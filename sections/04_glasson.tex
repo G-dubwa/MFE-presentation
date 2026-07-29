@@ -1,0 +1,171 @@
+% Slides 15--18: Glasson Osborne, 7:00.
+
+\speakerlabel{Glasson}{1:40}
+\begin{frame}{Three omitted Heston terms explain the proxy drift}
+  \begin{beamercolorbox}[rounded=true,sep=0.24cm]{block body}
+    \[
+      \operatorname{drift}(g)
+      =
+      \underbrace{\kappa(\theta-v)g_v}_{\text{mean reversion}\times\text{variance sensitivity}}
+      +
+      \underbrace{\tfrac12\xi^2v\,g_{vv}}_{\text{vol-of-vol convexity}}
+      +
+      \underbrace{\rho\xi vS\,g_{Sv}}_{\text{spot--variance interaction}} .
+    \]
+  \end{beamercolorbox}
+  \vspace{0.28cm}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.31\textwidth}
+      \centering
+      \pill[Coral]{1}
+      \vspace{0.1cm}
+
+      {\small Apply Itô to \(g(S,v,t)=C_{\bs}(S,K_h,T_h-t,\sqrt v)\).}
+    \end{column}
+    \begin{column}{0.31\textwidth}
+      \centering
+      \pill[Gold]{2}
+      \vspace{0.1cm}
+
+      {\small Cancel only the terms covered by the frozen-volatility BS PDE.}
+    \end{column}
+    \begin{column}{0.31\textwidth}
+      \centering
+      \pill[Teal]{3}
+      \vspace{0.1cm}
+
+      {\small Three Heston terms remain, so drift is generally nonzero.}
+    \end{column}
+  \end{columns}
+  \vspace{0.27cm}
+  \risknote{The sign is not determined by \(\xi\) and \(\rho\) alone. Under the submitted parameters and simulated state distribution, the average residual was negative, matching the diagnostic.}
+  \sourcefoot{Submitted report, Sec.\ 4.1.4 and Appendix A.6.3.}
+  \note{Walk through Itô, BS-PDE cancellation, then residual. Do not say correlation alone caused the negative drift.}
+\end{frame}
+
+\speakerlabel{Glasson}{1:30}
+\begin{frame}{COS pricing restores model consistency}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.52\textwidth}
+      \begin{tikzpicture}[
+        box/.style={rounded corners=4pt,fill=Mist,draw=DeepNavy!18,
+          minimum width=4.8cm,minimum height=0.72cm,align=center,font=\small},
+        arr/.style={-{Latex[length=2mm]},line width=0.9pt,color=Teal},
+        node distance=0.16cm
+      ]
+        \node[box] (state) {Heston state \((S_t,v_t,\tau_h)\)};
+        \node[box,below=of state] (cf) {Heston characteristic function};
+        \node[box,below=of cf] (cos) {256-term cosine expansion on \([-7,7]\)};
+        \node[box,below=of cos,fill=Teal!12] (path) {model-consistent liquid-option path \(C_t^h\)};
+        \draw[arr] (state)--(cf);\draw[arr] (cf)--(cos);\draw[arr] (cos)--(path);
+      \end{tikzpicture}
+    \end{column}
+    \begin{column}{0.44\textwidth}
+      \begin{beamercolorbox}[rounded=true,sep=0.20cm]{block body}
+        \centering
+        {\color{Teal}\fontsize{17}{19}\selectfont\bfseries \(5.1\times10^{-8}\)\par}
+        {\scriptsize maximum COS--Carr--Madan price discrepancy}
+      \end{beamercolorbox}
+      \vspace{0.14cm}
+      \begin{beamercolorbox}[rounded=true,sep=0.20cm]{block body}
+        \centering
+        {\color{DeepNavy}\fontsize{15}{17}\selectfont\bfseries \(9.8\times10^{-5}\)\par}
+        {\scriptsize finite-difference delta error}
+      \end{beamercolorbox}
+      \vspace{0.14cm}
+      \begin{beamercolorbox}[rounded=true,sep=0.20cm]{block body}
+        \centering
+        {\color{DeepNavy}\fontsize{15}{17}\selectfont\bfseries \(4.7\times10^{-4}\)\par}
+        {\scriptsize finite-difference variance-sensitivity error}
+      \end{beamercolorbox}
+    \end{column}
+  \end{columns}
+  \sourcefoot{Submitted report, Sec.\ 4.1.4 and Appendices A.6.1--A.6.2; Fang--Oosterlee (2008), Carr--Madan (1999). Validation is over the submitted traded range, not global.}
+  \note{COS uses the same Heston model as the simulation. Carr--Madan is an independent pricing cross-check; finite differences check Greeks.}
+\end{frame}
+
+\speakerlabel{Glasson}{2:00}
+\begin{frame}{The network beats the strongest tested heuristic}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.59\textwidth}
+      \begin{table}
+        \centering
+        \scriptsize
+        \begin{tabular}{lS[table-format=1.6]S[table-format=1.6]}
+          \toprule
+          Representative strategy & {RMSE} & {Loss CVaR95}\\
+          \midrule
+          No hedge & 0.190061 & 0.492959\\
+          BS-proxy stock delta & 0.019997 & 0.046360\\
+          Heston COS delta--vega & 0.014782 & 0.033251\\
+          Stock-only NN (tanh) & 0.018166 & 0.041379\\
+          Strongest tested heuristic & 0.009874 & 0.023130\\
+          \rowcolor{Teal!14}
+          \textbf{Stock + option NN} & \bfseries 0.007426 & \bfseries 0.016624\\
+          \bottomrule
+        \end{tabular}
+      \end{table}
+      \vspace{0.12cm}
+      \risknote{All Heston headline metrics use strategy-by-strategy fair-premium centering on the same test paths.}
+    \end{column}
+    \begin{column}{0.37\textwidth}
+      \begin{table}
+        \centering
+        \scriptsize
+        \begin{tabular}{cS[table-format=1.6]S[table-format=2.1]}
+          \toprule
+          Seed & {NN RMSE} & {Improvement \%}\\
+          \midrule
+          111 & 0.007806 & 20.6\\
+          222 & 0.007715 & 21.8\\
+          333 & 0.007346 & 25.5\\
+          \bottomrule
+        \end{tabular}
+      \end{table}
+      \vspace{0.15cm}
+      \begin{beamercolorbox}[rounded=true,sep=0.18cm]{block body}
+        \centering
+        {\color{Teal}\fontsize{19}{21}\selectfont\bfseries 22.7\%\par}
+        {\scriptsize mean RMSE improvement}\\[0.09cm]
+        {\color{DeepNavy}\fontsize{15}{17}\selectfont\bfseries 27.1\%\par}
+        {\scriptsize mean Loss CVaR95 improvement}
+      \end{beamercolorbox}
+    \end{column}
+  \end{columns}
+  \vspace{0.12cm}
+  \claimbox{The network won all three submitted pairwise seed comparisons against the strongest analytic heuristic tested.}
+  \sourcefoot{Submitted report, Tables 4.5--4.6 and A.11. Representative values and multi-seed means are deliberately separated.}
+  \note{Use the phrase ``strongest analytic heuristic tested,'' never ``optimal analytic hedge.'' Explain that local Greek matching is not globally terminal-MSE optimal under discrete trading. Three seeds are a consistency check, not definitive inference.}
+\end{frame}
+
+\speakerlabel{Glasson}{1:50}
+\begin{frame}{The evidence is strong within explicit boundaries}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.54\textwidth}
+      \pill{What the evidence establishes}
+      {\small\begin{enumerate}
+        \item \textbf{Black--Scholes:} recovered the known finite-grid hedge.
+        \item \textbf{Conditioning:} repaired the identified information failure.
+        \item \textbf{Heston:} reduced terminal risk against the strongest tested heuristic once the liquid option was priced consistently.
+      \end{enumerate}}
+      \vspace{0.05cm}
+      {\scriptsize\color{Slate}Learned option positions broadly follow variance-hedging direction, but soften at high variance under terminal MSE.}
+    \end{column}
+    \begin{column}{0.42\textwidth}
+      \pill[Coral]{Where the conclusion stops}
+      {\scriptsize\begin{tightitemize}
+        \item three seeds and evaluation-path premium centering;
+        \item comparators are local heuristics, not a derived finite-grid multi-instrument optimum;
+        \item frictionless simulated Heston market;
+        \item full-information headline; observable-market-information robustness is not stock-return-only filtering.
+      \end{tightitemize}}
+    \end{column}
+  \end{columns}
+  \vspace{0.08cm}
+  \begin{beamercolorbox}[rounded=true,sep=0.18cm]{block body}
+    \centering\color{DeepNavy}\bfseries
+    A constrained, rigorously benchmarked neural policy can recover a known solution and adapt when the state and traded instrument set become more complex.
+  \end{beamercolorbox}
+  \sourcefoot{Submitted report, Secs.\ 4.1.4 and 5; Figure 4.3 interpretation and stated limitations.}
+  \note{Close with the three calibrated claims. Do not claim neural networks should replace correct analytic hedges or that the Heston strategy is globally optimal.}
+\end{frame}

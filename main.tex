@@ -1,14 +1,67 @@
-\documentclass{article}
-\usepackage{graphicx} % Required for inserting images
+\documentclass[aspectratio=169,10pt]{beamer}
 
-\title{MFE presentation}
-\author{Glasson Osborne}
-\date{July 2026}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{booktabs}
+\usepackage{colortbl}
+\usepackage{siunitx}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,calc,fit,backgrounds,decorations.pathreplacing}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{adjustbox}
+\usepackage{listings}
+\usepackage{ragged2e}
+\usepackage{microtype}
+\usepackage{appendixnumberbeamer}
+\usepackage[round]{natbib}
+\usepackage{presentation_theme}
+
+\title[Deep Hedging: BS to Heston]{Deep Hedging under Black--Scholes\\and Heston Dynamics}
+\subtitle{Recover the known hedge first; then diagnose what changes under stochastic volatility}
+\author[MFE Group 5]{Micaela Marais \and Glasson Osborne \and Kaiden Wessels \and Siphelele Nkosi}
+\institute{Master's Research Project I \textperiodcentered\ University of Cape Town\\Supervised by Prof.\ Ouwehand}
+\date{7 August 2026}
+
+\newcommand{\deltann}{\delta^{\mathrm{NN}}}
+\newcommand{\deltadt}{\delta^{\mathrm{DT}}}
+\newcommand{\bs}{\mathrm{BS}}
+\newcommand{\he}{\mathrm{HE}}
+\newcommand{\loss}{\mathcal{L}}
+\newcommand{\cvar}{\mathrm{CVaR}}
+\newcommand{\target}{\mathrm{tar}}
+\newcommand{\hedge}{\mathrm{h}}
+
+\lstdefinestyle{deckcode}{
+  language=Python,
+  basicstyle=\ttfamily\fontsize{7.4}{8.6}\selectfont,
+  keywordstyle=\color{Teal}\bfseries,
+  commentstyle=\color{Slate}\itshape,
+  stringstyle=\color{Coral},
+  showstringspaces=false,
+  columns=fullflexible,
+  frame=single,
+  rulecolor=\color{Mist},
+  backgroundcolor=\color{Mist!45},
+  breaklines=true,
+  tabsize=2
+}
+
+\setbeameroption{hide notes}
 
 \begin{document}
 
-\maketitle
+\input{sections/00_title}
+\input{sections/01_kaiden}
+\input{sections/02_micaela}
+\input{sections/03_siphelele}
+\input{sections/04_glasson}
 
-\section{Introduction}
+\backupslidestrue
+\appendix
+\input{sections/05_backup}
 
 \end{document}

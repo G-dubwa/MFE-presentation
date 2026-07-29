@@ -1,0 +1,109 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{presentation_theme}[2026/07/29 Group 5 MFE presentation theme]
+
+\RequirePackage{xcolor}
+\RequirePackage{tikz}
+\RequirePackage{etoolbox}
+
+\definecolor{DeepNavy}{HTML}{10233F}
+\definecolor{Ink}{HTML}{1E2936}
+\definecolor{Slate}{HTML}{5B6778}
+\definecolor{Mist}{HTML}{EEF2F5}
+\definecolor{Teal}{HTML}{187A78}
+\definecolor{Gold}{HTML}{C8942F}
+\definecolor{Coral}{HTML}{C45B4A}
+\definecolor{Success}{HTML}{2E7D5B}
+
+\mode<presentation>
+
+\usefonttheme{professionalfonts}
+\setbeamercolor{normal text}{fg=Ink,bg=white}
+\setbeamercolor{structure}{fg=DeepNavy}
+\setbeamercolor{frametitle}{fg=DeepNavy,bg=white}
+\setbeamercolor{framesubtitle}{fg=Slate}
+\setbeamercolor{alerted text}{fg=Coral}
+\setbeamercolor{block title}{fg=white,bg=DeepNavy}
+\setbeamercolor{block body}{fg=Ink,bg=Mist}
+\setbeamercolor{itemize item}{fg=Teal}
+\setbeamercolor{itemize subitem}{fg=Teal}
+\setbeamercolor{enumerate item}{fg=Teal}
+
+\setbeamerfont{title}{size=\fontsize{24}{28}\selectfont,series=\bfseries}
+\setbeamerfont{subtitle}{size=\fontsize{12}{15}\selectfont}
+\setbeamerfont{author}{size=\fontsize{11}{14}\selectfont}
+\setbeamerfont{frametitle}{size=\fontsize{18}{21}\selectfont,series=\bfseries}
+\setbeamerfont{framesubtitle}{size=\fontsize{9}{11}\selectfont}
+\setbeamerfont{normal text}{size=\fontsize{10.5}{13}\selectfont}
+\setbeamerfont{footline}{size=\fontsize{6.8}{8}\selectfont}
+
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{itemize item}{\raise0.2ex\hbox{\color{Teal}\scriptsize$\blacktriangleright$}}
+\setbeamertemplate{itemize subitem}{\raise0.15ex\hbox{\color{Teal}\tiny$\bullet$}}
+\setbeamertemplate{blocks}[rounded][shadow=false]
+\setbeamersize{text margin left=0.65cm,text margin right=0.65cm}
+
+\newcommand{\deckspeaker}{}
+\newcommand{\decktime}{}
+\newif\ifbackupslides
+\backupslidesfalse
+\newcommand{\speakerlabel}[2]{%
+  \gdef\deckspeaker{#1}%
+  \gdef\decktime{#2}%
+}
+
+\setbeamertemplate{frametitle}{%
+  \nointerlineskip
+  \begin{beamercolorbox}[wd=\paperwidth,ht=0.78cm,dp=0.18cm,leftskip=0.65cm,rightskip=0.65cm]{frametitle}
+    \usebeamerfont{frametitle}\insertframetitle
+    \ifx\insertframesubtitle\@empty\else\\[-0.04cm]
+      {\usebeamerfont{framesubtitle}\usebeamercolor[fg]{framesubtitle}\insertframesubtitle}
+    \fi
+  \end{beamercolorbox}
+  \vspace{0.08cm}
+}
+
+\setbeamertemplate{footline}{%
+  \leavevmode
+  \begin{beamercolorbox}[wd=\paperwidth,ht=0.32cm,dp=0.11cm,leftskip=0.65cm,rightskip=0.65cm]{normal text}
+    {\color{Teal}\bfseries\deckspeaker}\ifx\decktime\empty\else\ {\color{Slate}\textperiodcentered\ \decktime}\fi
+    \hfill{\color{Slate}\insertshorttitle}
+    \hfill{\color{DeepNavy}\bfseries
+      \ifbackupslides Backup\else\insertframenumber\,/\,\insertmainframenumber\fi}
+  \end{beamercolorbox}
+}
+
+\newcommand{\sourcefoot}[1]{%
+  \par\vspace{0.12cm}{\fontsize{6.4}{7.5}\selectfont\color{Slate}Source: #1\par}
+}
+
+\newcommand{\claimbox}[1]{%
+  \begin{beamercolorbox}[rounded=true,sep=0.2cm]{block body}
+    \color{DeepNavy}\bfseries #1
+  \end{beamercolorbox}
+}
+
+\newcommand{\metricbox}[3][Teal]{%
+  \begin{beamercolorbox}[rounded=true,sep=0.18cm,wd=#3]{block body}
+    \centering
+    {\color{#1}\fontsize{17}{19}\selectfont\bfseries #2\par}
+  \end{beamercolorbox}
+}
+
+\newcommand{\pill}[2][Teal]{%
+  \tikz[baseline=(p.base)]\node[rounded corners=2pt,fill=#1!12,text=#1,
+  inner xsep=4pt,inner ysep=2pt,font=\scriptsize\bfseries] (p) {#2};%
+}
+
+\newcommand{\risknote}[1]{%
+  \begin{beamercolorbox}[rounded=true,sep=0.15cm]{block body}
+    {\scriptsize\color{Coral}\textbf{Boundary:} \color{Ink}#1}
+  \end{beamercolorbox}
+}
+
+\newenvironment{tightitemize}{%
+  \begin{itemize}\setlength{\itemsep}{0.16cm}\setlength{\parskip}{0pt}
+}{\end{itemize}}
+
+\AtBeginSection[]{}
+
+\mode<all>

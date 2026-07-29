@@ -1,0 +1,341 @@
+\speakerlabel{Backup}{}
+
+\begin{frame}{Backup: method-to-code map}
+  \scriptsize
+  \begin{tabular}{p{0.20\textwidth}p{0.26\textwidth}p{0.24\textwidth}p{0.19\textwidth}}
+    \toprule
+    Mathematical concept & Displayed implementation & Report evidence & Primary expert\\
+    \midrule
+    Exact BS path simulation & \texttt{simulate\_gbm\_paths} & Listing C.1; Alg.\ A.3.1 & Micaela / Glasson\\
+    Self-financing terminal error & \texttt{hedge\_error} & Listing C.2; Alg.\ A.6.1 & Micaela / Glasson\\
+    Shared Markov hedge & \texttt{SharedMarkovHedge} & Listing C.3; Sec.\ 2.2.2 & Kaiden / Micaela\\
+    Heston full-truncation simulation & PyTorch loop in Listing C.4 & Listing C.4; Alg.\ A.3.3 & Glasson / Siphelele\\
+    COS liquid-option pricing & Algorithms A.6.6--A.6.8 & App.\ A.6.1--A.6.2 & Glasson\\
+    Two-instrument neural gain & Algorithm A.6.10 & Sec.\ 4.1.4 & Glasson\\
+    \bottomrule
+  \end{tabular}
+  \vspace{0.25cm}
+  \risknote{The submitted report and its displayed code are present; notebook filenames, result CSV paths and \texttt{requirements.txt} are absent from this repository. See \texttt{OPEN\_QUESTIONS.md}.}
+\end{frame}
+
+\begin{frame}{Backup: tensor shapes}
+  \centering
+  \begin{tikzpicture}[
+    box/.style={rounded corners=3pt,draw=DeepNavy!18,fill=Mist,
+      minimum height=0.72cm,text width=2.2cm,align=center,font=\scriptsize},
+    arr/.style={-{Latex[length=2mm]},color=Teal,line width=0.8pt},
+    node distance=0.24cm
+  ]
+    \node[box] (p) {BS paths\\\((B,N+1)\)};
+    \node[box,right=of p] (f) {state stack\\\((B,N,2)\)};
+    \node[box,right=of f] (flat) {shared calls\\\((B\!\cdot\!N,2)\)};
+    \node[box,right=of flat] (d) {deltas\\\((B,N)\)};
+    \node[box,right=of d] (e) {terminal error\\\((B,)\)};
+    \draw[arr] (p)--(f);\draw[arr] (f)--(flat);\draw[arr] (flat)--(d);\draw[arr] (d)--(e);
+
+    \node[box,below=0.65cm of p] (hp) {Heston \(S,v,C^h\)\\each \((B,N+1)\)};
+    \node[box,right=of hp] (hf) {state stack\\\((B,N,6)\)};
+    \node[box,right=of hf] (hflat) {shared calls\\\((B\!\cdot\!N,6)\)};
+    \node[box,right=of hflat] (hout) {\((\delta,\eta)\)\\\((B,N,2)\)};
+    \node[box,right=of hout] (he) {gain / error\\\((B,)\)};
+    \draw[arr] (hp)--(hf);\draw[arr] (hf)--(hflat);\draw[arr] (hflat)--(hout);\draw[arr] (hout)--(he);
+  \end{tikzpicture}
+  \par\vspace{0.35cm}
+  {\scriptsize\color{Slate}BS path allocation and two-feature input are explicit in Listings C.1 and C.3. Heston array indexing and the six-feature/two-output contract are explicit in Listing C.4 and Algorithm A.6.10; flattening is the shared batched evaluation contract described in the report.}
+\end{frame}
+
+\begin{frame}{Backup: the discrete-time conditional projection}
+  \begin{align*}
+    \min_{\pi,\delta}\quad&
+    \mathbb{E}\!\left[
+      \left(\pi+\sum_{j=0}^{N-1}\delta_j\Delta S_j-H\right)^2
+    \right],\\
+    0={}&
+    \mathbb{E}\!\left[
+      \left(H-\pi-\sum_{j=0}^{N-1}\delta_j\Delta S_j\right)
+      \Delta S_n\mid\mathcal{F}_{t_n}
+    \right].
+  \end{align*}
+  Under the submitted \(r=0\) risk-neutral simulation, \(S\) is a martingale, so
+  \[
+    \deltadt_n =
+    \frac{\mathbb{E}[H\Delta S_n\mid\mathcal{F}_{t_n}]}
+         {\mathbb{E}[(\Delta S_n)^2\mid\mathcal{F}_{t_n}]}
+    =
+    \frac{\operatorname{Cov}(H,\Delta S_n\mid S_{t_n})}
+         {\operatorname{Var}(\Delta S_n\mid S_{t_n})}.
+  \]
+  \risknote{This simplification is tied to the submitted \(r=0\) martingale setting; local and global quadratic hedges need not coincide more generally.}
+  \sourcefoot{Submitted report, Appendix A.4; Schweizer (1995, 2001).}
+\end{frame}
+
+\begin{frame}{Backup: full frozen-volatility drift derivation}
+  For \(g(S,v,t)=C_{\bs}(S,K_h,T_h-t,\sqrt v)\), Itô's lemma under Heston gives
+  \[
+  \begin{aligned}
+    dg={}&\Big[g_t+rSg_S+\kappa(\theta-v)g_v+\tfrac12vS^2g_{SS}
+      +\tfrac12\xi^2vg_{vv}+\rho\xi vSg_{Sv}\Big]dt\\
+      &+g_S\sqrt vS\,dW^S+g_v\xi\sqrt v\,dW^v .
+  \end{aligned}
+  \]
+  The frozen-\(v\) Black--Scholes PDE cancels only
+  \[
+    g_t+rSg_S+\tfrac12vS^2g_{SS}-rg=0.
+  \]
+  Hence the discounted residual is
+  \[
+    \kappa(\theta-v)g_v+\tfrac12\xi^2vg_{vv}+\rho\xi vSg_{Sv},
+  \]
+  and with submitted \(r=0\) this is also the undiscounted drift residual.
+  \sourcefoot{Submitted report, Appendix A.6.3.}
+\end{frame}
+
+\begin{frame}{Backup: COS pricing in one equation}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.55\textwidth}
+      \[
+        \begin{aligned}
+        C_{\text{COS}}
+        &\approx e^{-r\tau}
+        \sum_{k=0}^{N_{\text{COS}}-1}{}' A_kV_k,\\
+        A_k&=\frac{2}{b-a}\Re\!\left[
+          \varphi(u_k)e^{-iu_ka}\right],
+        \qquad u_k=\frac{k\pi}{b-a}.
+        \end{aligned}
+      \]
+      {\scriptsize\color{Slate}\(A_k\) approximates the density coefficient; \(V_k\) is the analytic call-payoff coefficient.}
+    \end{column}
+    \begin{column}{0.41\textwidth}
+      \begin{tightitemize}
+        \item Heston characteristic function \(\varphi\).
+        \item \(N_{\text{COS}}=256\), \([a,b]=[-7,7]\).
+        \item Traded validation range: \(\tau_h\in[0.5,1]\).
+        \item Carr--Madan check: \(\alpha=1.5\), \(u\in[0,200]\), 20,000 points.
+      \end{tightitemize}
+      \risknote{Accuracy is validated on the traded grid, not claimed globally.}
+    \end{column}
+  \end{columns}
+  \sourcefoot{Submitted report, Algorithms A.6.6--A.6.7 and Appendix A.6.2.}
+\end{frame}
+
+\begin{frame}[fragile]{Backup: Heston simulation code}
+\begin{lstlisting}[style=deckcode]
+for n in range(N_STEPS):
+    z1 = torch.randn(n_paths, device=device)
+    z2 = torch.randn(n_paths, device=device)
+    z_s = z1
+    z_v = RHO*z1 + math.sqrt(max(1.0-RHO**2, 0.0))*z2
+    v_pos = torch.clamp(v[:, n], min=0.0)
+    S[:, n+1] = S[:, n] * torch.exp(
+        (R - 0.5*v_pos)*dt + torch.sqrt(v_pos)*sqrt_dt*z_s
+    )
+    v_next = v[:, n] + KAPPA*(THETA-v_pos)*dt \
+             + XI*torch.sqrt(v_pos)*sqrt_dt*z_v
+    v[:, n+1] = torch.clamp(v_next, min=0.0)
+\end{lstlisting}
+  \sourcefoot{Adapted only for line length from submitted report Listing C.4. Purpose: correlated Heston shocks, log-Euler stock update and full-truncation variance update. Primary speaker: Glasson / Siphelele.}
+\end{frame}
+
+\begin{frame}[fragile]{Backup: two-instrument gain construction}
+\begin{lstlisting}[style=deckcode]
+# state at t_n only
+x_n = [log(S_n/K), (T-t_n)/T, v_n/THETA,
+       log(S_n/K_H), (T_H-t_n)/T_H, C_h_n/S_n]
+z_stock, z_option = shared_mlp(x_n)
+delta_n = 5.0 * tanh(z_stock)
+eta_n   = 5.0 * tanh(z_option)
+
+gain = sum(delta_n * (S_next-S_n)
+           + eta_n * (C_h_next-C_h_n), over="time")
+hedge_error = premium + gain - maximum(S_T-K, 0.0)
+loss = mean(hedge_error**2)
+\end{lstlisting}
+  \risknote{This is a faithful pseudocode rendering of Algorithm A.6.10, not a verbatim excerpt from the absent executable notebook.}
+  \sourcefoot{Submitted report, Sec.\ 4.1.4 and Algorithm A.6.10. Primary speaker: Glasson.}
+\end{frame}
+
+\begin{frame}{Backup: data separation and centering}
+  \centering
+  \begin{tikzpicture}[
+    box/.style={rounded corners=4pt,minimum width=3.4cm,minimum height=1.2cm,
+      align=center,font=\small,draw=DeepNavy!18},
+    arr/.style={-{Latex[length=2mm]},color=Teal,line width=0.9pt}
+  ]
+    \node[box,fill=Gold!12] (tr) at (0,0) {\textbf{Training}\\fit weights and learned premium};
+    \node[box,fill=Teal!12] (va) at (4.1,0) {\textbf{Validation}\\select architecture / best epoch};
+    \node[box,fill=Mist] (te) at (8.2,0) {\textbf{Test}\\one final risk evaluation};
+    \draw[arr] (tr)--(va);\draw[arr] (va)--(te);
+    \node[below=0.32cm of tr,font=\scriptsize,color=Slate] {independent paths};
+    \node[below=0.32cm of va,font=\scriptsize,color=Slate] {independent paths};
+    \node[below=0.32cm of te,font=\scriptsize,color=Slate] {independent paths};
+  \end{tikzpicture}
+  \vspace{0.5cm}
+  \risknote{Heston headline fair premiums are estimated on the same test paths as the risk metrics. Interpret them as test-sample-centred hedge-quality comparisons, not fully out-of-sample pricing results.}
+  \sourcefoot{Submitted report, Tables A.1--A.2 and Algorithms A.6.1--A.6.2.}
+\end{frame}
+
+\begin{frame}{Backup: three-seed Heston comparison}
+  \begin{table}
+    \centering
+    \small
+    \begin{tabular}{cS[table-format=1.6]S[table-format=1.6]S[table-format=2.1]S[table-format=2.1]}
+      \toprule
+      Seed & {NN RMSE} & {Heuristic RMSE} & {RMSE imp.\ (\%)} & {CVaR95 imp.\ (\%)}\\
+      \midrule
+      111 & 0.007806 & 0.009838 & 20.6 & 26.3\\
+      222 & 0.007715 & 0.009871 & 21.8 & 27.0\\
+      333 & 0.007346 & 0.009864 & 25.5 & 28.0\\
+      \midrule
+      \multicolumn{3}{r}{Mean pairwise improvement} & \bfseries 22.7 & \bfseries 27.1\\
+      \bottomrule
+    \end{tabular}
+  \end{table}
+  \vspace{0.25cm}
+  \risknote{Three seeds demonstrate consistency across the submitted runs; they do not support high-powered confidence intervals.}
+  \sourcefoot{Submitted report, Table A.11.}
+\end{frame}
+
+\begin{frame}{Backup: position and information diagnostics}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.48\textwidth}
+      \pill{Position-bound check}
+      \begin{tightitemize}
+        \item Network output range: \([-5,5]\).
+        \item Observed max \(|\eta^{NN}|\approx1.33\).
+        \item COS delta--vega RMSE:
+          \begin{itemize}
+            \item bound \([-5,5]\): \(0.014782\);
+            \item bound \([-20,20]\): \(0.014667\).
+          \end{itemize}
+      \end{tightitemize}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \pill[Gold]{Observable-information check}
+      \begin{tightitemize}
+        \item EWMA decay \(\lambda=0.94\).
+        \item \(\operatorname{corr}(\hat v_t,v_t)=0.777613\).
+        \item Relative variance-proxy RMSE \(=0.369375\).
+        \item Neural mean RMSE \(0.007877\) vs heuristic \(0.010734\).
+      \end{tightitemize}
+      \risknote{\(C_t^h/S_t\) remains observable and variance-informative; this is not stock-return-only filtering.}
+    \end{column}
+  \end{columns}
+  \sourcefoot{Submitted report, Sec.\ 4.1.4 and Tables A.10, A.12, A.15.}
+\end{frame}
+
+\begin{frame}{Backup: transaction costs change the learned policy}
+  \[
+    V_T^\lambda
+    =\pi+\sum_{n=0}^{N-1}\delta_n\Delta S_n
+    -\lambda\sum_{n=0}^{N-1}S_{t_n}\lvert\delta_n-\delta_{n-1}\rvert,
+    \qquad \delta_{-1}=0.
+  \]
+  \begin{table}
+    \centering
+    \scriptsize
+    \begin{tabular}{c l S[table-format=1.6]S[table-format=1.6]S[table-format=1.6]}
+      \toprule
+      \(\lambda\) & Strategy & {RMSE} & {Loss CVaR95} & {Turnover}\\
+      \midrule
+      0.0025 & BS cost-adjusted & 0.008492 & 0.021464 & 4.497364\\
+      0.0025 & Cost-aware NN & 0.008077 & 0.018694 & 4.386880\\
+      0.0050 & BS cost-adjusted & 0.010013 & 0.025565 & 4.497364\\
+      0.0050 & Cost-aware NN & 0.008331 & 0.019269 & 4.284602\\
+      \bottomrule
+    \end{tabular}
+  \end{table}
+  \risknote{Comparator is a cost-adjusted frictionless delta, not a full optimal-cost benchmark such as Leland or Whalley--Wilmott.}
+  \sourcefoot{Submitted report, Appendix A.7 and Table A.16.}
+\end{frame}
+
+\begin{frame}{Backup: data-generation comparison}
+  \begin{table}
+    \centering
+    \scriptsize
+    \begin{tabular}{r l S[table-format=1.6]S[table-format=1.6]}
+      \toprule
+      Paths & Method & {RMSE} & {Loss CVaR95}\\
+      \midrule
+      10,000 & Crude MC & 0.009430 & 0.021266\\
+      10,000 & LHS & 0.009201 & 0.020845\\
+      10,000 & Sobol + Brownian bridge & 0.009174 & 0.020865\\
+      \midrule
+      100,000 & Crude MC & 0.007865 & 0.018218\\
+      100,000 & LHS & 0.007846 & 0.018331\\
+      100,000 & Sobol + Brownian bridge & 0.007840 & 0.018125\\
+      \bottomrule
+    \end{tabular}
+  \end{table}
+  \vspace{0.22cm}
+  \claimbox{At 10,000 paths, structured methods reduce RMSE by roughly 2.4--2.7\%; by 100,000 paths the difference is negligible.}
+  \sourcefoot{Submitted report, Sec.\ 3.1.5 and Tables A.7--A.8.}
+\end{frame}
+
+\begin{frame}{Backup: experimental protocol}
+  \scriptsize
+  \begin{tabular}{p{0.26\textwidth}rrrrp{0.24\textwidth}}
+    \toprule
+    Experiment & Train & Val & Test & Batch & Training / seeds\\
+    \midrule
+    Architecture selection & 100k & 20k & 50k & 256 & 60 epochs; 2026--2028\\
+    Final BS benchmark & 100k & 30k & 100k & 4096 & 250 epochs; base 123\\
+    Parameter robustness & 50k & 15k & 50k & 4096 & 150 epochs\\
+    Conditioned hedger & 200k & 30k & 50k / case & 4096 & 250 epochs; 777\\
+    Heston stock + option & 100k & 25k & 100k & 4096 & 150 epochs; base 123\\
+    \bottomrule
+  \end{tabular}
+  \vspace{0.28cm}
+  \begin{tightitemize}
+    \item Adam learning rate \(10^{-3}\) unless otherwise stated.
+    \item Baseline: \(S_0=1,K=0.9,T=0.5,r=0,\sigma=0.4,N=125\).
+    \item Architecture search uses more updates per epoch via batch size 256; final experiments use 4096.
+  \end{tightitemize}
+  \sourcefoot{Submitted report, Appendix A.1, Table A.1.}
+\end{frame}
+
+\begin{frame}{Backup: AI assistance and verification}
+  \small
+  \begin{tabular}{p{0.41\textwidth}p{0.49\textwidth}}
+    \toprule
+    Assistance area disclosed & Human verification reported\\
+    \midrule
+    Code drafting and debugging & Executed notebooks, code inspection and exported results\\
+    Mathematical explanations and LaTeX & Checked against theory and cited sources\\
+    Report organisation and consistency & Tables checked against CSV/TeX outputs and figures\\
+    COS implementation support & Independent Carr--Madan Fourier price check\\
+    Neural experiment support & BS analytic and finite-grid benchmarks; archived outputs\\
+    Documentation and reproducibility & Checklists, packaging review and author decisions\\
+    \bottomrule
+  \end{tabular}
+  \vspace{0.24cm}
+  \risknote{The report names ChatGPT and Claude. It states that AI suggestions were not authoritative and that all final methodological and interpretive decisions remained with the authors.}
+  \sourcefoot{Submitted report, Appendix B.}
+\end{frame}
+
+\begin{frame}{Backup: architecture selection by seed}
+  \begin{table}
+    \centering
+    \small
+    \begin{tabular}{c l S[table-format=1.3e-1]S[table-format=1.6]}
+      \toprule
+      Seed & Validation winner & {Val.\ loss} & {Test RMSE}\\
+      \midrule
+      2026 & Shared norm.\ \(64{\times}3\), tanh & 6.025e-5 & 0.007883\\
+      2027 & Shared norm.\ \(64{\times}3\), tanh & 6.164e-5 & 0.007916\\
+      2028 & Shared norm.\ \(64{\times}2\), ReLU & 6.014e-5 & 0.007855\\
+      \bottomrule
+    \end{tabular}
+  \end{table}
+  \vspace{0.25cm}
+  \claimbox{The \(64{\times}3\) tanh model won two seeds and had the best mean validation loss and test RMSE; the ReLU alternative was close.}
+  \sourcefoot{Submitted report, Tables A.3--A.6.}
+\end{frame}
+
+\begin{frame}[allowframebreaks]{Backup: references}
+  \scriptsize
+  \nocite{blackscholes1973,merton1973,buehler2019,heston1993,fang2008,carrmadan1999,
+    schweizer1995,schweizer2001,follmerschweizer1991,lord2010,leland1985,
+    whalley1997,glasserman2004,gatheral2006,rufwang2020,kingmaba2015}
+  \bibliographystyle{plainnat}
+  \bibliography{references}
+\end{frame}

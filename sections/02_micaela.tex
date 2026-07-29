@@ -1,0 +1,203 @@
+% Slides 6--10: Micaela Marais, 6:50.
+
+\speakerlabel{Micaela}{1:30}
+\begin{frame}{The neural hedge recovers the finite-grid benchmark}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.62\textwidth}
+      \begin{table}
+        \centering
+        \small
+        \begin{tabular}{lS[table-format=1.6]}
+          \toprule
+          Strategy & {RMSE}\\
+          \midrule
+          No hedge & 0.227257\\
+          Black--Scholes delta & 0.007810\\
+          Discrete-time MSE-optimal & 0.007810\\
+          Degree-2 polynomial & 0.022183\\
+          \rowcolor{Teal!13}
+          \textbf{Neural hedge} & \bfseries 0.007841\\
+          \bottomrule
+        \end{tabular}
+      \end{table}
+      \vspace{0.16cm}
+      \risknote{These are final-benchmark values from an independent retraining, not architecture-search rows.}
+    \end{column}
+    \begin{column}{0.34\textwidth}
+      \begin{beamercolorbox}[rounded=true,sep=0.23cm]{block body}
+        \centering
+        {\color{Teal}\fontsize{21}{23}\selectfont\bfseries 0.4\%\par}
+        {\scriptsize neural RMSE above the discrete-time benchmark}
+      \end{beamercolorbox}
+      \vspace{0.2cm}
+      \begin{beamercolorbox}[rounded=true,sep=0.23cm]{block body}
+        \centering
+        {\color{DeepNavy}\fontsize{16}{18}\selectfont\bfseries 0.163972\par}
+        {\scriptsize learned premium}\\[0.08cm]
+        {\color{Slate}\scriptsize vs.\ analytic \(0.164111\)}
+      \end{beamercolorbox}
+      \vspace{0.2cm}
+      \claimbox{Near equality is the validation result we wanted.}
+    \end{column}
+  \end{columns}
+  \sourcefoot{Submitted report, Table 3.2 and Sec.\ 3.1.4.}
+  \note{State RMSE values for the three key strategies. Do not say the network outperformed Black--Scholes. Explain the learned-premium gap as finite-sample/optimisation error.}
+\end{frame}
+
+\speakerlabel{Micaela}{1:10}
+\begin{frame}{The learned hedge has the right financial shape}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.71\textwidth}
+      \begin{tikzpicture}[x=2.25cm,y=1cm]
+        \draw[-{Latex[length=2mm]},line width=0.9pt,color=Slate] (0,0)--(3.25,0);
+        \foreach \x in {0.3,1.6,2.9}
+          \draw[Slate] (\x,-0.08)--(\x,0.08);
+        \node[below,font=\scriptsize,color=Slate] at (0.3,-0.08) {deep OTM};
+        \node[below,font=\scriptsize,color=Slate] at (1.6,-0.08) {near strike};
+        \node[below,font=\scriptsize,color=Slate] at (2.9,-0.08) {deep ITM};
+
+        \node[rounded corners=4pt,fill=Mist,minimum width=1.55cm,minimum height=1.35cm,
+          align=center] at (0.3,1.05) {{\color{Teal}\Large\(\delta\to0\)}\\[-0.05cm]\scriptsize little stock needed};
+        \node[rounded corners=4pt,fill=Gold!12,minimum width=1.55cm,minimum height=1.35cm,
+          align=center] at (1.6,1.05) {{\color{Gold!80!black}\Large\(\nearrow\)}\\[-0.05cm]\scriptsize smooth transition};
+        \node[rounded corners=4pt,fill=Teal!12,minimum width=1.55cm,minimum height=1.35cm,
+          align=center] at (2.9,1.05) {{\color{Teal}\Large\(\delta\to1\)}\\[-0.05cm]\scriptsize nearly one-for-one};
+        \draw[-{Latex[length=2mm]},line width=1.4pt,color=Teal]
+          (0.62,1.05) .. controls (1.15,1.05) and (1.15,1.38) .. (1.32,1.38);
+        \draw[-{Latex[length=2mm]},line width=1.4pt,color=Teal]
+          (1.88,1.38) .. controls (2.05,1.38) and (2.05,1.05) .. (2.58,1.05);
+      \end{tikzpicture}
+    \end{column}
+    \begin{column}{0.25\textwidth}
+      \begin{tightitemize}
+        \item monotone in moneyness;
+        \item close to both analytic curves;
+        \item nearly indistinguishable on representative OTM, ATM and ITM paths.
+      \end{tightitemize}
+    \end{column}
+  \end{columns}
+  \vspace{0.18cm}
+  \claimbox{The network learned the expected hedge function, not only a low aggregate loss.}
+  \sourcefoot{Economic reading of submitted report Figures 3.3 and 3.5; schematic above is not a data redraw.}
+  \note{Use the three moneyness regimes to explain the hedge. Refer to the submitted report figures if an examiner asks for path-level evidence.}
+\end{frame}
+
+\speakerlabel{Micaela}{1:20}
+\begin{frame}{Retraining preserves architecture quality}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.65\textwidth}
+      \begin{table}
+        \centering
+        \scriptsize
+        \begin{tabular}{lS[table-format=1.6]S[table-format=1.3]}
+          \toprule
+          Retrained setting & {NN RMSE} & {NN / DT}\\
+          \midrule
+          \(K=0.8\) & 0.006656 & 1.082\\
+          \(\sigma=0.2\) & 0.003680 & 1.082\\
+          \(T=1.0\) & 0.011792 & 1.050\\
+          \(N=30\) & 0.015595 & 1.009\\
+          \(N=250\) & 0.006047 & 1.099\\
+          \bottomrule
+        \end{tabular}
+      \end{table}
+    \end{column}
+    \begin{column}{0.31\textwidth}
+      \begin{beamercolorbox}[rounded=true,sep=0.22cm]{block body}
+        \centering
+        {\color{Teal}\fontsize{20}{22}\selectfont\bfseries 1.049\par}
+        {\scriptsize mean NN / discrete-time RMSE ratio across tested settings}
+      \end{beamercolorbox}
+      \vspace{0.22cm}
+      \risknote{This is architecture reuse \emph{with retraining}; it is not zero-shot generalisation.}
+    \end{column}
+  \end{columns}
+  \vspace{0.2cm}
+  \claimbox{Absolute error falls as the grid becomes finer, even when the relative gap rises because the benchmark improves faster.}
+  \sourcefoot{Submitted report, Table 4.1 and Sec.\ 4.1.1.}
+  \note{State the range of NN/DT ratios: 1.009 to 1.099. Avoid describing the N=250 ratio as worse absolute performance.}
+\end{frame}
+
+\speakerlabel{Micaela}{1:20}
+\begin{frame}{Missing information---not capacity---causes failure}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.55\textwidth}
+      \begin{table}
+        \centering
+        \scriptsize
+        \begin{tabular}{ccS[table-format=1.6]S[table-format=1.6]}
+          \toprule
+          \(K\) & \(\sigma\) & {DT RMSE} & {NN RMSE}\\
+          \midrule
+          0.7 & 0.2 & 0.000492 & 0.143314\\
+          \rowcolor{Teal!12}
+          0.9 & 0.4 & 0.007809 & 0.007841\\
+          1.1 & 0.4 & 0.009017 & 0.126961\\
+          1.1 & 0.6 & 0.013686 & 0.107178\\
+          \bottomrule
+        \end{tabular}
+      \end{table}
+      {\scriptsize\color{Slate}\(\,\)Model trained only at \(K^\star=0.9,\sigma^\star=0.4\); evaluated without retraining.}
+    \end{column}
+    \begin{column}{0.41\textwidth}
+      \begin{tikzpicture}[
+        issue/.style={rounded corners=3pt,fill=Coral!10,text width=4.25cm,
+          minimum height=0.8cm,align=left,font=\small,inner xsep=6pt},
+        node distance=0.16cm
+      ]
+        \node[issue] (k) {\textbf{Strike is hardcoded}\\Original moneyness uses \(K^\star\).};
+        \node[issue,below=of k] (s) {\textbf{Volatility is absent}\\The policy cannot condition on \(\sigma\).};
+        \node[issue,below=of s] (d) {\textbf{No parameter variation}\\The training distribution contains one scenario.};
+      \end{tikzpicture}
+    \end{column}
+  \end{columns}
+  \vspace{0.15cm}
+  \claimbox{More paths from the same scenario cannot identify dependence on an unobserved, non-varying parameter.}
+  \sourcefoot{Submitted report, Table 4.2 and Sec.\ 4.1.2.}
+  \note{Separate capacity from information. The failure is jointly due to missing inputs and missing variation in training.}
+\end{frame}
+
+\speakerlabel{Micaela}{1:30}
+\begin{frame}{Conditioning restores cross-contract usefulness}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.49\textwidth}
+      \[
+        \delta_n =
+        f_\theta\!\left(
+          \log(S_{t_n}/K),\,
+          \tau_n/T,\,
+          K,\,
+          \sigma
+        \right)
+      \]
+      \begin{tightitemize}
+        \item Train once with \(K\sim U(0.7,1.1)\) and \(\sigma\sim U(0.2,0.6)\).
+        \item Each path uses its analytic Black--Scholes premium; pricing is separated from hedging.
+        \item Evaluation spans interpolation and moderate extrapolation without retraining.
+      \end{tightitemize}
+    \end{column}
+    \begin{column}{0.47\textwidth}
+      \begin{table}
+        \centering
+        \scriptsize
+        \begin{tabular}{lccS[table-format=1.6]S[table-format=1.6]}
+          \toprule
+          Region & \(K\) & \(\sigma\) & {DT} & {NN}\\
+          \midrule
+          Interp. & 0.9 & 0.4 & 0.007813 & 0.007830\\
+          Interp. & 1.1 & 0.6 & 0.013715 & 0.013783\\
+          Extrap. & 0.6 & 0.4 & 0.002220 & 0.002241\\
+          Extrap. & 0.9 & 0.1 & 0.001019 & 0.003404\\
+          Extrap. & 1.3 & 0.8 & 0.019187 & 0.020058\\
+          \bottomrule
+        \end{tabular}
+      \end{table}
+      \vspace{0.12cm}
+      \risknote{Interpolation is strong; volatility extrapolation is visibly harder.}
+    \end{column}
+  \end{columns}
+  \vspace{0.16cm}
+  \claimbox{Useful generalisation required both the right information set and a training distribution that varied those inputs.}
+  \sourcefoot{Submitted report, Sec.\ 4.1.3, Table 4.3 and Algorithm A.6.3.}
+  \note{Explain the changed premium treatment. Do not imply the conditioned model learns prices. Handover: ``Black--Scholes has one diffusion risk; Siphelele now moves to Heston, where variance adds a second.''}
+\end{frame}
