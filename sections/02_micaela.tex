@@ -170,53 +170,46 @@
 \end{frame}
 
 \speakerlabel{Micaela}{2:00}
-\begin{frame}[t,shrink=2]{Conditioning fixes the generalisation failure}
-  \vspace{-0.06cm}
-  {\centering
-    $\delta_n=f_\theta\!\left(\log\dfrac{S_{t_n}}{K},\ \dfrac{\tau_n}{T},\ \mathbf K,\ \boldsymbol\sigma\right)$\par
-    \vspace{0.05cm}
+\begin{frame}[t]{Conditioning fixes the generalisation failure}
+  \vspace{-0.1cm}
+  \begin{center}
+    $\delta_n=f_\theta\!\left(\log(S_{t_n}/K),\ \tau_n/T,\ \mathbf K,\ \boldsymbol\sigma\right)$
+    \\[0.1cm]
     {\scriptsize\color{Slate}
-     Trained on $K\sim U(0.7,1.1)$ and $\sigma\sim U(0.2,0.6)$ over 200k paths;
-     each path priced at its own analytic BS premium (pricing separated from hedging).\par}}
+     Trained on $K\sim U(0.7,1.1)$ and $\sigma\sim U(0.2,0.6)$, 200k paths;
+     each path at its own analytic BS premium.}
+  \end{center}
   \vspace{0.12cm}
   \begin{columns}[T,onlytextwidth]
-    \begin{column}{0.32\textwidth}
-      \centering
-      \pill[Teal]{Interpolation}
-      \vspace{0.12cm}
-
-      {\scriptsize\color{Slate} inside trained range\\
-       $K\in[0.7,1.1],\ \sigma\in[0.2,0.6]$\par}
-      \vspace{0.16cm}
-      {\color{Coral}\fontsize{17}{19}\selectfont\bfseries $\leq$0.00018\par}
-      {\scriptsize\color{DeepNavy} max RMSE gap --- all 9 points near-optimal\par}
+    \begin{column}{0.48\textwidth}
+      \begin{beamercolorbox}[rounded=true,sep=0.26cm]{block body}
+        \centering
+        {\centering\pill[Teal]{Interpolation}\par}
+        \vspace{0.13cm}
+        {\scriptsize\color{Slate} inside the trained range\\
+         $K\in[0.7,1.1],\ \sigma\in[0.2,0.6]$\par}
+        \vspace{0.15cm}
+        {\color{Coral}\fontsize{18}{20}\selectfont\bfseries $\leq$0.00018\par}
+        \vspace{0.04cm}
+        {\scriptsize\color{DeepNavy} max RMSE gap --- all 9 points near-optimal\par}
+      \end{beamercolorbox}
     \end{column}
-    \begin{column}{0.32\textwidth}
-      \centering
-      \pill[Gold]{Extrapolation}
-      \vspace{0.12cm}
-
-      {\scriptsize\color{Slate} outside trained range\\
-       $K\!\to\!\{0.6,1.3\},\ \sigma\!\to\!\{0.1,0.8\}$\par}
-      \vspace{0.1cm}
-      {\small\color{DeepNavy}\textbf{Strike}\ } {\color{Coral}\bfseries $\leq$0.00004} {\scriptsize\color{Slate} holds}\\[0.1cm]
-      {\small\color{DeepNavy}\textbf{Vol}\ } {\color{Coral}\bfseries $\sim$3$\times$} {\scriptsize\color{Slate} at $\sigma{=}0.1$}\\[0.08cm]
-      {\scriptsize\color{Slate} graceful but uneven --- vol edges harder than strike edges\par}
-    \end{column}
-    \begin{column}{0.32\textwidth}
-      \centering
-      \pill[Coral]{Tail risk --- CVaR95}
-      \vspace{0.12cm}
-
-      {\scriptsize\color{Slate} rises smoothly with $\sigma$ ($K{=}0.9$):\par}
-      {\small\color{DeepNavy} 0.008 $\to$ 0.018 $\to$ 0.027\par}
-      {\scriptsize\color{Slate} ($\sigma{=}0.2\!\to\!0.4\!\to\!0.6$)\par}
-      \vspace{0.1cm}
-      {\scriptsize\color{Slate} peak \textbf{0.051} at $(K{=}1.3,\sigma{=}0.8)$ --- vol \& strike compounding, not spiking\par}
+    \begin{column}{0.48\textwidth}
+      \begin{beamercolorbox}[rounded=true,sep=0.26cm]{block body}
+        \centering
+        {\centering\pill[Gold]{Extrapolation}\par}
+        \vspace{0.13cm}
+        {\scriptsize\color{Slate} pushed outside the trained range\\
+         $K\to\{0.6,1.3\},\ \sigma\to\{0.1,0.8\}$\par}
+        \vspace{0.15cm}
+        {\color{Coral}\fontsize{18}{20}\selectfont\bfseries $\sim$3$\times$\par}
+        \vspace{0.04cm}
+        {\scriptsize\color{DeepNavy} worst vol gap ($\sigma{=}0.1$); strike holds ($\leq$0.00004)\par}
+      \end{beamercolorbox}
     \end{column}
   \end{columns}
   \vspace{0.14cm}
   \claimbox{One \textbf{433\,s} run covers the whole $(K,\sigma)$ range and matches or beats per-scenario retraining (\textbf{992\,s}): mean NN/DT \textbf{1.009} vs \textbf{1.050}.}
   \sourcefoot{Submitted report, Sec.\ 4.1.3, Table 4.3; efficiency comparison vs Table 4.1.}
-  \note{Card order follows the script: tested inside the range, then outside, then tail behaviour, then the efficiency win. Setup detail said aloud: strike gets its own input, log-moneyness now uses the true path-specific strike, and the fixed analytic premium isolates hedging. The largest relative interpolation gap is at $(0.7,0.2)$, where absolute error is near zero. The single highest tail-risk point $(1.3,0.8)$ combines both extremes. The conditioned network also sees more training data; the unconditional result is one run plus continuous coverage.}
+  \note{Two regimes: inside the trained box (interpolation) and pushed outside it (extrapolation). Said aloud: strike gets its own input and log-moneyness now uses the true path-specific strike. The fixed analytic premium isolates hedging. The largest relative interpolation gap is at $(0.7,0.2)$, where absolute error is near zero. The conditioned network also sees more training data; the unconditional result is one run plus continuous coverage.}
 \end{frame}
