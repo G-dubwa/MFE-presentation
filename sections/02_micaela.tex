@@ -1,456 +1,6 @@
-% Slides 6--10: Micaela Marais, 6:50.
+% Slides 6--10: Micaela Marais.
 
 \speakerlabel{Micaela}{1:30}
-
-\begin{frame}[t]{Parameter Robustness under Retraining}
-  \vspace{-0.3cm}
-  \begin{center}
-    \footnotesize
-    One-factor-at-a-time retraining around baseline $(K,\sigma,T,N) = (0.9, 0.4, 0.5, 125)$
-    \vspace{0.05cm}
-
-    $K \in \{0.8, 0.9, 1.0, 1.1, 1.2\} \qquad \sigma \in \{0.2, 0.4, 0.6\} \qquad
-     T \in \{0.25, 0.5, 1.0\} \qquad N \in \{30, 60, 125, 250\}$
-  \end{center}
-  \vspace{0.2cm}
-  \begin{columns}[c,onlytextwidth]
-    \begin{column}{0.56\textwidth}
-      \centering
-      \includegraphics[width=0.85\linewidth]{sections/robustness_rmse_vs_N.png}
-    \end{column}
-    \begin{column}{0.4\textwidth}
-      \centering
-      {\color{Coral}\fontsize{20}{22}\selectfont\bfseries 3--8\%\par}
-      {\small\color{DeepNavy} above DT-optimal, across all tested settings\par}
-      \vspace{0.4cm}
-      {\color{Coral}\fontsize{20}{22}\selectfont\bfseries 1.049\par}
-      {\small\color{DeepNavy} mean NN/DT ratio (range 1.009--1.099)\par}
-      \vspace{0.4cm}
-      {\color{Coral}\fontsize{16}{18}\selectfont\bfseries $>$10$\times$ tighter\par}
-      {\small\color{DeepNavy} than the degree-2 polynomial baseline\par}
-    \end{column}
-  \end{columns}
-  \vfill
-  \sourcefoot{Submitted report, Sec.\ 4.1.1, Table 4.1 and Figure 4.1.}
-\end{frame}
-
-\begin{frame}{\fontsize{16}{18}\selectfont Generalization Failure of the Single-Scenario Hedger}
-  \centering
-  \begin{tikzpicture}
-    \begin{axis}[
-      width=0.98\textwidth, height=5.8cm,
-      ybar, bar width=10pt,
-      ymin=0, ymax=320,
-      ylabel={RMSE Ratio To Discrete-Time MSE-Optimal Benchmark},
-      ylabel style={font=\scriptsize, color=DeepNavy},
-      ytick={0,50,100,150,200,250,300},
-      yticklabel style={font=\scriptsize, color=Slate},
-      axis lines*=left,
-      axis line style={color=Slate},
-      ymajorgrids, grid style={color=Mist, line width=0.4pt},
-      symbolic x coords={K0.9s0.4,K0.9s0.6,K1.1s0.6,K1.1s0.4,K0.9s0.2,K0.7s0.6,K1.1s0.2,K0.7s0.4,K0.7s0.2},
-      xtick=data,
-      xticklabels={{$K{=}0.9,\sigma{=}0.4^\ast$},{$K{=}0.9,\sigma{=}0.6$},{$K{=}1.1,\sigma{=}0.6$},{$K{=}1.1,\sigma{=}0.4$},{$K{=}0.9,\sigma{=}0.2$},{$K{=}0.7,\sigma{=}0.6$},{$K{=}1.1,\sigma{=}0.2$},{$K{=}0.7,\sigma{=}0.4$},{$K{=}0.7,\sigma{=}0.2$}},
-      xticklabel style={rotate=90, anchor=east, font=\tiny, color=DeepNavy, inner sep=1pt},
-      enlarge x limits=0.07,
-      nodes near coords={\pgfmathprintnumber[precision=1,fixed]{\pgfplotspointmeta}x},
-      every node near coord/.append style={font=\scriptsize, color=DeepNavy, anchor=south},
-      tick style={draw=none},
-    ]
-      \addplot[ybar, fill=Coral, draw=none] coordinates {
-        (K0.9s0.6,4.8) (K1.1s0.6,7.8) (K1.1s0.4,14.1) (K0.9s0.2,14.3)
-        (K0.7s0.6,24.7) (K1.1s0.2,39.3) (K0.7s0.4,40.6) (K0.7s0.2,291.3)
-      };
-      \addplot[ybar, fill=Teal, draw=none] coordinates {(K0.9s0.4,1.0)};
-    \end{axis}
-  \end{tikzpicture}
-  \sourcefoot{Submitted report, Table 4.2. Single-scenario hedger evaluated without retraining across strike ($K$) and volatility ($\sigma$) combinations; ratio is neural hedge RMSE to discrete-time MSE-optimal RMSE.}
-\end{frame}
-
-
-
-\begin{frame}{Parameter-Conditioned Hedger}
-  \vspace{-0.2cm}
-  \begin{center}
-    \[
-      \delta_n = f_\theta\!\left(\log\frac{S_{t_n}}{K},\ \frac{\tau_n}{T},\ K,\ \sigma\right)
-    \]
-    \vspace{-0.25cm}
-    $K \sim U(0.7, 1.1) \qquad \sigma \sim U(0.2, 0.6)$
-  \end{center}
-  \vspace{0.15cm}
-  \begin{beamercolorbox}[rounded=true,sep=0.35cm]{block body}
-    \begin{columns}[c,onlytextwidth]
-      \begin{column}{0.48\textwidth}
-        \begin{table}
-          \centering
-          \scriptsize
-          \setlength{\tabcolsep}{4pt}
-          \begin{tabular}{lS[table-format=1.1]S[table-format=1.1]S[table-format=1.6]S[table-format=1.6]}
-            \toprule
-            Region & {$K$} & {$\sigma$} & {DT} & {NN}\\
-            \midrule
-            Interp. & 0.9 & 0.4 & 0.007813 & 0.007830\\
-            Interp. & 1.1 & 0.6 & 0.013715 & 0.013783\\
-            Extrap. & 0.6 & 0.4 & 0.002220 & 0.002241\\
-            Extrap. & 0.9 & 0.1 & 0.001019 & 0.003404\\
-            Extrap. & 1.3 & 0.8 & 0.019187 & 0.020058\\
-            \bottomrule
-          \end{tabular}
-        \end{table}
-        \vspace{0.3cm}
-        \scriptsize\color{DeepNavy}
-        Each path uses its analytic Black--Scholes premium --- pricing is separated from hedging.
-      \end{column}
-      \begin{column}{0.46\textwidth}
-        \centering
-        {\color{Coral}\fontsize{15}{17}\selectfont\bfseries \(\leq\)0.00018\par}
-        {\scriptsize\color{DeepNavy} max.\ RMSE gap, all 9 interpolation points\par}
-        \vspace{0.22cm}
-        {\color{Coral}\fontsize{15}{17}\selectfont\bfseries \(\leq\)0.00004\par}
-        {\scriptsize\color{DeepNavy} strike-extrapolation RMSE gap\par}
-        \vspace{0.22cm}
-        {\color{Coral}\fontsize{15}{17}\selectfont\bfseries \(\sim\)3\(\times\)\par}
-        {\scriptsize\color{DeepNavy} worst-case volatility-extrapolation gap}
-      \end{column}
-    \end{columns}
-  \end{beamercolorbox}
-  \vspace{0.15cm}
-  \sourcefoot{Submitted report, Sec.\ 4.1.3, Table 4.3 and Algorithm A.6.3.}
-\end{frame}
-
-
-\begin{frame}{Parameter-Conditioned Hedger vs.\ Retraining}
-
-\begin{table}[h]
-\centering
-\scriptsize
-\setlength{\tabcolsep}{4pt}
-\begin{tabular}{cccc S[table-format=1.6] S[table-format=1.6] S[table-format=1.6] S[table-format=1.3] S[table-format=1.3]}
-\toprule
-$K$ & $\sigma$ & $T$ & $N$ & {DT-opt RMSE} & {Retrained NN} & {Param-cond NN} & {Retr.\ NN/DT} & {PC NN/DT} \\
-\midrule
-0.9 & 0.2 & 0.5 & 125 & 0.003400 & 0.003680 & 0.003492 & 1.082 & 1.026 \\
-0.9 & 0.4 & 0.5 & 125 & 0.007810 & 0.008172 & 0.007830 & 1.046 & 1.002 \\
-0.9 & 0.6 & 0.5 & 125 & 0.011827 & 0.012334 & 0.011891 & 1.043 & 1.003 \\
-1.1 & 0.4 & 0.5 & 125 & 0.008983 & 0.009248 & 0.009071 & 1.030 & 1.003 \\
-\bottomrule
-\end{tabular}
-\caption{\scriptsize Comparison at the four shared $(K,\sigma,T,N)$ settings between Table 4.1 (retraining) and Table 4.3 (parameter-conditioned).}
-\end{table}
-
-\vspace{0.5em}
-\begin{columns}[T]
-\begin{column}{0.48\textwidth}
-\textbf{\small Summary statistics}
-\begin{itemize}
-\scriptsize
-\item Mean NN/DT ratio: \textbf{1.050} (retrained) vs.\ \textbf{1.009} (param-cond)
-\item Mean excess RMSE above DT-optimal: \textbf{0.000354} vs.\ \textbf{0.000066}
-\item Param-cond beats retrained on RMSE in \textbf{4/4} settings tested
-\end{itemize}
-\end{column}
-\begin{column}{0.48\textwidth}
-\textbf{\small Training time}
-\begin{itemize}
-\scriptsize
-\item Param-conditioned: \textbf{433s} (one run)
-\item Retraining (combined): \textbf{992s} (per-scenario)
-\item Covers a \emph{continuous} $(K,\sigma)$ range vs.\ fixed points
-\end{itemize}
-\end{column}
-\end{columns}
-
-\end{frame}
-\begin{frame}[t]{Parameter Robustness under Retraining}
-  \vspace{-0.3cm}
-  \begin{center}
-    \footnotesize
-    Same architecture, \textbf{retrained from scratch} at each setting (one factor at a time)
-    around baseline $(K,\sigma,T,N) = (0.9,\,0.4,\,0.5,\,125)$.
-    \vspace{0.05cm}
-
-    $K \in \{0.8, 0.9, 1.0, 1.1, 1.2\} \qquad
-    \sigma \in \{0.2, 0.4, 0.6\} \qquad
-    T \in \{0.25, 0.5, 1.0\} \qquad
-    N \in \{30, 60, 125, 250\}$
-  \end{center}
-
-  \vspace{0.2cm}
-
-  \begin{columns}[c,onlytextwidth]
-
-    \begin{column}{0.56\textwidth}
-      \centering
-      \includegraphics[width=0.85\linewidth]{sections/robustness_rmse_vs_N.png}
-    \end{column}
-
-    \begin{column}{0.4\textwidth}
-      \centering
-
-      {\color{Coral}\fontsize{20}{22}\selectfont\bfseries 3--8\%\par}
-      {\small\color{DeepNavy} above DT-optimal, across all tested settings\par}
-
-      \vspace{0.4cm}
-
-      {\color{Coral}\fontsize{20}{22}\selectfont\bfseries 1.049\par}
-      {\small\color{DeepNavy} mean NN/DT ratio (range 1.009--1.099)\par}
-
-      \vspace{0.4cm}
-
-      {\color{Coral}\fontsize{16}{18}\selectfont\bfseries $\approx$184\%\par}
-      {\small\color{DeepNavy} above optimal for the degree-2 polynomial (vs.\ our 3--8\%)\par}
-
-    \end{column}
-
-  \end{columns}
-
-  \vfill
-  \sourcefoot{Submitted report, Sec.\ 4.1.1, Table 4.1 and Figure 4.1.}
-\end{frame}
-
- 
- 
-% ---------------------------------------------------------------------
-% SLIDE 7 : Generalization Failure  (unchanged from v1 -- included for completeness)
-% ---------------------------------------------------------------------
-\speakerlabel{Micaela}{1:30}
-\begin{frame}{\fontsize{15}{17}\selectfont Generalization Failure of the Single-Scenario Hedger}
-  \vspace{-0.08cm}
-  \begin{center}
-    {\footnotesize One model \textbf{trained once} at $(K^\ast,\sigma^\ast)=(0.9,0.4)$,
-     evaluated elsewhere \textbf{without retraining}.}
-  \end{center}
-  \vspace{-0.02cm}
-  \begin{columns}[c,onlytextwidth]
-    \begin{column}{0.6\textwidth}
-      \centering
-      \begin{tikzpicture}
-        \begin{axis}[
-          width=\linewidth, height=5.2cm,
-          ybar, bar width=8pt,
-          ymin=0, ymax=320,
-          ylabel={RMSE ratio to DT-optimal},
-          ylabel style={font=\scriptsize,color=DeepNavy},
-          ytick={0,50,100,150,200,250,300},
-          yticklabel style={font=\scriptsize,color=Slate},
-          axis lines*=left, axis line style={color=Slate},
-          ymajorgrids, grid style={color=Mist,line width=0.4pt},
-          symbolic x coords={K0.9s0.4,K0.9s0.6,K1.1s0.6,K1.1s0.4,K0.9s0.2,K0.7s0.6,K1.1s0.2,K0.7s0.4,K0.7s0.2},
-          xtick=data,
-          xticklabels={{$0.9,0.4^\ast$},{$0.9,0.6$},{$1.1,0.6$},{$1.1,0.4$},{$0.9,0.2$},{$0.7,0.6$},{$1.1,0.2$},{$0.7,0.4$},{$0.7,0.2$}},
-          xticklabel style={rotate=90,anchor=east,font=\tiny,color=DeepNavy,inner sep=1pt},
-          enlarge x limits=0.07,
-          nodes near coords={\pgfmathprintnumber[precision=1,fixed]{\pgfplotspointmeta}$\times$},
-          every node near coord/.append style={font=\tiny,color=DeepNavy,anchor=south},
-          tick style={draw=none},
-        ]
-          \addplot[ybar,fill=Coral,draw=none] coordinates {
-            (K0.9s0.6,4.8)(K1.1s0.6,7.8)(K1.1s0.4,14.1)(K0.9s0.2,14.3)
-            (K0.7s0.6,24.7)(K1.1s0.2,39.3)(K0.7s0.4,40.6)(K0.7s0.2,291.3)};
-          \addplot[ybar,fill=Teal,draw=none] coordinates {(K0.9s0.4,1.0)};
-        \end{axis}
-      \end{tikzpicture}
-      \\[0.02cm]
-      {\scriptsize\color{Slate} $x$-axis: $(K,\sigma)$ pairs. Up to $291\times$ worse at $(0.7,0.2)$.}
-    \end{column}
-    \begin{column}{0.38\textwidth}
-      \pill[Coral]{Why it fails}
-      \vspace{0.14cm}
- 
-      {\scriptsize
-       \textbf{1.\ One scenario.} Trained on a single fixed $(K^\ast,\sigma^\ast)$ --- no variation to learn parameter dependence from.\par\vspace{0.14cm}
-       \textbf{2.\ Strike hardcoded.} $K^\ast$ is baked into log-moneyness, so a new strike feeds the network the \emph{wrong} number, not merely an unseen one.\par\vspace{0.14cm}
-       \textbf{3.\ No $\sigma$ input.} Volatility is absent, so only an \emph{average} hedge is learnable --- optimal for none.\par}
-    \end{column}
-  \end{columns}
-  \vspace{0.05cm}
-
-  \sourcefoot{Submitted report, Sec.\ 4.1.2, Table 4.2. Ratio is neural-hedge RMSE to discrete-time MSE-optimal RMSE.}
-  \note{Contrast with the previous slide: there the architecture was retrained per setting and stayed within 3--8\%; here the SAME architecture is frozen and fails by up to two orders of magnitude. The three causes compound --- fixing only one would not help. Worst case $(0.7,0.2)$: RMSE jumps from $0.0005$ to $0.14$.}
-\end{frame}
- 
-
-
- \begin{frame}[t]{Conditioning fixes the generalisation failure}
-  \vspace{-0.05cm}
-  \begin{center}
-    $\delta_n = f_\theta\!\left(\log\dfrac{S_{t_n}}{K},\ \dfrac{\tau_n}{T},\ \mathbf{K},\ \boldsymbol{\sigma}\right)$
-    \\[0.14cm]
-    {\scriptsize\color{Slate}
-     Trained on $K\sim U(0.7,1.1),\ \sigma\sim U(0.2,0.6)$ over 200k paths;
-     each path priced at its own analytic BS premium (pricing separated from hedging).}
-  \end{center}
-  \vspace{0.14cm}
-  \begin{columns}[T,onlytextwidth]
- 
-    % ---- INTERPOLATION -------------------------------------------------
-    \begin{column}{0.32\textwidth}
-      \centering
-      \pill[Teal]{Interpolation}
-      \vspace{0.14cm}
- 
-      {\scriptsize\color{Slate} inside trained range\\
-       $K\in[0.7,1.1],\ \sigma\in[0.2,0.6]$\par}
-      \vspace{0.18cm}
-      {\color{Coral}\fontsize{18}{20}\selectfont\bfseries $\leq$0.00018\par}
-      {\scriptsize\color{DeepNavy} max RMSE gap --- all 9 points near-optimal\par}
-    \end{column}
- 
-    % ---- EXTRAPOLATION -------------------------------------------------
-    \begin{column}{0.32\textwidth}
-      \centering
-      \pill[Gold]{Extrapolation}
-      \vspace{0.14cm}
- 
-      {\scriptsize\color{Slate} outside trained range\\
-       $K\!\to\!\{0.6,1.3\},\ \sigma\!\to\!\{0.1,0.8\}$\par}
-      \vspace{0.12cm}
-      {\small\color{DeepNavy}\textbf{Strike}\ } {\color{Coral}\bfseries $\leq$0.00004} {\scriptsize\color{Slate} holds}\\[0.12cm]
-      {\small\color{DeepNavy}\textbf{Vol}\ } {\color{Coral}\bfseries $\sim$3$\times$} {\scriptsize\color{Slate} at $\sigma{=}0.1$}\\[0.1cm]
-      {\scriptsize\color{Slate} graceful but uneven --- vol edges harder than strike edges\par}
-    \end{column}
- 
-    % ---- TAIL RISK -----------------------------------------------------
-    \begin{column}{0.32\textwidth}
-      \centering
-      \pill[Coral]{Tail risk --- CVaR95}
-      \vspace{0.14cm}
- 
-      {\scriptsize\color{Slate} rises smoothly with $\sigma$ ($K{=}0.9$):\par}
-      {\small\color{DeepNavy} 0.008 $\to$ 0.018 $\to$ 0.027\par}
-      {\scriptsize\color{Slate} ($\sigma{=}0.2\!\to\!0.4\!\to\!0.6$)\par}
-      \vspace{0.12cm}
-      {\scriptsize\color{Slate} peak \textbf{0.051} at $(K{=}1.3,\sigma{=}0.8)$ --- vol \& strike compounding, not spiking\par}
-    \end{column}
-  \end{columns}
-  \vspace{0.18cm}
-  \claimbox{One \textbf{433\,s} run covers the whole $(K,\sigma)$ range and matches or beats per-scenario retraining (\textbf{992\,s}): mean NN/DT \textbf{1.009} vs \textbf{1.050}.}
-  \sourcefoot{Submitted report, Sec.\ 4.1.3, Table 4.3; efficiency comparison vs Table 4.1.}
-  \note{Card order follows the script: tested inside the range, then outside, then tail behaviour, then the efficiency win. Setup detail said aloud: strike gets its own input (volatility has no other route in; strike is technically recoverable from moneyness but explicit is easier to use), and log-moneyness now uses the true path-specific strike, no longer hardcoded. Fixed premium is justified because with r=0 the optimal premium = E[payoff] is hedge-independent, so supplying the analytic BS price isolates hedging cleanly. Interpolation nuance: the largest RELATIVE gap is at (0.7,0.2), but that is deep-OTM low-vol where absolute error is near zero. Tail risk tracking sigma is the reassuring part --- worst case is a sensible driver, and the single highest point (1.3,0.8) combines both extremes. On ``matches or beats'': at baseline the conditioned net is ~20x tighter in excess error, but that is partly the extra training data --- do not claim conditioning is intrinsically better; the unconditional win is one run + continuous coverage.}
-\end{frame}
-% ---------------------------------------------------------------------
-% SLIDE 8 : Parameter-Conditioned Hedger  ((K,sigma) plane; old Slide 9 merged)
-% ---------------------------------------------------------------------
-\speakerlabel{Micaela}{2:00}
-\begin{frame}[t]{Parameter-Conditioned Hedger}
-  \vspace{-0.02cm}
-  \begin{center}\small
-    $\delta_n = f_\theta\!\left(\log\dfrac{S_{t_n}}{K},\ \dfrac{\tau_n}{T},\ \mathbf{K},\ \boldsymbol{\sigma}\right)$,\quad
-    trained on $K\sim U(0.7,1.1),\ \sigma\sim U(0.2,0.6)$, each path at its own analytic BS premium.
-  \end{center}
-  \vspace{0.04cm}
-  \begin{columns}[c,onlytextwidth]
-    \begin{column}{0.62\textwidth}
-      \centering
-      \begin{tikzpicture}
-        \begin{axis}[
-          width=\linewidth, height=5.3cm,
-          xlabel={strike $K$}, ylabel={volatility $\sigma$},
-          xlabel style={font=\scriptsize,color=DeepNavy},
-          ylabel style={font=\scriptsize,color=DeepNavy},
-          xmin=0.5, xmax=1.42, ymin=0.0, ymax=0.92,
-          xtick={0.6,0.8,1.0,1.2,1.4}, ytick={0.2,0.4,0.6,0.8},
-          tick label style={font=\scriptsize,color=Slate},
-          axis lines*=left, axis line style={color=Slate},
-          tick style={draw=none}, clip=false,
-        ]
-          % training region [0.7,1.1] x [0.2,0.6]
-          \fill[Teal!12] (axis cs:0.7,0.2) rectangle (axis cs:1.1,0.6);
-          \draw[Teal,line width=0.8pt] (axis cs:0.7,0.2) rectangle (axis cs:1.1,0.6);
-          \node[font=\scriptsize\bfseries,color=Teal] at (axis cs:0.9,0.69) {trained region};
-          % interpolation points (inside/on box) -- teal circles
-          \addplot[only marks,mark=*,mark options={fill=Teal,draw=Teal,scale=0.8}]
-            coordinates {(0.7,0.2)(0.7,0.4)(0.7,0.6)(0.9,0.2)(0.9,0.4)(0.9,0.6)(1.1,0.2)(1.1,0.4)(1.1,0.6)};
-          % strike / high-vol extrapolation (good) -- teal squares outside box
-          \addplot[only marks,mark=square*,mark options={fill=Teal,draw=Teal,scale=0.7}]
-            coordinates {(0.6,0.4)(1.3,0.4)(0.9,0.8)(1.3,0.8)};
-          % vol-floor extrapolation failure -- coral square below box
-          \addplot[only marks,mark=square*,mark options={fill=Coral,draw=Coral,scale=1.05}]
-            coordinates {(0.9,0.1)};
-          % annotations for the two ratio outliers
-          \node[font=\tiny,color=DeepNavy,anchor=west]      at (axis cs:0.7,0.2)  {\,1.34$\times$};
-          \node[font=\tiny\bfseries,color=Coral,anchor=west] at (axis cs:0.9,0.1) {\,3.34$\times$};
-        \end{axis}
-      \end{tikzpicture}
-      \\[0.02cm]
-      {\scriptsize\color{Slate}
-       $\bullet$ interpolation \quad $\blacksquare$ extrapolation \quad
-       {\color{Coral}$\blacksquare$} vol-floor failure ($\sigma<0.2$)}
-    \end{column}
-    \begin{column}{0.36\textwidth}
-      \centering
-      {\color{Coral}\fontsize{15}{17}\selectfont\bfseries $\leq$0.00018\par}
-      {\scriptsize\color{DeepNavy} max interpolation RMSE gap (all 9 points)\par}
-      \vspace{0.18cm}
-      {\color{Coral}\fontsize{15}{17}\selectfont\bfseries $\sim$3$\times$\par}
-      {\scriptsize\color{DeepNavy} only real weak spot --- $\sigma$ pushed below the trained floor\par}
-      \vspace{0.18cm}
-      {\scriptsize\color{Slate} Strike extrapolation holds ($\leq$0.00004); the $1.34\times$ corner is negligible in absolute terms (delta $\approx 0$).\par}
-    \end{column}
-  \end{columns}
-  \vspace{0.04cm}
-  \claimbox{One \textbf{433\,s} run covers the whole $(K,\sigma)$ box and matches or beats per-scenario retraining (\textbf{992\,s}): mean NN/DT \textbf{1.009} vs \textbf{1.050}.}
-  \sourcefoot{Submitted report, Sec.\ 4.1.3, Tables 4.1, 4.3.}
-  \note{The old table showed raw RMSE numbers that are just ``small vs small.'' This plane shows what actually matters: WHERE we trained (the box), interpolation (circles inside) vs extrapolation (squares outside), and the one failure mode --- volatility pushed below the trained floor ($\sigma=0.1$, 3.34x). Strike extrapolation left/right of the box holds. The $(0.7,0.2)$ corner is a large ratio but negligible absolute error (deep-OTM, low-vol, delta near zero). Merge line: lead with coverage + amortization; if pushed on ``beats,'' concede the conditioned model also trains on more paths and is evaluated in-distribution --- the coverage and time win is unconditional. Justification for the fixed premium: with $r=0$ the optimal premium $=\mathbb{E}[\text{payoff}]$ is hedge-independent, so supplying the analytic BS premium isolates hedging cleanly.}
-\end{frame}
-% =============================
-
-% ---------------------------------------------------------------------
-% SLIDE 8 : Parameter-Conditioned Hedger  (old Slide 9 merged in)
-% ---------------------------------------------------------------------
-\speakerlabel{Micaela}{2:00}
-\begin{frame}{Parameter-Conditioned Hedger}
-  \vspace{-0.15cm}
-  \begin{center}
-    \[
-      \delta_n = f_\theta\!\left(\log\frac{S_{t_n}}{K},\ \frac{\tau_n}{T},\ \mathbf{K},\ \boldsymbol{\sigma}\right),
-      \qquad K\sim U(0.7,1.1),\ \ \sigma\sim U(0.2,0.6).
-    \]
-  \end{center}
-  \vspace{-0.12cm}
-  {\centering\scriptsize\color{Slate}
-   $K,\sigma$ enter directly; each path trains on its own analytic BS premium.
-   With $r=0$ the optimal premium $=\mathbb{E}[\text{payoff}]$ is hedge-independent, so pricing is cleanly separated from hedging.\par}
-  \vspace{0.14cm}
-  \begin{beamercolorbox}[rounded=true,sep=0.26cm]{block body}
-    \begin{columns}[c,onlytextwidth]
-      \begin{column}{0.57\textwidth}
-        \begin{table}
-          \centering \scriptsize \setlength{\tabcolsep}{3.5pt}
-          \begin{tabular}{lS[table-format=1.1]S[table-format=1.1]S[table-format=1.6]S[table-format=1.6]S[table-format=1.2]}
-            \toprule
-            Region & {$K$} & {$\sigma$} & {DT-opt} & {PC-NN} & {NN/DT}\\
-            \midrule
-            Interp. & 0.7 & 0.2 & 0.000506 & 0.000680 & 1.34\\
-            Interp. & 0.9 & 0.4 & 0.007813 & 0.007830 & 1.00\\
-            Interp. & 1.1 & 0.6 & 0.013715 & 0.013783 & 1.01\\
-            Extrap. & 0.9 & 0.1 & 0.001019 & 0.003404 & 3.34\\
-            Extrap. & 1.3 & 0.8 & 0.019187 & 0.020058 & 1.05\\
-            \bottomrule
-          \end{tabular}
-        \end{table}
-        {\scriptsize\color{Slate}
-         DT-opt $=$ discrete-time MSE-optimal. Largest gaps sit at \emph{volatility} edges, where absolute error is tiny.}
-      \end{column}
-      \begin{column}{0.4\textwidth}
-        \centering
-        {\color{Coral}\fontsize{15}{17}\selectfont\bfseries $\leq$0.00018\par}
-        {\scriptsize\color{DeepNavy} max interpolation RMSE gap (all 9 points)\par}
-        \vspace{0.2cm}
-        {\color{Coral}\fontsize{15}{17}\selectfont\bfseries $\sim$3$\times$\par}
-        {\scriptsize\color{DeepNavy} worst vol-extrapolation gap ($\sigma{=}0.1$); strike extrapolation stays $\leq$0.00004\par}
-      \end{column}
-    \end{columns}
-  \end{beamercolorbox}
-  \vspace{0.1cm}
-  \claimbox{One \textbf{433\,s} run covers the whole $(K,\sigma)$ range and matches or beats per-scenario retraining (\textbf{992\,s}) on every shared setting: mean NN/DT \textbf{1.009} vs \textbf{1.050}.}
-  \risknote{The conditioned model also sees more training paths, so the honest headline is \emph{coverage $+$ amortization $+$ parity}, not intrinsic superiority. Settings without analytic premia would need a separate pricing component.}
-  \sourcefoot{Submitted report, Secs.\ 4.1.3, Tables 4.1, 4.3 and Algorithm A.6.3.}
-  \note{This merges the old ``vs retraining'' slide. Lead with the unconditional win --- one run, continuous coverage --- not ``beats 4/4,'' which is confounded by the larger training set and in-distribution evaluation. If pressed, concede the data mismatch openly: coverage and amortization advantages hold regardless. I deliberately show $(0.9,0.1)$ as my worst point --- examiners respect showing the weak case.}
-\end{frame}
-
-
 \begin{frame}{The neural hedge recovers the finite-grid benchmark}
   \begin{columns}[T,onlytextwidth]
     \begin{column}{0.62\textwidth}
@@ -532,122 +82,141 @@ $K$ & $\sigma$ & $T$ & $N$ & {DT-opt RMSE} & {Retrained NN} & {Param-cond NN} & 
   \note{Use the three moneyness regimes to explain the hedge. Refer to the submitted report figures if an examiner asks for path-level evidence.}
 \end{frame}
 
-\speakerlabel{Micaela}{1:20}
-\begin{frame}{Retraining preserves architecture quality}
-  \begin{columns}[T,onlytextwidth]
-    \begin{column}{0.65\textwidth}
-      \begin{table}
-        \centering
-        \scriptsize
-        \begin{tabular}{lS[table-format=1.6]S[table-format=1.3]}
-          \toprule
-          Retrained setting & {NN RMSE} & {NN / DT}\\
-          \midrule
-          \(K=0.8\) & 0.006656 & 1.082\\
-          \(\sigma=0.2\) & 0.003680 & 1.082\\
-          \(T=1.0\) & 0.011792 & 1.050\\
-          \(N=30\) & 0.015595 & 1.009\\
-          \(N=250\) & 0.006047 & 1.099\\
-          \bottomrule
-        \end{tabular}
-      \end{table}
+\speakerlabel{Micaela}{1:30}
+\begin{frame}[t,shrink=2]{Parameter robustness under retraining}
+  \vspace{-0.12cm}
+  {\centering\footnotesize
+    Same architecture, \textbf{retrained from scratch} at each setting (one factor at a time)
+    around baseline $(K,\sigma,T,N)=(0.9,\,0.4,\,0.5,\,125)$.\par
+    \vspace{0.03cm}
+    $K\in\{0.8,0.9,1.0,1.1,1.2\}\quad
+     \sigma\in\{0.2,0.4,0.6\}\quad
+     T\in\{0.25,0.5,1.0\}\quad
+     N\in\{30,60,125,250\}$\par}
+  \vspace{0.1cm}
+  \begin{columns}[c,onlytextwidth]
+    \begin{column}{0.56\textwidth}
+      \centering
+      \includegraphics[width=0.84\linewidth]{sections/robustness_rmse_vs_N.png}
     \end{column}
-    \begin{column}{0.31\textwidth}
-      \begin{beamercolorbox}[rounded=true,sep=0.22cm]{block body}
-        \centering
-        {\color{Teal}\fontsize{20}{22}\selectfont\bfseries 1.049\par}
-        {\scriptsize mean NN / discrete-time RMSE ratio across tested settings}
-      \end{beamercolorbox}
-      \vspace{0.22cm}
-      \risknote{This is architecture reuse \emph{with retraining}; it is not zero-shot generalisation.}
-    \end{column}
-  \end{columns}
-  \vspace{0.2cm}
-  \claimbox{Absolute error falls as the grid becomes finer, even when the relative gap rises because the benchmark improves faster.}
-  \sourcefoot{Submitted report, Table 4.1 and Sec.\ 4.1.1.}
-  \note{State the range of NN/DT ratios: 1.009 to 1.099. Avoid describing the N=250 ratio as worse absolute performance.}
-\end{frame}
-
-\speakerlabel{Micaela}{1:20}
-\begin{frame}{Missing information---not capacity---causes failure}
-  \begin{columns}[T,onlytextwidth]
-    \begin{column}{0.55\textwidth}
-      \begin{table}
-        \centering
-        \scriptsize
-        \begin{tabular}{ccS[table-format=1.6]S[table-format=1.6]}
-          \toprule
-          \(K\) & \(\sigma\) & {DT RMSE} & {NN RMSE}\\
-          \midrule
-          0.7 & 0.2 & 0.000492 & 0.143314\\
-          \rowcolor{Teal!12}
-          0.9 & 0.4 & 0.007809 & 0.007841\\
-          1.1 & 0.4 & 0.009017 & 0.126961\\
-          1.1 & 0.6 & 0.013686 & 0.107178\\
-          \bottomrule
-        \end{tabular}
-      \end{table}
-      {\scriptsize\color{Slate}\(\,\)Model trained only at \(K^\star=0.9,\sigma^\star=0.4\); evaluated without retraining.}
-    \end{column}
-    \begin{column}{0.41\textwidth}
-      \begin{tikzpicture}[
-        issue/.style={rounded corners=3pt,fill=Coral!10,text width=4.25cm,
-          minimum height=0.8cm,align=left,font=\small,inner xsep=6pt},
-        node distance=0.16cm
-      ]
-        \node[issue] (k) {\textbf{Strike is hardcoded}\\Original moneyness uses \(K^\star\).};
-        \node[issue,below=of k] (s) {\textbf{Volatility is absent}\\The policy cannot condition on \(\sigma\).};
-        \node[issue,below=of s] (d) {\textbf{No parameter variation}\\The training distribution contains one scenario.};
-      \end{tikzpicture}
+    \begin{column}{0.4\textwidth}
+      \centering
+      {\color{Coral}\fontsize{19}{21}\selectfont\bfseries 3--8\%\par}
+      {\scriptsize\color{DeepNavy} above DT-optimal, across all tested settings\par}
+      \vspace{0.24cm}
+      {\color{Coral}\fontsize{19}{21}\selectfont\bfseries 1.049\par}
+      {\scriptsize\color{DeepNavy} mean NN/DT ratio (range 1.009--1.099)\par}
+      \vspace{0.24cm}
+      {\color{Coral}\fontsize{15}{17}\selectfont\bfseries $\approx$184\%\par}
+      {\scriptsize\color{DeepNavy} above optimal for the degree-2 polynomial (vs.\ our 3--8\%)\par}
     \end{column}
   \end{columns}
-  \vspace{0.15cm}
-  \claimbox{More paths from the same scenario cannot identify dependence on an unobserved, non-varying parameter.}
-  \sourcefoot{Submitted report, Table 4.2 and Sec.\ 4.1.2.}
-  \note{Separate capacity from information. The failure is jointly due to missing inputs and missing variation in training.}
+  \vfill
+  \sourcefoot{Submitted report, Sec.\ 4.1.1, Table 4.1 and Figure 4.1.}
+  \note{Follow Part One in this order: bridge from the baseline result; define the one-factor-at-a-time retraining study; name the $K,\sigma,T,N$ ranges; compare with the discrete-time optimum; then explain the volatility, maturity and rebalancing patterns. The ratio rises with $N$ because the DT-optimal benchmark falls faster. Close on the worst case and transition from retraining to the zero-shot question.}
 \end{frame}
 
 \speakerlabel{Micaela}{1:30}
-\begin{frame}{Conditioning restores cross-contract usefulness}
-  \begin{columns}[T,onlytextwidth]
-    \begin{column}{0.49\textwidth}
-      \[
-        \delta_n =
-        f_\theta\!\left(
-          \log(S_{t_n}/K),\,
-          \tau_n/T,\,
-          K,\,
-          \sigma
-        \right)
-      \]
-      \begin{tightitemize}
-        \item Train once with \(K\sim U(0.7,1.1)\) and \(\sigma\sim U(0.2,0.6)\).
-        \item Each path uses its analytic Black--Scholes premium; pricing is separated from hedging.
-        \item Evaluation spans interpolation and moderate extrapolation without retraining.
-      \end{tightitemize}
+\begin{frame}[t]{\raisebox{-0.16cm}{Generalization failure}}
+  {\centering\footnotesize
+   \pill[Coral]{Single-scenario hedger}\qquad
+   One model \textbf{trained once} at $(K^\ast,\sigma^\ast)=(0.9,0.4)$,
+   evaluated elsewhere \textbf{without retraining}.\par}
+  \vspace{0.02cm}
+  \begin{columns}[c,onlytextwidth]
+    \begin{column}{0.6\textwidth}
+      \centering
+      \begin{tikzpicture}
+        \begin{axis}[
+          width=\linewidth,height=4.75cm,
+          ybar,bar width=8pt,
+          ymin=0,ymax=320,
+          ylabel={RMSE ratio to DT-optimal},
+          ylabel style={font=\scriptsize,color=DeepNavy},
+          ytick={0,50,100,150,200,250,300},
+          yticklabel style={font=\scriptsize,color=Slate},
+          axis lines*=left,axis line style={color=Slate},
+          ymajorgrids,grid style={color=Mist,line width=0.4pt},
+          symbolic x coords={K0.9s0.4,K0.9s0.6,K1.1s0.6,K1.1s0.4,K0.9s0.2,K0.7s0.6,K1.1s0.2,K0.7s0.4,K0.7s0.2},
+          xtick=data,
+          xticklabels={{$0.9,0.4^\ast$},{$0.9,0.6$},{$1.1,0.6$},{$1.1,0.4$},{$0.9,0.2$},{$0.7,0.6$},{$1.1,0.2$},{$0.7,0.4$},{$0.7,0.2$}},
+          xticklabel style={rotate=90,anchor=east,font=\tiny,color=DeepNavy,inner sep=1pt},
+          enlarge x limits=0.07,
+          nodes near coords={\pgfmathprintnumber[precision=1,fixed]{\pgfplotspointmeta}$\times$},
+          every node near coord/.append style={font=\tiny,color=DeepNavy,anchor=south},
+          tick style={draw=none},
+        ]
+          \addplot[ybar,fill=Coral,draw=none] coordinates {
+            (K0.9s0.6,4.8)(K1.1s0.6,7.8)(K1.1s0.4,14.1)(K0.9s0.2,14.3)
+            (K0.7s0.6,24.7)(K1.1s0.2,39.3)(K0.7s0.4,40.6)(K0.7s0.2,291.3)};
+          \addplot[ybar,fill=Teal,draw=none] coordinates {(K0.9s0.4,1.0)};
+        \end{axis}
+      \end{tikzpicture}
+      \\[-0.04cm]
+      {\scriptsize\color{Slate} $x$-axis: $(K,\sigma)$ pairs. Up to $291\times$ worse at $(0.7,0.2)$.}
     \end{column}
-    \begin{column}{0.47\textwidth}
-      \begin{table}
-        \centering
-        \scriptsize
-        \begin{tabular}{lccS[table-format=1.6]S[table-format=1.6]}
-          \toprule
-          Region & \(K\) & \(\sigma\) & {DT} & {NN}\\
-          \midrule
-          Interp. & 0.9 & 0.4 & 0.007813 & 0.007830\\
-          Interp. & 1.1 & 0.6 & 0.013715 & 0.013783\\
-          Extrap. & 0.6 & 0.4 & 0.002220 & 0.002241\\
-          Extrap. & 0.9 & 0.1 & 0.001019 & 0.003404\\
-          Extrap. & 1.3 & 0.8 & 0.019187 & 0.020058\\
-          \bottomrule
-        \end{tabular}
-      \end{table}
+    \begin{column}{0.38\textwidth}
+      \pill[Coral]{Why it fails}
       \vspace{0.12cm}
-      \risknote{Interpolation is strong; volatility extrapolation is visibly harder.}
+
+      {\scriptsize
+       \textbf{1.\ One scenario.} Trained on a single fixed $(K^\ast,\sigma^\ast)$ --- no variation to learn parameter dependence from.\par\vspace{0.11cm}
+       \textbf{2.\ Strike hardcoded.} $K^\ast$ is baked into log-moneyness, so a new strike feeds the network the \emph{wrong} number, not merely an unseen one.\par\vspace{0.11cm}
+       \textbf{3.\ No $\sigma$ input.} Volatility is absent, so only an \emph{average} hedge is learnable --- optimal for none.\par}
     \end{column}
   \end{columns}
-  \vspace{0.16cm}
-  \claimbox{Useful generalisation required both the right information set and a training distribution that varied those inputs.}
-  \sourcefoot{Submitted report, Sec.\ 4.1.3, Table 4.3 and Algorithm A.6.3.}
-  \note{Explain the changed premium treatment. Do not imply the conditioned model learns prices. Handover: ``Black--Scholes has one diffusion risk; Siphelele now moves to Heston, where variance adds a second.''}
+  \sourcefoot{Submitted report, Sec.\ 4.1.2, Table 4.2. Ratio is neural-hedge RMSE to discrete-time MSE-optimal RMSE.}
+  \note{Follow Part Two in this order: contrast retraining with one frozen baseline model; move from the successful training point to the off-scenario bars; state the $(0.7,0.2)$ worst case; then explain the fixed training scenario, hardcoded strike and absent volatility input. Close on the information limitation and transition to changing both inputs and the training distribution.}
+\end{frame}
+
+\speakerlabel{Micaela}{2:00}
+\begin{frame}[t,shrink=2]{Conditioning fixes the generalisation failure}
+  \vspace{-0.06cm}
+  {\centering
+    $\delta_n=f_\theta\!\left(\log\dfrac{S_{t_n}}{K},\ \dfrac{\tau_n}{T},\ \mathbf K,\ \boldsymbol\sigma\right)$\par
+    \vspace{0.05cm}
+    {\scriptsize\color{Slate}
+     Trained on $K\sim U(0.7,1.1)$ and $\sigma\sim U(0.2,0.6)$ over 200k paths;
+     each path priced at its own analytic BS premium (pricing separated from hedging).\par}}
+  \vspace{0.12cm}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.32\textwidth}
+      \centering
+      \pill[Teal]{Interpolation}
+      \vspace{0.12cm}
+
+      {\scriptsize\color{Slate} inside trained range\\
+       $K\in[0.7,1.1],\ \sigma\in[0.2,0.6]$\par}
+      \vspace{0.16cm}
+      {\color{Coral}\fontsize{17}{19}\selectfont\bfseries $\leq$0.00018\par}
+      {\scriptsize\color{DeepNavy} max RMSE gap --- all 9 points near-optimal\par}
+    \end{column}
+    \begin{column}{0.32\textwidth}
+      \centering
+      \pill[Gold]{Extrapolation}
+      \vspace{0.12cm}
+
+      {\scriptsize\color{Slate} outside trained range\\
+       $K\!\to\!\{0.6,1.3\},\ \sigma\!\to\!\{0.1,0.8\}$\par}
+      \vspace{0.1cm}
+      {\small\color{DeepNavy}\textbf{Strike}\ } {\color{Coral}\bfseries $\leq$0.00004} {\scriptsize\color{Slate} holds}\\[0.1cm]
+      {\small\color{DeepNavy}\textbf{Vol}\ } {\color{Coral}\bfseries $\sim$3$\times$} {\scriptsize\color{Slate} at $\sigma{=}0.1$}\\[0.08cm]
+      {\scriptsize\color{Slate} graceful but uneven --- vol edges harder than strike edges\par}
+    \end{column}
+    \begin{column}{0.32\textwidth}
+      \centering
+      \pill[Coral]{Tail risk --- CVaR95}
+      \vspace{0.12cm}
+
+      {\scriptsize\color{Slate} rises smoothly with $\sigma$ ($K{=}0.9$):\par}
+      {\small\color{DeepNavy} 0.008 $\to$ 0.018 $\to$ 0.027\par}
+      {\scriptsize\color{Slate} ($\sigma{=}0.2\!\to\!0.4\!\to\!0.6$)\par}
+      \vspace{0.1cm}
+      {\scriptsize\color{Slate} peak \textbf{0.051} at $(K{=}1.3,\sigma{=}0.8)$ --- vol \& strike compounding, not spiking\par}
+    \end{column}
+  \end{columns}
+  \vspace{0.14cm}
+  \claimbox{One \textbf{433\,s} run covers the whole $(K,\sigma)$ range and matches or beats per-scenario retraining (\textbf{992\,s}): mean NN/DT \textbf{1.009} vs \textbf{1.050}.}
+  \sourcefoot{Submitted report, Sec.\ 4.1.3, Table 4.3; efficiency comparison vs Table 4.1.}
+  \note{Card order follows the script: tested inside the range, then outside, then tail behaviour, then the efficiency win. Setup detail said aloud: strike gets its own input, log-moneyness now uses the true path-specific strike, and the fixed analytic premium isolates hedging. The largest relative interpolation gap is at $(0.7,0.2)$, where absolute error is near zero. The single highest tail-risk point $(1.3,0.8)$ combines both extremes. The conditioned network also sees more training data; the unconditional result is one run plus continuous coverage.}
 \end{frame}
