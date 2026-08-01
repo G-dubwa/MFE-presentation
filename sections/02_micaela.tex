@@ -1,7 +1,90 @@
 % Slides 6--10: Micaela Marais, 6:50.
+\begin{frame}{The neural hedge recovers the finite-grid benchmark}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.62\textwidth}
+      \begin{table}
+        \centering
+        \small
+        \begin{tabular}{lS[table-format=1.6]}
+          \toprule
+          Strategy & {RMSE}\\
+          \midrule
+          No hedge & 0.227257\\
+          Black--Scholes delta & 0.007810\\
+          Discrete-time MSE-optimal & 0.007810\\
+          Degree-2 polynomial & 0.022183\\
+          \rowcolor{Teal!13}
+          \textbf{Neural hedge} & \bfseries 0.007841\\
+          \bottomrule
+        \end{tabular}
+      \end{table}
+      \vspace{0.16cm}
+      \risknote{These are final-benchmark values from an independent retraining, not architecture-search rows.}
+    \end{column}
+    \begin{column}{0.34\textwidth}
+      \begin{beamercolorbox}[rounded=true,sep=0.23cm]{block body}
+        \centering
+        {\color{Teal}\fontsize{21}{23}\selectfont\bfseries 0.4\%\par}
+        {\scriptsize neural RMSE above the discrete-time benchmark}
+      \end{beamercolorbox}
+      \vspace{0.2cm}
+      \begin{beamercolorbox}[rounded=true,sep=0.23cm]{block body}
+        \centering
+        {\color{DeepNavy}\fontsize{16}{18}\selectfont\bfseries 0.163972\par}
+        {\scriptsize learned premium}\\[0.08cm]
+        {\color{Slate}\scriptsize vs.\ analytic \(0.164111\)}
+      \end{beamercolorbox}
+      \vspace{0.2cm}
+      \claimbox{Near equality is the validation result we wanted.}
+    \end{column}
+  \end{columns}
+  \sourcefoot{Submitted report, Table 3.2 and Sec.\ 3.1.4.}
+  \note{State RMSE values for the three key strategies. Do not say the network outperformed Black--Scholes. Explain the learned-premium gap as finite-sample/optimisation error.}
+\end{frame}
+
+\speakerlabel{Micaela}{1:10}
+\begin{frame}{The learned hedge has the right financial shape}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.71\textwidth}
+      \begin{tikzpicture}[x=2.25cm,y=1cm]
+        \draw[-{Latex[length=2mm]},line width=0.9pt,color=Slate] (0,0)--(3.25,0);
+        \foreach \x in {0.3,1.6,2.9}
+          \draw[Slate] (\x,-0.08)--(\x,0.08);
+        \node[below,font=\scriptsize,color=Slate] at (0.3,-0.08) {deep OTM};
+        \node[below,font=\scriptsize,color=Slate] at (1.6,-0.08) {near strike};
+        \node[below,font=\scriptsize,color=Slate] at (2.9,-0.08) {deep ITM};
+
+        \node[rounded corners=4pt,fill=Mist,minimum width=1.55cm,minimum height=1.35cm,
+          align=center] at (0.3,1.05) {{\color{Teal}\Large\(\delta\to0\)}\\[-0.05cm]\scriptsize little stock needed};
+        \node[rounded corners=4pt,fill=Gold!12,minimum width=1.55cm,minimum height=1.35cm,
+          align=center] at (1.6,1.05) {{\color{Gold!80!black}\Large\(\nearrow\)}\\[-0.05cm]\scriptsize smooth transition};
+        \node[rounded corners=4pt,fill=Teal!12,minimum width=1.55cm,minimum height=1.35cm,
+          align=center] at (2.9,1.05) {{\color{Teal}\Large\(\delta\to1\)}\\[-0.05cm]\scriptsize nearly one-for-one};
+        \draw[-{Latex[length=2mm]},line width=1.4pt,color=Teal]
+          (0.62,1.05) .. controls (1.15,1.05) and (1.15,1.38) .. (1.32,1.38);
+        \draw[-{Latex[length=2mm]},line width=1.4pt,color=Teal]
+          (1.88,1.38) .. controls (2.05,1.38) and (2.05,1.05) .. (2.58,1.05);
+      \end{tikzpicture}
+    \end{column}
+    \begin{column}{0.25\textwidth}
+      \begin{tightitemize}
+        \item monotone in moneyness;
+        \item close to both analytic curves;
+        \item nearly indistinguishable on representative OTM, ATM and ITM paths.
+      \end{tightitemize}
+    \end{column}
+  \end{columns}
+  \vspace{0.18cm}
+  \claimbox{The network learned the expected hedge function, not only a low aggregate loss.}
+  \sourcefoot{Economic reading of submitted report Figures 3.3 and 3.5; schematic above is not a data redraw.}
+  \note{Use the three moneyness regimes to explain the hedge. Refer to the submitted report figures if an examiner asks for path-level evidence.}
+\end{frame}
+
+
 
 \speakerlabel{Micaela}{1:30}
-
+\begin{comment}
+    
 \begin{frame}[t]{Parameter Robustness under Retraining}
   \vspace{-0.3cm}
   \begin{center}
@@ -162,6 +245,11 @@ $K$ & $\sigma$ & $T$ & $N$ & {DT-opt RMSE} & {Retrained NN} & {Param-cond NN} & 
 \end{columns}
 
 \end{frame}
+
+
+\end{comment}
+
+
 \begin{frame}[t]{Parameter Robustness under Retraining}
   \vspace{-0.3cm}
   \begin{center}
@@ -209,7 +297,7 @@ $K$ & $\sigma$ & $T$ & $N$ & {DT-opt RMSE} & {Retrained NN} & {Param-cond NN} & 
   \sourcefoot{Submitted report, Sec.\ 4.1.1, Table 4.1 and Figure 4.1.}
 \end{frame}
 
- 
+
  
 % ---------------------------------------------------------------------
 % SLIDE 7 : Generalization Failure  (unchanged from v1 -- included for completeness)
@@ -270,68 +358,59 @@ $K$ & $\sigma$ & $T$ & $N$ & {DT-opt RMSE} & {Retrained NN} & {Param-cond NN} & 
   \note{Contrast with the previous slide: there the architecture was retrained per setting and stayed within 3--8\%; here the SAME architecture is frozen and fails by up to two orders of magnitude. The three causes compound --- fixing only one would not help. Worst case $(0.7,0.2)$: RMSE jumps from $0.0005$ to $0.14$.}
 \end{frame}
  
-
-
- \begin{frame}[t]{Conditioning fixes the generalisation failure}
-  \vspace{-0.05cm}
+\begin{frame}[t]{Conditioning fixes the generalisation failure}
+  \vspace{-0.1cm}
   \begin{center}
-    $\delta_n = f_\theta\!\left(\log\dfrac{S_{t_n}}{K},\ \dfrac{\tau_n}{T},\ \mathbf{K},\ \boldsymbol{\sigma}\right)$
-    \\[0.14cm]
+    $\delta_n = f_\theta\!\left(\log(S_{t_n}/K),\ \tau_n/T,\ \mathbf{K},\ \boldsymbol{\sigma}\right)$
+    \\[0.1cm]
     {\scriptsize\color{Slate}
-     Trained on $K\sim U(0.7,1.1),\ \sigma\sim U(0.2,0.6)$ over 200k paths;
-     each path priced at its own analytic BS premium (pricing separated from hedging).}
+     Trained on $K\sim U(0.7,1.1),\ \sigma\sim U(0.2,0.6)$, 200k paths; each path at its own analytic BS premium.}
   \end{center}
-  \vspace{0.14cm}
+  \vspace{0.12cm}
   \begin{columns}[T,onlytextwidth]
  
     % ---- INTERPOLATION -------------------------------------------------
-    \begin{column}{0.32\textwidth}
-      \centering
-      \pill[Teal]{Interpolation}
-      \vspace{0.14cm}
- 
-      {\scriptsize\color{Slate} inside trained range\\
-       $K\in[0.7,1.1],\ \sigma\in[0.2,0.6]$\par}
-      \vspace{0.18cm}
-      {\color{Coral}\fontsize{18}{20}\selectfont\bfseries $\leq$0.00018\par}
-      {\scriptsize\color{DeepNavy} max RMSE gap --- all 9 points near-optimal\par}
+    \begin{column}{0.48\textwidth}
+      \begin{beamercolorbox}[rounded=true,sep=0.26cm]{block body}
+        \centering
+        {\centering\pill[Teal]{Interpolation}\par}
+        \vspace{0.13cm}
+        {\scriptsize\color{Slate} inside the trained range\\
+         $K\in[0.7,1.1],\ \ \sigma\in[0.2,0.6]$\par}
+        \vspace{0.15cm}
+        {\color{Coral}\fontsize{18}{20}\selectfont\bfseries $\leq$0.00018\par}
+        \vspace{0.04cm}
+        {\scriptsize\color{DeepNavy} max RMSE gap --- all 9 points near-optimal\par}
+      \end{beamercolorbox}
     \end{column}
  
     % ---- EXTRAPOLATION -------------------------------------------------
-    \begin{column}{0.32\textwidth}
-      \centering
-      \pill[Gold]{Extrapolation}
-      \vspace{0.14cm}
- 
-      {\scriptsize\color{Slate} outside trained range\\
-       $K\!\to\!\{0.6,1.3\},\ \sigma\!\to\!\{0.1,0.8\}$\par}
-      \vspace{0.12cm}
-      {\small\color{DeepNavy}\textbf{Strike}\ } {\color{Coral}\bfseries $\leq$0.00004} {\scriptsize\color{Slate} holds}\\[0.12cm]
-      {\small\color{DeepNavy}\textbf{Vol}\ } {\color{Coral}\bfseries $\sim$3$\times$} {\scriptsize\color{Slate} at $\sigma{=}0.1$}\\[0.1cm]
-      {\scriptsize\color{Slate} graceful but uneven --- vol edges harder than strike edges\par}
-    \end{column}
- 
-    % ---- TAIL RISK -----------------------------------------------------
-    \begin{column}{0.32\textwidth}
-      \centering
-      \pill[Coral]{Tail risk --- CVaR95}
-      \vspace{0.14cm}
- 
-      {\scriptsize\color{Slate} rises smoothly with $\sigma$ ($K{=}0.9$):\par}
-      {\small\color{DeepNavy} 0.008 $\to$ 0.018 $\to$ 0.027\par}
-      {\scriptsize\color{Slate} ($\sigma{=}0.2\!\to\!0.4\!\to\!0.6$)\par}
-      \vspace{0.12cm}
-      {\scriptsize\color{Slate} peak \textbf{0.051} at $(K{=}1.3,\sigma{=}0.8)$ --- vol \& strike compounding, not spiking\par}
+    \begin{column}{0.48\textwidth}
+      \begin{beamercolorbox}[rounded=true,sep=0.26cm]{block body}
+        \centering
+        {\centering\pill[Gold]{Extrapolation}\par}
+        \vspace{0.13cm}
+        {\scriptsize\color{Slate} pushed outside the trained range\\
+         $K\to\{0.6,1.3\},\ \ \sigma\to\{0.1,0.8\}$\par}
+        \vspace{0.15cm}
+        {\color{Coral}\fontsize{18}{20}\selectfont\bfseries $\sim$3$\times$\par}
+        \vspace{0.04cm}
+        {\scriptsize\color{DeepNavy} worst vol gap ($\sigma{=}0.1$); strike holds ($\leq$0.00004)\par}
+      \end{beamercolorbox}
     \end{column}
   \end{columns}
-  \vspace{0.18cm}
+  \vspace{0.14cm}
   \claimbox{One \textbf{433\,s} run covers the whole $(K,\sigma)$ range and matches or beats per-scenario retraining (\textbf{992\,s}): mean NN/DT \textbf{1.009} vs \textbf{1.050}.}
   \sourcefoot{Submitted report, Sec.\ 4.1.3, Table 4.3; efficiency comparison vs Table 4.1.}
-  \note{Card order follows the script: tested inside the range, then outside, then tail behaviour, then the efficiency win. Setup detail said aloud: strike gets its own input (volatility has no other route in; strike is technically recoverable from moneyness but explicit is easier to use), and log-moneyness now uses the true path-specific strike, no longer hardcoded. Fixed premium is justified because with r=0 the optimal premium = E[payoff] is hedge-independent, so supplying the analytic BS price isolates hedging cleanly. Interpolation nuance: the largest RELATIVE gap is at (0.7,0.2), but that is deep-OTM low-vol where absolute error is near zero. Tail risk tracking sigma is the reassuring part --- worst case is a sensible driver, and the single highest point (1.3,0.8) combines both extremes. On ``matches or beats'': at baseline the conditioned net is ~20x tighter in excess error, but that is partly the extra training data --- do not claim conditioning is intrinsically better; the unconditional win is one run + continuous coverage.}
+  \note{Two regimes: inside the trained box (interpolation) and pushed outside it (extrapolation). Said aloud: strike gets its own input (volatility has no other route in; strike is recoverable from moneyness but explicit is easier to use), and log-moneyness now uses the true path-specific strike. Fixed premium justified because with r=0 the optimal premium = E[payoff] is hedge-independent, so the analytic BS price isolates hedging. Interpolation nuance: the largest RELATIVE gap is at (0.7,0.2) --- deep-OTM low-vol, absolute error near zero. On ``matches or beats'': at baseline ~20x tighter in excess error, but partly the extra training data --- the unconditional win is one run + continuous coverage.}
 \end{frame}
+
+
 % ---------------------------------------------------------------------
 % SLIDE 8 : Parameter-Conditioned Hedger  ((K,sigma) plane; old Slide 9 merged)
 % ---------------------------------------------------------------------
+
+\begin{comment}
 \speakerlabel{Micaela}{2:00}
 \begin{frame}[t]{Parameter-Conditioned Hedger}
   \vspace{-0.02cm}
@@ -394,11 +473,15 @@ $K$ & $\sigma$ & $T$ & $N$ & {DT-opt RMSE} & {Retrained NN} & {Param-cond NN} & 
   \sourcefoot{Submitted report, Sec.\ 4.1.3, Tables 4.1, 4.3.}
   \note{The old table showed raw RMSE numbers that are just ``small vs small.'' This plane shows what actually matters: WHERE we trained (the box), interpolation (circles inside) vs extrapolation (squares outside), and the one failure mode --- volatility pushed below the trained floor ($\sigma=0.1$, 3.34x). Strike extrapolation left/right of the box holds. The $(0.7,0.2)$ corner is a large ratio but negligible absolute error (deep-OTM, low-vol, delta near zero). Merge line: lead with coverage + amortization; if pushed on ``beats,'' concede the conditioned model also trains on more paths and is evaluated in-distribution --- the coverage and time win is unconditional. Justification for the fixed premium: with $r=0$ the optimal premium $=\mathbb{E}[\text{payoff}]$ is hedge-independent, so supplying the analytic BS premium isolates hedging cleanly.}
 \end{frame}
+
+\end{comment}
 % =============================
 
 % ---------------------------------------------------------------------
 % SLIDE 8 : Parameter-Conditioned Hedger  (old Slide 9 merged in)
 % ---------------------------------------------------------------------
+
+\begin{comment}
 \speakerlabel{Micaela}{2:00}
 \begin{frame}{Parameter-Conditioned Hedger}
   \vspace{-0.15cm}
@@ -450,88 +533,12 @@ $K$ & $\sigma$ & $T$ & $N$ & {DT-opt RMSE} & {Retrained NN} & {Param-cond NN} & 
   \note{This merges the old ``vs retraining'' slide. Lead with the unconditional win --- one run, continuous coverage --- not ``beats 4/4,'' which is confounded by the larger training set and in-distribution evaluation. If pressed, concede the data mismatch openly: coverage and amortization advantages hold regardless. I deliberately show $(0.9,0.1)$ as my worst point --- examiners respect showing the weak case.}
 \end{frame}
 
+\end{comment}
+    
 
-\begin{frame}{The neural hedge recovers the finite-grid benchmark}
-  \begin{columns}[T,onlytextwidth]
-    \begin{column}{0.62\textwidth}
-      \begin{table}
-        \centering
-        \small
-        \begin{tabular}{lS[table-format=1.6]}
-          \toprule
-          Strategy & {RMSE}\\
-          \midrule
-          No hedge & 0.227257\\
-          Black--Scholes delta & 0.007810\\
-          Discrete-time MSE-optimal & 0.007810\\
-          Degree-2 polynomial & 0.022183\\
-          \rowcolor{Teal!13}
-          \textbf{Neural hedge} & \bfseries 0.007841\\
-          \bottomrule
-        \end{tabular}
-      \end{table}
-      \vspace{0.16cm}
-      \risknote{These are final-benchmark values from an independent retraining, not architecture-search rows.}
-    \end{column}
-    \begin{column}{0.34\textwidth}
-      \begin{beamercolorbox}[rounded=true,sep=0.23cm]{block body}
-        \centering
-        {\color{Teal}\fontsize{21}{23}\selectfont\bfseries 0.4\%\par}
-        {\scriptsize neural RMSE above the discrete-time benchmark}
-      \end{beamercolorbox}
-      \vspace{0.2cm}
-      \begin{beamercolorbox}[rounded=true,sep=0.23cm]{block body}
-        \centering
-        {\color{DeepNavy}\fontsize{16}{18}\selectfont\bfseries 0.163972\par}
-        {\scriptsize learned premium}\\[0.08cm]
-        {\color{Slate}\scriptsize vs.\ analytic \(0.164111\)}
-      \end{beamercolorbox}
-      \vspace{0.2cm}
-      \claimbox{Near equality is the validation result we wanted.}
-    \end{column}
-  \end{columns}
-  \sourcefoot{Submitted report, Table 3.2 and Sec.\ 3.1.4.}
-  \note{State RMSE values for the three key strategies. Do not say the network outperformed Black--Scholes. Explain the learned-premium gap as finite-sample/optimisation error.}
-\end{frame}
 
-\speakerlabel{Micaela}{1:10}
-\begin{frame}{The learned hedge has the right financial shape}
-  \begin{columns}[T,onlytextwidth]
-    \begin{column}{0.71\textwidth}
-      \begin{tikzpicture}[x=2.25cm,y=1cm]
-        \draw[-{Latex[length=2mm]},line width=0.9pt,color=Slate] (0,0)--(3.25,0);
-        \foreach \x in {0.3,1.6,2.9}
-          \draw[Slate] (\x,-0.08)--(\x,0.08);
-        \node[below,font=\scriptsize,color=Slate] at (0.3,-0.08) {deep OTM};
-        \node[below,font=\scriptsize,color=Slate] at (1.6,-0.08) {near strike};
-        \node[below,font=\scriptsize,color=Slate] at (2.9,-0.08) {deep ITM};
 
-        \node[rounded corners=4pt,fill=Mist,minimum width=1.55cm,minimum height=1.35cm,
-          align=center] at (0.3,1.05) {{\color{Teal}\Large\(\delta\to0\)}\\[-0.05cm]\scriptsize little stock needed};
-        \node[rounded corners=4pt,fill=Gold!12,minimum width=1.55cm,minimum height=1.35cm,
-          align=center] at (1.6,1.05) {{\color{Gold!80!black}\Large\(\nearrow\)}\\[-0.05cm]\scriptsize smooth transition};
-        \node[rounded corners=4pt,fill=Teal!12,minimum width=1.55cm,minimum height=1.35cm,
-          align=center] at (2.9,1.05) {{\color{Teal}\Large\(\delta\to1\)}\\[-0.05cm]\scriptsize nearly one-for-one};
-        \draw[-{Latex[length=2mm]},line width=1.4pt,color=Teal]
-          (0.62,1.05) .. controls (1.15,1.05) and (1.15,1.38) .. (1.32,1.38);
-        \draw[-{Latex[length=2mm]},line width=1.4pt,color=Teal]
-          (1.88,1.38) .. controls (2.05,1.38) and (2.05,1.05) .. (2.58,1.05);
-      \end{tikzpicture}
-    \end{column}
-    \begin{column}{0.25\textwidth}
-      \begin{tightitemize}
-        \item monotone in moneyness;
-        \item close to both analytic curves;
-        \item nearly indistinguishable on representative OTM, ATM and ITM paths.
-      \end{tightitemize}
-    \end{column}
-  \end{columns}
-  \vspace{0.18cm}
-  \claimbox{The network learned the expected hedge function, not only a low aggregate loss.}
-  \sourcefoot{Economic reading of submitted report Figures 3.3 and 3.5; schematic above is not a data redraw.}
-  \note{Use the three moneyness regimes to explain the hedge. Refer to the submitted report figures if an examiner asks for path-level evidence.}
-\end{frame}
-
+\begin{comment}
 \speakerlabel{Micaela}{1:20}
 \begin{frame}{Retraining preserves architecture quality}
   \begin{columns}[T,onlytextwidth]
@@ -568,6 +575,10 @@ $K$ & $\sigma$ & $T$ & $N$ & {DT-opt RMSE} & {Retrained NN} & {Param-cond NN} & 
   \note{State the range of NN/DT ratios: 1.009 to 1.099. Avoid describing the N=250 ratio as worse absolute performance.}
 \end{frame}
 
+\end{comment}
+
+
+\begin{comment}
 \speakerlabel{Micaela}{1:20}
 \begin{frame}{Missing information---not capacity---causes failure}
   \begin{columns}[T,onlytextwidth]
@@ -607,6 +618,10 @@ $K$ & $\sigma$ & $T$ & $N$ & {DT-opt RMSE} & {Retrained NN} & {Param-cond NN} & 
   \note{Separate capacity from information. The failure is jointly due to missing inputs and missing variation in training.}
 \end{frame}
 
+\end{comment}
+
+\begin{comment}
+    
 \speakerlabel{Micaela}{1:30}
 \begin{frame}{Conditioning restores cross-contract usefulness}
   \begin{columns}[T,onlytextwidth]
@@ -651,3 +666,4 @@ $K$ & $\sigma$ & $T$ & $N$ & {DT-opt RMSE} & {Retrained NN} & {Param-cond NN} & 
   \sourcefoot{Submitted report, Sec.\ 4.1.3, Table 4.3 and Algorithm A.6.3.}
   \note{Explain the changed premium treatment. Do not imply the conditioned model learns prices. Handover: ``Black--Scholes has one diffusion risk; Siphelele now moves to Heston, where variance adds a second.''}
 \end{frame}
+\end{comment}
