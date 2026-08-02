@@ -65,14 +65,18 @@ All report page numbers below are the printed report page numbers where availabl
 | 16 | Interpretation of residual terms | Sec. 4.1.4; Appendix A.6.3 | N/A | Verified — report | Wording follows report. |
 | 16 | Negative sign qualification | Sec. 4.1.4 | Drift CSV absent | Verified — report | Sign attributed to submitted parameters and realised state distribution, not \(\xi,\rho\) alone. |
 | 17 | COS uses Heston characteristic function and repeated path repricing | Sec. 4.1.4; Algorithm A.6.6 | COS notebook absent | Verified — report | Native pipeline diagram is conceptual. |
+| 17 | Characteristic-function-to-cosine-coefficient bridge; no nested future-path simulation | Appendix A.6.1; Algorithm A.6.6 | COS notebook submitted separately | Verified — report | COS is a deterministic pricing routine, not a path simulator. |
+| 17 | \(\eta=V^T/V^h,\ \delta=\Delta^T-\eta\Delta^h\), \(V=\partial C/\partial v\) | Appendix A.6.4; Algorithm A.6.9 | Heston Greek implementation submitted separately | Verified — report | Local diffusion matching; table retains delta--vega label. |
 | 17 | 256 terms and interval \([-7,7]\) | Appendix A.6.2 | COS config absent | Report-supported; archive unresolved | Accuracy/runtime setting. |
 | 17 | Max COS–Carr–Madan discrepancy `5.1×10^-8` | Sec. 4.1.4; Appendix A.6.2 | Validation CSV absent | Report-supported; archive unresolved | Traded validation grid only. |
 | 17 | Delta error `9.8×10^-5`; variance error `4.7×10^-4` | Sec. 4.1.4, p. 26 | Greek validation CSV absent | Report-supported; archive unresolved | Report gives approximate values. |
 | 18 | Representative Heston strategy values | Tables 4.5–4.6 | Heston CSV absent | Report-supported; archive unresolved | Representative and multi-seed evidence separated. |
-| 18 | Strongest heuristic is BS-proxy Greeks on COS path | Table 4.6; Sec. 4.1.4 | Heston CSV absent | Verified — report | Described as heuristic, not optimum. |
+| 18 | Strongest tested analytic heuristic is BS-proxy Greek heuristic on the COS option path | Table 4.6; Sec. 4.1.4 | Heston CSV absent | Verified — report | Described as a heuristic, not an optimum or a Heston pricer. |
 | 18 | Seed rows 111/222/333 | Table A.11 | Multi-seed CSV absent | Report-supported; archive unresolved | Exact RMSE and improvement values. |
 | 18 | Mean RMSE improvement `22.7%`; CVaR95 `27.1%` | Sec. 4.1.4; Table A.11 | Multi-seed CSV absent | Report-supported; archive unresolved | All three pairwise comparisons favour NN. |
 | 18 | Fair-premium centering caveat | Sec. 4.1.4, p. 26; Table A.2 | Heston evaluation code absent | Verified — report | Same test paths used for centering and risk metrics. |
+| 18 | Representative table versus four-strategy three-seed cell | Tables 4.5--4.6 and A.11 | Multi-seed CSV absent | Verified — report | Three-seed cell retrained two NNs and reevaluated two analytic rules; not every representative row was rerun. |
+| 18 | Fair centring is final test evaluation, not the raw premium used in training | Sec. 4.1.4; Algorithm A.6.10 | Training/evaluation code submitted separately | Verified — report code | NN learns a raw premium jointly with weights during training. |
 | 19 | Three calibrated conclusions | Sec. 5, pp. 31–32 | N/A | Verified — report | Faithful condensation of conclusion. |
 | 19 | Learned option position broadly follows variance-hedge direction and softens at high variance | Figure 4.3; Sec. 4.1.4 | Figure/data absent | Verified — report | No empirical curve redrawn. |
 | 19 | Limitations: three seeds, centering, heuristic comparator, frictionless Heston, information set | Sec. 4.1.4; Sec. 5 | N/A | Verified — report | Main limitations shown visibly. |
@@ -81,8 +85,10 @@ All report page numbers below are the printed report page numbers where availabl
 
 | Backup slide | Excerpt | Source | Treatment |
 |---|---|---|---|
-| Heston simulation | Correlated shocks, log-Euler stock, full-truncation variance | Report Listing C.4 | Line wrapping only; semantics preserved. |
-| Two-instrument loss | Six features, two tanh outputs, gain and MSE | Report Algorithm A.6.10 | Explicitly labelled faithful pseudocode because executable notebook is absent. |
+| Heston simulation | Correlated shocks, log-Euler stock, full-truncation variance | Report Algorithm A.3.3 and Listing C.4 | Equations and rationale reproduce the submitted update scheme. |
+| Two-instrument loss | Six features, two tanh outputs, gain and MSE | Report Algorithm A.6.10 | Presentation equations map to the separately submitted executable notebooks. |
+| Shared-weight backpropagation | Gradient accumulation across path-date calls | Sec. 2.2.2; Algorithm A.6.10 | Derived directly from the displayed terminal-MSE computation graph; no analytic hedge labels. |
+| Heston characteristic function | \(\phi=\exp(C+Dv+iux)\) and deterministic COS frequency grid | Heston (1993); Report Algorithm A.6.6 | Full \(C,D\) formulas intentionally omitted; bridge only. |
 
 ## Unresolved archive provenance
 
