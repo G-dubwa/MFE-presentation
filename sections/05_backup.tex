@@ -2,7 +2,7 @@
 
 \begin{frame}{Backup: method-to-code map}
   \scriptsize
-  \begin{tabular}{p{0.20\textwidth}p{0.26\textwidth}p{0.24\textwidth}p{0.19\textwidth}}
+  \begin{tabular}{@{}p{0.19\textwidth}p{0.25\textwidth}p{0.23\textwidth}p{0.18\textwidth}@{}}
     \toprule
     Mathematical concept & Displayed implementation & Report evidence & Primary expert\\
     \midrule
@@ -66,31 +66,43 @@
          {\operatorname{Var}(\Delta S_n\mid S_{t_n})}.
   \]
   \risknote{This simplification is tied to the submitted \(r=0\) martingale setting; local and global quadratic hedges need not coincide more generally.}
+  \vspace{-0.12cm}
   \sourcefoot{Submitted report, Appendix A.4; Schweizer (1995, 2001).}
 \end{frame}
 
-\begin{frame}{Backup: full frozen-volatility drift derivation}
-  For \(g(S,v,t)=C_{\bs}(S,K_h,T_h-t,\sqrt v)\), Itô's lemma under Heston gives
-  \[
+\begin{frame}[t]{\texorpdfstring{\raisebox{-0.25cm}[0pt][0pt]{Frozen-volatility drift derivation}}{Frozen-volatility drift derivation}}
+  {\scriptsize For \(g(t,S,v)=C_{\bs}(S,K_h,T_h-t,\sqrt v)\), the Heston multiplication rules are}
+  {\small\[
+    (dS)^2=vS^2dt,
+    \qquad (dv)^2=\xi^2vdt,
+    \qquad dS\,dv=\rho\xi vSdt.
+  \]}
+  {\fontsize{8.5}{10}\selectfont\[
   \begin{aligned}
     dg={}&\Big[g_t+rSg_S+\kappa(\theta-v)g_v+\tfrac12vS^2g_{SS}
       +\tfrac12\xi^2vg_{vv}+\rho\xi vSg_{Sv}\Big]dt\\
-      &+g_S\sqrt vS\,dW^S+g_v\xi\sqrt v\,dW^v .
+      &+g_SS\sqrt v\,dW^S+g_v\xi\sqrt v\,dW^v .
   \end{aligned}
-  \]
-  The frozen-\(v\) Black--Scholes PDE cancels only
-  \[
-    g_t+rSg_S+\tfrac12vS^2g_{SS}-rg=0.
-  \]
-  Hence the discounted residual is
-  \[
-    \kappa(\theta-v)g_v+\tfrac12\xi^2vg_{vv}+\rho\xi vSg_{Sv},
-  \]
-  and with submitted \(r=0\) this is also the undiscounted drift residual.
+  \]}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.46\textwidth}
+      \pill[Teal]{Frozen-\(v\) BS PDE cancellation}
+      \vspace{0.05cm}
+      \centering{\small\(\displaystyle g_t+rSg_S+\tfrac12vS^2g_{SS}-rg=0\)}
+    \end{column}
+    \begin{column}{0.50\textwidth}
+      \pill[Coral]{Remaining Heston residual}
+      \vspace{0.05cm}
+      \centering{\small\(\displaystyle \kappa(\theta-v)g_v+\tfrac12\xi^2vg_{vv}+\rho\xi vSg_{Sv}\)}
+    \end{column}
+  \end{columns}
+  \begin{beamercolorbox}[rounded=true,sep=0.12cm]{block body}
+    {\scriptsize With submitted \(r=0\), this is both the discounted and undiscounted drift residual. Its sign is state-dependent; the diagnostic is not a complete formal arbitrage proof.}
+  \end{beamercolorbox}
   \sourcefoot{Submitted report, Appendix A.6.3.}
 \end{frame}
 
-\begin{frame}{Backup: COS pricing in one equation}
+\begin{frame}[t]{COS pricing}
   \begin{columns}[T,onlytextwidth]
     \begin{column}{0.55\textwidth}
       \[
@@ -103,11 +115,15 @@
         \qquad u_k=\frac{k\pi}{b-a}.
         \end{aligned}
       \]
-      {\scriptsize\color{Slate}\(A_k\) approximates the density coefficient; \(V_k\) is the analytic call-payoff coefficient.}
+      {\scriptsize\color{Slate}\(A_k\) approximates the density coefficient; \(V_k\) is the analytic call-payoff coefficient. The prime halves the \(k=0\) term.}
+      \vspace{0.10cm}
+      \begin{beamercolorbox}[rounded=true,sep=0.10cm]{block body}
+        {\scriptsize\textbf{Finite-difference checks:} delta error \(\approx9.8\times10^{-5}\); variance-sensitivity error \(\approx4.7\times10^{-4}\).}
+      \end{beamercolorbox}
     \end{column}
     \begin{column}{0.41\textwidth}
       \begin{tightitemize}
-        \item Heston characteristic function \(\varphi\).
+        \item Heston supplies the characteristic function \(\varphi\); COS supplies the numerical expansion.
         \item \(N_{\text{COS}}=256\), \([a,b]=[-7,7]\).
         \item Traded validation range: \(\tau_h\in[0.5,1]\).
         \item Carr--Madan check: \(\alpha=1.5\), \(u\in[0,200]\), 20,000 points.
@@ -116,6 +132,73 @@
     \end{column}
   \end{columns}
   \sourcefoot{Submitted report, Algorithms A.6.6--A.6.7 and Appendix A.6.2.}
+\end{frame}
+
+\begin{frame}[t]{Analytic Heston stock-and-option hedge}
+  \begin{beamercolorbox}[rounded=true,sep=0.10cm]{block body}
+    \centering
+    {\fontsize{8.5}{10}\selectfont\(\displaystyle
+      \begin{aligned}
+        df&=\cdots+f_SS\sqrt v\,dW^S+f_v\xi\sqrt v\,dW^v,\\
+        d(\delta S+\eta g)&=\cdots
+          +(\delta+\eta g_S)S\sqrt v\,dW^S
+          +\eta g_v\xi\sqrt v\,dW^v
+      \end{aligned}\)}
+  \end{beamercolorbox}
+  \vspace{0.07cm}
+  \begin{beamercolorbox}[rounded=true,sep=0.12cm]{block body}
+    \centering
+    \textbf{Match both instantaneous diffusion exposures:}\qquad
+    \(\displaystyle \eta=\frac{f_v}{g_v},\quad \delta=f_S-\eta g_S.\)
+  \end{beamercolorbox}
+  \vspace{0.08cm}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.48\textwidth}
+      \pill{Heston COS delta--vega benchmark}
+      \vspace{0.04cm}
+
+      {\small Target and hedge-option sensitivities all come from Heston COS.}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \pill[Gold]{BS-proxy Greeks on COS option path}
+      \vspace{0.04cm}
+
+      {\small Frozen-\(v\) BS sensitivities determine positions; gains are still marked to the COS path.}
+    \end{column}
+  \end{columns}
+  \vspace{0.08cm}
+  \begin{beamercolorbox}[rounded=true,sep=0.10cm]{block body}
+    \centering\small\bfseries Same traded COS option path; different position rule.
+  \end{beamercolorbox}
+  \sourcefoot{Submitted report, Sec.\ 4.1.4 and Algorithms A.6.8--A.6.9. Here \(f_v,g_v\) are variance sensitivities.}
+\end{frame}
+
+\begin{frame}[t]{\large Pricing accuracy and finite-grid hedge optimality are different questions}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.47\textwidth}
+      \pill{What COS establishes}
+      \begin{tightitemize}
+        \item model-consistent Heston option prices;
+        \item independently validated prices and implemented sensitivities;
+        \item local first-order exposures for the COS Greek rule.
+      \end{tightitemize}
+    \end{column}
+    \begin{column}{0.49\textwidth}
+      \pill[Coral]{What it does not optimise}
+      \begin{tightitemize}
+        \item finite-grid terminal MSE;
+        \item between-date gamma and variance curvature;
+        \item spot--variance cross effects and changing Greeks.
+      \end{tightitemize}
+    \end{column}
+  \end{columns}
+  \vspace{0.18cm}
+  \begin{beamercolorbox}[rounded=true,sep=0.17cm]{block body}
+    \small Approximation-error cancellation may benefit the BS-proxy rule in this tested parameter regime. That ordering does \textbf{not} imply that Black--Scholes is a better Heston pricer.
+  \end{beamercolorbox}
+  \vspace{0.14cm}
+  {\small The neural policy instead trains directly on the submitted terminal-MSE objective. Turnover is supporting diagnostic evidence, not proof of the ordering.}
+  \sourcefoot{Submitted report, Sec.\ 4.1.4 and the stated interpretation of Tables 4.5--4.6.}
 \end{frame}
 
 \begin{frame}[fragile]{Backup: Heston simulation code}
@@ -136,7 +219,7 @@ for n in range(N_STEPS):
   \sourcefoot{Adapted only for line length from submitted report Listing C.4. Purpose: correlated Heston shocks, log-Euler stock update and full-truncation variance update. Primary speaker: Glasson / Siphelele.}
 \end{frame}
 
-\begin{frame}[fragile]{Backup: two-instrument gain construction}
+\begin{frame}[fragile]{Two-instrument gain construction}
 \begin{lstlisting}[style=deckcode]
 # state at t_n only
 x_n = [log(S_n/K), (T-t_n)/T, v_n/THETA,
@@ -154,27 +237,48 @@ loss = mean(hedge_error**2)
   \sourcefoot{Submitted report, Sec.\ 4.1.4 and Algorithm A.6.10. Primary speaker: Glasson.}
 \end{frame}
 
-\begin{frame}{Backup: data separation and centering}
-  \centering
-  \begin{tikzpicture}[
-    box/.style={rounded corners=4pt,minimum width=3.4cm,minimum height=1.2cm,
-      align=center,font=\small,draw=DeepNavy!18},
-    arr/.style={-{Latex[length=2mm]},color=Teal,line width=0.9pt}
-  ]
-    \node[box,fill=Gold!12] (tr) at (0,0) {\textbf{Training}\\fit weights and learned premium};
-    \node[box,fill=Teal!12] (va) at (4.1,0) {\textbf{Validation}\\select architecture / best epoch};
-    \node[box,fill=Mist] (te) at (8.2,0) {\textbf{Test}\\one final risk evaluation};
-    \draw[arr] (tr)--(va);\draw[arr] (va)--(te);
-    \node[below=0.32cm of tr,font=\scriptsize,color=Slate] {independent paths};
-    \node[below=0.32cm of va,font=\scriptsize,color=Slate] {independent paths};
-    \node[below=0.32cm of te,font=\scriptsize,color=Slate] {independent paths};
-  \end{tikzpicture}
-  \vspace{0.5cm}
-  \risknote{Heston headline fair premiums are estimated on the same test paths as the risk metrics. Interpret them as test-sample-centred hedge-quality comparisons, not fully out-of-sample pricing results.}
-  \sourcefoot{Submitted report, Tables A.1--A.2 and Algorithms A.6.1--A.6.2.}
+\begin{frame}[t]{Fair-premium centring}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.54\textwidth}
+      \begin{beamercolorbox}[rounded=true,sep=0.18cm]{block body}
+        \[
+          \pi_j^*=\mathbb E_{\mathrm{test}}[H-G_T^j],
+          \qquad
+          HE_j=\pi_j^*+G_T^j-H.
+        \]
+      \end{beamercolorbox}
+      \vspace{0.14cm}
+      \begin{tightitemize}
+        \item removes strategy \(j\)'s test-sample mean error;
+        \item RMSE compares centred hedge dispersion;
+        \item Loss CVaR95 compares centred downside tail risk.
+      \end{tightitemize}
+    \end{column}
+    \begin{column}{0.42\textwidth}
+      \pill{Data roles remain separate}
+      \vspace{0.12cm}
+
+      {\small
+      \begin{tabular}{@{}p{0.26\linewidth}p{0.62\linewidth}@{}}
+        \toprule
+        Training & \shortstack[l]{Fit weights and\\learned premium}\\
+        Validation & \shortstack[l]{Select architecture /\\best epoch}\\
+        Test & Final centred risk comparison\\
+        \bottomrule
+      \end{tabular}}
+    \end{column}
+  \end{columns}
+  \vspace{0.18cm}
+  \begin{beamercolorbox}[rounded=true,sep=0.14cm]{block body}
+    {\small\textbf{Scope:} Because \(\pi_j^*\) is estimated on the same test paths as the risk metrics, this is not a fully out-of-sample joint pricing-and-hedging result.}
+  \end{beamercolorbox}
+  \sourcefoot{Submitted report, Sec.\ 4.1.4, Tables A.1--A.2 and Algorithms A.6.1--A.6.2.}
 \end{frame}
 
-\begin{frame}{Backup: three-seed Heston comparison}
+\begin{frame}[t]{Three-seed Heston comparison}
+  \centering
+  \pill[Gold]{Comparator: BS-proxy Greeks on COS option path}
+  \vspace{0.16cm}
   \begin{table}
     \centering
     \small
@@ -195,32 +299,100 @@ loss = mean(hedge_error**2)
   \sourcefoot{Submitted report, Table A.11.}
 \end{frame}
 
-\begin{frame}{Backup: position and information diagnostics}
+\begin{frame}[t]{Position-bound diagnostic}
   \begin{columns}[T,onlytextwidth]
-    \begin{column}{0.48\textwidth}
-      \pill{Position-bound check}
-      \begin{tightitemize}
-        \item Network output range: \([-5,5]\).
-        \item Observed max \(|\eta^{NN}|\approx1.33\).
-        \item COS delta--vega RMSE:
-          \begin{itemize}
-            \item bound \([-5,5]\): \(0.014782\);
-            \item bound \([-20,20]\): \(0.014667\).
-          \end{itemize}
-      \end{tightitemize}
+    \begin{column}{0.47\textwidth}
+      \pill{Neural position range}
+      \vspace{0.12cm}
+      \begin{beamercolorbox}[rounded=true,sep=0.18cm]{block body}
+        \centering
+        {\color{Teal}\fontsize{18}{20}\selectfont\bfseries \([-5,5]\)\par}
+        {\small network output range}\\[0.12cm]
+        {\color{DeepNavy}\fontsize{16}{18}\selectfont\bfseries \(\max|\eta^{NN}|\approx1.33\)\par}
+        {\small observed option position}
+      \end{beamercolorbox}
     \end{column}
-    \begin{column}{0.48\textwidth}
-      \pill[Gold]{Observable-information check}
-      \begin{tightitemize}
-        \item EWMA decay \(\lambda=0.94\).
-        \item \(\operatorname{corr}(\hat v_t,v_t)=0.777613\).
-        \item Relative variance-proxy RMSE \(=0.369375\).
-        \item Neural mean RMSE \(0.007877\) vs heuristic \(0.010734\).
-      \end{tightitemize}
-      \risknote{\(C_t^h/S_t\) remains observable and variance-informative; this is not stock-return-only filtering.}
+    \begin{column}{0.49\textwidth}
+      \pill[Gold]{COS benchmark clip sensitivity}
+      \vspace{0.12cm}
+      \begin{table}
+        \centering
+        \fontsize{8.6}{10}\selectfont
+        \begin{tabular}{lS[table-format=1.6]}
+          \toprule
+          Position bound & {RMSE}\\
+          \midrule
+          \([-5,5]\) & 0.014782\\
+          \([-20,20]\) & 0.014667\\
+          \bottomrule
+        \end{tabular}
+      \end{table}
     \end{column}
   \end{columns}
+  \vspace{0.20cm}
+  \begin{beamercolorbox}[rounded=true,sep=0.14cm]{block body}
+    \small The learned option positions remained well inside their imposed range; widening the analytic benchmark clip changed its RMSE only slightly.
+  \end{beamercolorbox}
+  \sourcefoot{Submitted report, Sec.\ 4.1.4 and Tables A.10 and A.12.}
+\end{frame}
+
+\begin{frame}[t]{Observable-information robustness}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.47\textwidth}
+      \pill{Causal variance proxy}
+      \begin{tightitemize}
+        \item EWMA decay \(\lambda=0.94\);
+        \item \(\operatorname{corr}(\hat v_t,v_t)=0.777613\);
+        \item relative variance-proxy RMSE \(=0.369375\).
+      \end{tightitemize}
+    \end{column}
+    \begin{column}{0.49\textwidth}
+      \pill[Gold]{Submitted mean RMSE}
+      \vspace{0.12cm}
+      \begin{table}
+        \centering
+        \fontsize{8.6}{10}\selectfont
+        \begin{tabular}{lS[table-format=1.6]}
+          \toprule
+          Strategy & {RMSE}\\
+          \midrule
+          Stock + option NN & 0.007877\\
+          BS-proxy Greeks on COS option path & 0.010734\\
+          \bottomrule
+        \end{tabular}
+      \end{table}
+    \end{column}
+  \end{columns}
+  \vspace{0.18cm}
+  \begin{beamercolorbox}[rounded=true,sep=0.14cm]{block body}
+    {\small\textbf{Scope:} \(C_t^h/S_t\) remains contemporaneously observable and variance-informative. This is therefore not a stock-return-only filtering experiment.}
+  \end{beamercolorbox}
   \sourcefoot{Submitted report, Sec.\ 4.1.4 and Tables A.10, A.12, A.15.}
+\end{frame}
+
+\begin{frame}[t]{Why the hedge option differs from the target}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.47\textwidth}
+      \pill{Target liability}
+      \begin{beamercolorbox}[rounded=true,sep=0.18cm]{block body}
+        \centering\Large\bfseries \(K=0.9,\quad T=0.5\)
+      \end{beamercolorbox}
+    \end{column}
+    \begin{column}{0.49\textwidth}
+      \pill[Gold]{Liquid hedge option}
+      \begin{beamercolorbox}[rounded=true,sep=0.18cm]{block body}
+        \centering\Large\bfseries \(K_h=1,\quad T_h=1\)
+      \end{beamercolorbox}
+    \end{column}
+  \end{columns}
+  \vspace{0.20cm}
+  \begin{tightitemize}
+    \item \(K_h=1\) is initially at the money and variance-sensitive.
+    \item \(T_h>T\) keeps the hedge instrument alive throughout the target horizon.
+    \item Trading an identical target option would trivialise the hedging problem.
+    \item In practice, the target liability need not itself be a liquid traded contract.
+  \end{tightitemize}
+  \sourcefoot{Submitted report, Sec.\ 4.1.4 and the target/hedge-option configuration.}
 \end{frame}
 
 \begin{frame}{Backup: transaction costs change the learned policy}
