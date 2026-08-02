@@ -11,14 +11,14 @@
     Shared Markov hedge & \texttt{SharedMarkovHedge} & Listing C.3; Sec.\ 2.2.2 & Kaiden / Micaela\\
     Heston full-truncation simulation & PyTorch loop in Listing C.4 & Listing C.4; Alg.\ A.3.3 & Glasson / Siphelele\\
     COS liquid-option pricing & Algorithms A.6.6--A.6.8 & App.\ A.6.1--A.6.2 & Glasson\\
-    Two-instrument neural gain & Algorithm A.6.10 & Sec.\ 4.1.4 & Glasson\\
+    Two-instrument neural gain & Algorithm A.6.10 & Sec.\ 4.1.4 & Siphelele / Glasson\\
     \bottomrule
   \end{tabular}
   \vspace{0.25cm}
   \risknote{The submitted report and its displayed code are present; notebook filenames, result CSV paths and \texttt{requirements.txt} are absent from this repository. See \texttt{OPEN\_QUESTIONS.md}.}
 \end{frame}
 
-\begin{frame}{Backup: tensor shapes}
+\begin{frame}{State and tensor shapes}
   \centering
   \begin{tikzpicture}[
     box/.style={rounded corners=3pt,draw=DeepNavy!18,fill=Mist,
@@ -41,7 +41,7 @@
     \draw[arr] (hp)--(hf);\draw[arr] (hf)--(hflat);\draw[arr] (hflat)--(hout);\draw[arr] (hout)--(he);
   \end{tikzpicture}
   \par\vspace{0.35cm}
-  {\scriptsize\color{Slate}BS path allocation and two-feature input are explicit in Listings C.1 and C.3. Heston array indexing and the six-feature/two-output contract are explicit in Listing C.4 and Algorithm A.6.10; flattening is the shared batched evaluation contract described in the report.}
+  {\scriptsize\color{Slate}The same shared network is applied to every path-date state. Each complete path produces one terminal gain and one terminal hedge error. BS dimensions follow Listings C.1 and C.3; Heston dimensions follow Listing C.4 and Algorithm A.6.10.}
 \end{frame}
 
 \begin{frame}{Backup: the discrete-time conditional projection}
@@ -201,7 +201,7 @@
   \sourcefoot{Submitted report, Sec.\ 4.1.4 and the stated interpretation of Tables 4.5--4.6.}
 \end{frame}
 
-\begin{frame}[fragile]{Backup: Heston simulation code}
+\begin{frame}[fragile]{Heston simulation}
 \begin{lstlisting}[style=deckcode]
 for n in range(N_STEPS):
     z1 = torch.randn(n_paths, device=device)
@@ -216,7 +216,16 @@ for n in range(N_STEPS):
              + XI*torch.sqrt(v_pos)*sqrt_dt*z_v
     v[:, n+1] = torch.clamp(v_next, min=0.0)
 \end{lstlisting}
-  \sourcefoot{Adapted only for line length from submitted report Listing C.4. Purpose: correlated Heston shocks, log-Euler stock update and full-truncation variance update. Primary speaker: Glasson / Siphelele.}
+  \vspace{-0.08cm}
+  {\scriptsize
+  \begin{tabular}{@{}p{0.18\linewidth}p{0.76\linewidth}@{}}
+    \texttt{z\_s} / \texttt{z\_v} & stock shock / correlated variance shock\\
+    \texttt{v\_pos} & non-negative variance used in the drift, diffusion and stock log-Euler update\\
+    final clamp & prevents a negative Euler proposal becoming the next stored variance\\
+  \end{tabular}}
+  \vspace{0.06cm}
+  \risknote{The Feller condition \(2\kappa\theta=0.64\geq\xi^2=0.36\) concerns the continuous-time process; it does not guarantee that an Euler proposal is never negative. Train, validation and test paths are simulated independently.}
+  \sourcefoot{Adapted only for line length from submitted report Listing C.4 and Algorithm A.3.3. Primary speaker: Siphelele.}
 \end{frame}
 
 \begin{frame}[fragile]{Two-instrument gain construction}
@@ -234,7 +243,42 @@ hedge_error = premium + gain - maximum(S_T-K, 0.0)
 loss = mean(hedge_error**2)
 \end{lstlisting}
   \risknote{This is a faithful pseudocode rendering of Algorithm A.6.10, not a verbatim excerpt from the absent executable notebook.}
-  \sourcefoot{Submitted report, Sec.\ 4.1.4 and Algorithm A.6.10. Primary speaker: Glasson.}
+  \sourcefoot{Submitted report, Sec.\ 4.1.4 and Algorithm A.6.10. Primary speakers: Siphelele / Glasson.}
+\end{frame}
+
+\begin{frame}[t]{Holdings, trades, and gains}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.47\textwidth}
+      \pill{Network action: total holdings}
+      \begin{beamercolorbox}[rounded=true,sep=0.20cm]{block body}
+        \[
+          (\delta_n,\eta_n)
+          \quad\text{over }[t_n,t_{n+1}].
+        \]
+      \end{beamercolorbox}
+      \vspace{0.18cm}
+      \pill[Gold]{Trade increments}
+      \[
+        \Delta\delta_n=\delta_n-\delta_{n-1},\qquad
+        \Delta\eta_n=\eta_n-\eta_{n-1}.
+      \]
+    \end{column}
+    \begin{column}{0.49\textwidth}
+      \pill{Frictionless one-step gain}
+      \begin{beamercolorbox}[rounded=true,sep=0.20cm]{block body}
+        \[
+          \delta_n\Delta S_n+\eta_n\Delta C_n^h.
+        \]
+      \end{beamercolorbox}
+      \vspace{0.20cm}
+      {\small\begin{tightitemize}
+        \item The submitted Heston gain equation uses holdings.
+        \item Trade increments would determine transaction costs and turnover.
+        \item Calling \(\delta_n\) or \(\eta_n\) a trade would therefore change the meaning of the implementation.
+      \end{tightitemize}}
+    \end{column}
+  \end{columns}
+  \sourcefoot{Submitted report, Sec.\ 4.1.4 and Algorithm A.6.10.}
 \end{frame}
 
 \begin{frame}[t]{Fair-premium centring}
@@ -299,41 +343,36 @@ loss = mean(hedge_error**2)
   \sourcefoot{Submitted report, Table A.11.}
 \end{frame}
 
-\begin{frame}[t]{Position-bound diagnostic}
+\begin{frame}[t]{Why the Heston outputs use scaled tanh}
   \begin{columns}[T,onlytextwidth]
     \begin{column}{0.47\textwidth}
-      \pill{Neural position range}
+      \pill{Two signed outputs}
       \vspace{0.12cm}
       \begin{beamercolorbox}[rounded=true,sep=0.18cm]{block body}
         \centering
-        {\color{Teal}\fontsize{18}{20}\selectfont\bfseries \([-5,5]\)\par}
-        {\small network output range}\\[0.12cm]
-        {\color{DeepNavy}\fontsize{16}{18}\selectfont\bfseries \(\max|\eta^{NN}|\approx1.33\)\par}
-        {\small observed option position}
+        \[
+          \delta_n=5\tanh(z_{1,n}),\qquad
+          \eta_n=5\tanh(z_{2,n}).
+        \]
+        {\color{Teal}\fontsize{17}{19}\selectfont\bfseries \([-5,5]\)\par}
+        {\small numerical output range}
       \end{beamercolorbox}
     \end{column}
     \begin{column}{0.49\textwidth}
-      \pill[Gold]{COS benchmark clip sensitivity}
-      \vspace{0.12cm}
-      \begin{table}
-        \centering
-        \fontsize{8.6}{10}\selectfont
-        \begin{tabular}{lS[table-format=1.6]}
-          \toprule
-          Position bound & {RMSE}\\
-          \midrule
-          \([-5,5]\) & 0.014782\\
-          \([-20,20]\) & 0.014667\\
-          \bottomrule
-        \end{tabular}
-      \end{table}
+      \pill[Gold]{Why this map is used}
+      \begin{tightitemize}
+        \item Stock and option holdings can be long or short.
+        \item A sigmoid's \((0,1)\) range is therefore unsuitable.
+        \item Scaled tanh permits signed, bounded positions.
+        \item The bound improves numerical stability; it is not an optimality theorem.
+      \end{tightitemize}
     \end{column}
   \end{columns}
   \vspace{0.20cm}
   \begin{beamercolorbox}[rounded=true,sep=0.14cm]{block body}
-    \small The learned option positions remained well inside their imposed range; widening the analytic benchmark clip changed its RMSE only slightly.
+    \centering\small Submitted diagnostic: \(\max|\eta^{NN}|\approx1.33\), comfortably below the bound of five.
   \end{beamercolorbox}
-  \sourcefoot{Submitted report, Sec.\ 4.1.4 and Tables A.10 and A.12.}
+  \sourcefoot{Submitted report, Sec.\ 4.1.4, Algorithm A.6.10 and Table A.12.}
 \end{frame}
 
 \begin{frame}[t]{Observable-information robustness}
@@ -387,12 +426,43 @@ loss = mean(hedge_error**2)
   \end{columns}
   \vspace{0.20cm}
   \begin{tightitemize}
-    \item \(K_h=1\) is initially at the money and variance-sensitive.
+    \item Near-ATM options generally have useful variance sensitivity; \(K_h=1\) is initially at the money.
     \item \(T_h>T\) keeps the hedge instrument alive throughout the target horizon.
-    \item Trading an identical target option would trivialise the hedging problem.
+    \item Trading an identical target option would largely trivialise the hedging problem.
     \item In practice, the target liability need not itself be a liquid traded contract.
   \end{tightitemize}
   \sourcefoot{Submitted report, Sec.\ 4.1.4 and the target/hedge-option configuration.}
+\end{frame}
+
+\begin{frame}[t]{What the martingale diagnostic measures}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.52\textwidth}
+      \pill{Sample mean over \([0,T]\)}
+      \begin{beamercolorbox}[rounded=true,sep=0.17cm]{block body}
+        \[
+          \widehat m=\frac1M\sum_{i=1}^M
+          \left(C_T^{h,(i)}-C_0^h\right).
+        \]
+      \end{beamercolorbox}
+      \vspace{0.18cm}
+      \pill[Gold]{Monte Carlo standard error}
+      \[
+        \widehat{\mathrm{SE}}(\widehat m)
+        =\frac{s(C_T^h-C_0^h)}{\sqrt M}.
+      \]
+    \end{column}
+    \begin{column}{0.44\textwidth}
+      {\small\begin{tightitemize}
+        \item Individual option paths fluctuate; the statistic concerns their average movement.
+        \item Under \(r=0\), the risk-neutral reference value is zero.
+        \item The target horizon ends at \(T=0.5\), before the hedge option matures at \(T_h=1\).
+        \item The test diagnoses dynamic inconsistency; it is not a standalone proof of executable real-market arbitrage.
+      \end{tightitemize}}
+    \end{column}
+  \end{columns}
+  \vspace{0.04cm}
+  \risknote{Proxy: \(-0.009482\) (SE \(0.000459\)); COS: \(-0.000118\) (SE \(0.000479\)). The COS residual is negligible, not exactly zero.}
+  \sourcefoot{Submitted report, Table A.9 and Algorithm A.6.8.}
 \end{frame}
 
 \begin{frame}{Backup: transaction costs change the learned policy}

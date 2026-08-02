@@ -1,162 +1,229 @@
-% Slides 11--14: Siphelele Nkosi, 6:40.
+% Slides 11--15: Siphelele Nkosi, 6:30.
 
-\speakerlabel{Siphelele}{1:40}
+\speakerlabel{Siphelele}{1:25}
 \begin{frame}{Heston introduces a second source of risk}
   \begin{columns}[T,onlytextwidth]
-    \begin{column}{0.57\textwidth}
-      \begin{beamercolorbox}[rounded=true,sep=0.22cm]{block body}
+    \begin{column}{0.58\textwidth}
+      \begin{beamercolorbox}[rounded=true,sep=0.18cm]{block body}
         \[
           \begin{aligned}
           dS_t &= rS_t\,dt+\sqrt{v_t}S_t\,dW_t^S,\\
           dv_t &= \kappa(\theta-v_t)\,dt+\xi\sqrt{v_t}\,dW_t^v,\\
-          dW_t^S\,dW_t^v&=\rho\,dt .
+          dW_t^S\,dW_t^v&=\rho\,dt.
           \end{aligned}
         \]
       \end{beamercolorbox}
-      \vspace{0.18cm}
-      \begin{tightitemize}
-        \item \(v_t\): stochastic instantaneous variance.
-        \item \(\kappa,\theta\): mean reversion; \(\xi\): volatility of volatility.
-        \item \(\rho=-0.70\): correlated spot--variance shocks in the submitted experiment.
-        \item \(2\kappa\theta=0.64\geq\xi^2=0.36\): Feller condition satisfied.
-      \end{tightitemize}
+      \vspace{0.12cm}
+      \[
+        dW_t^v=\rho\,dW_t^S+\sqrt{1-\rho^2}\,dW_t^\perp
+      \]
+      \vspace{-0.04cm}
+      {\small\begin{tightitemize}
+        \item \(v_t\) is instantaneous variance; \(\sqrt{v_t}\) is volatility.
+        \item Since \(|\rho|<1\), an orthogonal variance shock remains.
+        \item Stock supplies one traded diffusion exposure; a variance-sensitive liquid option supplies a second locally independent exposure.
+      \end{tightitemize}}
     \end{column}
-    \begin{column}{0.39\textwidth}
+    \begin{column}{0.38\textwidth}
       \centering
       \begin{tikzpicture}[
-        src/.style={circle,minimum size=0.9cm,fill=Coral!12,draw=Coral!30,font=\small\bfseries},
-        asset/.style={rounded corners=4pt,minimum width=2.6cm,minimum height=0.8cm,
+        src/.style={circle,minimum size=0.82cm,fill=Coral!12,draw=Coral!30,font=\small\bfseries},
+        asset/.style={rounded corners=4pt,minimum width=2.45cm,minimum height=0.72cm,
           fill=Mist,draw=DeepNavy!20,font=\small\bfseries},
         arr/.style={-{Latex[length=2mm]},line width=0.9pt,color=Teal}
       ]
-        \node[src] (ws) at (0,1.55) {\(W^S\)};
-        \node[src] (wv) at (2.7,1.55) {\(W^v\)};
-        \node[asset] (stock) at (1.35,0.1) {stock};
+        \node[src] (ws) at (0,1.65) {\(W^S\)};
+        \node[src] (wv) at (2.55,1.65) {\(W^v\)};
+        \draw[dashed,line width=0.8pt,color=Coral!80] (ws)--node[above,font=\scriptsize,color=Slate] {\(\rho=-0.70\)} (wv);
+        \node[asset] (stock) at (0,0.15) {stock};
+        \node[asset,fill=Teal!12] (option) at (1.27,-1.25) {liquid option};
         \draw[arr] (ws)--(stock);
-        \draw[arr,dashed] (wv)--(stock);
-        \node[asset,fill=Teal!12] (option) at (1.35,-1.45) {liquid option};
         \draw[arr] (ws)--(option);
         \draw[arr] (wv)--(option);
       \end{tikzpicture}
+      \vspace{0.18cm}
+      \begin{beamercolorbox}[rounded=true,sep=0.13cm]{block body}
+        {\scriptsize\textbf{Scope:} Local spanning holds in the ideal continuous-time frictionless model; discrete trading still leaves hedging error.}
+      \end{beamercolorbox}
     \end{column}
   \end{columns}
-  \sourcefoot{Submitted report, Secs.\ 2.1.2 and 4.1.4; Heston (1993).}
-  \note{Explain the two diffusion risks and why stock plus cash cannot span both. The liquid option is useful because it has variance sensitivity.}
+  \sourcefoot{Submitted report, Secs.\ 2.1.2 and 4.1.4; Heston (1993). Feller calculation in backup.}
+  \note{Explain the orthogonal variance component and qualify the local spanning statement.}
 \end{frame}
 
-\speakerlabel{Siphelele}{1:45}
-\begin{frame}{The hedge now chooses two traded positions}
+\speakerlabel{Siphelele}{0:55}
+\begin{frame}{How Heston training paths are generated}
+  \centering
+  \begin{tikzpicture}[
+    box/.style={rounded corners=3pt,draw=DeepNavy!18,fill=Mist,
+      minimum height=0.64cm,text width=1.62cm,align=center,font=\scriptsize},
+    arr/.style={-{Latex[length=2mm]},color=Teal,line width=0.8pt},
+    node distance=0.14cm
+  ]
+    \node[box] (z) {independent\\\((Z_n^S,Z_n^\perp)\)};
+    \node[box,right=of z] (zv) {correlate\\\(Z_n^v\)};
+    \node[box,right=of zv] (sv) {update\\\((S_{t_n},v_{t_n})\)};
+    \node[box,right=of sv] (c) {reprice\\\(C_{t_n}^h\)};
+    \node[box,right=of c] (x) {form state\\\(x_n\)};
+    \node[box,right=of x,fill=Teal!12] (pos) {choose\\\((\delta_n,\eta_n)\)};
+    \draw[arr] (z)--(zv);\draw[arr] (zv)--(sv);\draw[arr] (sv)--(c);
+    \draw[arr] (c)--(x);\draw[arr] (x)--(pos);
+  \end{tikzpicture}
+  \vspace{0.13cm}
+  \[
+    Z_n^v=\rho Z_n^S+\sqrt{1-\rho^2}\,Z_n^\perp,
+    \qquad
+    (\delta,\eta)\longrightarrow G_T\longrightarrow HE.
+  \]
+  \vspace{-0.04cm}
   \begin{columns}[T,onlytextwidth]
-    \begin{column}{0.52\textwidth}
-      {\fontsize{8.8}{10.2}\selectfont\[
-        G_T=
-        \sum_{n=0}^{N-1}\delta_n\,\Delta S_n
-        +\sum_{n=0}^{N-1}\eta_n\,\Delta C^h_n
-      \]}
-      \vspace{0.06cm}
-      \begin{beamercolorbox}[rounded=true,sep=0.18cm]{block body}
-        {\fontsize{8.1}{9.4}\selectfont\[
-          x_n=\left(
-          \log\frac{S_n}{K},\,
-          \frac{T-t_n}{T},\,
-          \frac{v_n}{\theta},\,
-          \log\frac{S_n}{K_h},\,
-          \frac{T_h-t_n}{T_h},\,
-          \frac{C_n^h}{S_n}
-          \right)
-        \]}
-      \end{beamercolorbox}
-      \vspace{0.05cm}
-      {\scriptsize Target \(K=0.9,T=0.5\); liquid option \(K_h=1,T_h=1\), alive throughout.}
+    \begin{column}{0.48\textwidth}
+      \pill{Path construction}
+      {\small\begin{tightitemize}
+        \item log-Euler updates stock;
+        \item full-truncation Euler updates variance, so negative Euler values do not enter the square root or next update;
+        \item the liquid option is repriced at every hedge date.
+      \end{tightitemize}}
     \end{column}
-    \begin{column}{0.44\textwidth}
-      \begin{tikzpicture}[
-        box/.style={rounded corners=4pt,fill=Mist,draw=DeepNavy!18,
-          minimum width=3.3cm,minimum height=0.62cm,align=center,font=\scriptsize},
-        arr/.style={-{Latex[length=2mm]},color=Teal,line width=0.9pt},
-        node distance=0.12cm
-      ]
-        \node[box] (state) {six causal state features};
-        \node[box,below=of state] (mlp) {shared fully connected network};
-        \node[box,below=of mlp,fill=Teal!12] (out) {\(\delta_n=5\tanh z_{1,n}\)\\\(\eta_n=5\tanh z_{2,n}\)};
-        \node[box,below=of out] (gain) {two-instrument gains \(\rightarrow\) terminal MSE};
-        \draw[arr] (state)--(mlp);\draw[arr] (mlp)--(out);\draw[arr] (out)--(gain);
-      \end{tikzpicture}
-      \vspace{0.06cm}
-      {\scriptsize\begin{tightitemize}
-        \item Signed positions are now economically necessary.
-        \item Full-truncation protects variance; all positions are causal.
+    \begin{column}{0.48\textwidth}
+      \pill[Gold]{Training sample}
+      {\small\begin{tightitemize}
+        \item train, validation and test paths are simulated independently;
+        \item one sample is an entire trajectory, not one isolated observation;
+        \item \(S,v,C^h\!:\,B\!\times\!(N+1)\), \(x\!:\,B\!\times\!N\!\times\!6\).
       \end{tightitemize}}
     \end{column}
   \end{columns}
-  \sourcefoot{Submitted report, Sec.\ 4.1.4 and Algorithms A.3.3, A.6.10.}
-  \note{Define delta and eta. Explain why sigmoid is no longer appropriate. Mention log-Euler for stock and full-truncation Euler for variance.}
-\end{frame}
-
-\speakerlabel{Siphelele}{1:45}
-\begin{frame}{The frozen-volatility proxy changed the market}
-  \begin{columns}[T,onlytextwidth]
-    \begin{column}{0.54\textwidth}
-      \vspace{0.05cm}
-      \begin{beamercolorbox}[rounded=true,sep=0.28cm]{block body}
-        \[
-          C_t^h \approx
-          C_{\bs}\!\left(S_t,K_h,T_h-t,\sqrt{v_t}\right)
-        \]
-      \end{beamercolorbox}
-      \vspace{0.12cm}
-      \claimbox{Insert the current Heston variance into a familiar Black--Scholes price.}
-    \end{column}
-    \begin{column}{0.42\textwidth}
-      \pill{Why it seemed reasonable}
-      {\small\begin{tightitemize}
-        \item cheap to evaluate at every path state;
-        \item responsive to the current variance;
-        \item produces a volatility-sensitive second instrument;
-        \item preliminary neural RMSE \(0.008198\) was encouraging.
-      \end{tightitemize}}
-      \vspace{0.05cm}
-      \pill[Coral]{The hidden mismatch}
-      {\small\begin{tightitemize}
-        \item \(S_t,v_t\) follow Heston;
-        \item \(C_t^h\) solves a frozen-volatility Black--Scholes equation.
-      \end{tightitemize}}
-    \end{column}
-  \end{columns}
-  \vspace{0.06cm}
-  \risknote{The proxy experiment motivates the refinement; it is not compared directly with the final COS experiment because the traded-option processes differ.}
-  \sourcefoot{Submitted report, Sec.\ 4.1.4 (pp.\ 24--25) and Algorithm A.6.5.}
-  \note{The preliminary 0.008198 value is report-supported, but the separate run archive is absent. Keep it secondary. The core point is the model mismatch.}
+  \sourcefoot{Submitted report, Listing C.4 and Algorithms A.3.3, A.6.8, A.6.10.}
+  \note{Explain that every path is simulated rather than historical and becomes one terminal-error observation.}
 \end{frame}
 
 \speakerlabel{Siphelele}{1:30}
-\begin{frame}{A martingale diagnostic exposes inconsistency}
+\begin{frame}{The hedge chooses two traded positions}
   \begin{columns}[T,onlytextwidth]
-    \begin{column}{0.63\textwidth}
-      \begin{tikzpicture}[x=1cm,y=1cm]
-        \draw[-{Latex[length=2mm]},Slate] (1.2,0)--(6.35,0);
-        \draw[dashed,Slate] (6.0,-0.15)--(6.0,1.85);
-        \node[below,font=\scriptsize,color=Slate] at (6.0,-0.1) {zero};
-        \node[right,font=\small] at (0,1.35) {BS proxy};
-        \node[right,font=\small] at (0,0.45) {Heston COS};
-        \draw[line width=10pt,color=Coral!70] (1.35,1.35)--(6.0,1.35);
-        \draw[line width=10pt,color=Teal!75] (5.94,0.45)--(6.0,0.45);
-        \node[anchor=west,font=\small\bfseries,color=Coral] at (1.35,1.65) {\(-0.009482\)};
-        \node[anchor=east,font=\small\bfseries,color=Teal] at (5.9,0.75) {\(-0.000118\)};
-        \node[anchor=west,font=\scriptsize,color=Slate] at (1.35,1.08) {SE \(0.000459\)};
-        \node[anchor=east,font=\scriptsize,color=Slate] at (5.9,0.18) {SE \(0.000479\)};
-      \end{tikzpicture}
+    \begin{column}{0.54\textwidth}
+      {\fontsize{9.2}{10.5}\selectfont\[
+        G_T=\sum_{n=0}^{N-1}\delta_n\Delta S_n
+        +\sum_{n=0}^{N-1}\eta_n\Delta C_n^h
+      \]}
+      \vspace{-0.04cm}
+      \begin{beamercolorbox}[rounded=true,sep=0.12cm,wd=0.98\linewidth]{block body}
+        {\small\(\delta_n,\eta_n\) are desired \textbf{total holdings} over \([t_n,t_{n+1}]\), not trades.}
+      \end{beamercolorbox}
+      \vspace{0.12cm}
+      {\scriptsize
+      \begin{tabular}{@{}p{0.27\linewidth}p{0.65\linewidth}@{}}
+        \toprule
+        Target state & \(\log(S_n/K),\ (T-t_n)/T\)\\
+        Variance state & \(v_n/\theta\)\\
+        Hedge instrument & \(\log(S_n/K_h),\ (T_h-t_n)/T_h,\ C_n^h/S_n\)\\
+        \bottomrule
+      \end{tabular}}
     \end{column}
-    \begin{column}{0.33\textwidth}
-      \begin{tightitemize}
-        \item Under \(r=0\), a consistently priced traded option should have approximately zero mean movement.
-        \item The proxy displacement is large relative to its standard error.
-        \item The COS residual is statistically negligible and consistent with discretisation.
-      \end{tightitemize}
+    \begin{column}{0.40\textwidth}
+      \pill{Signed, bounded holdings}
+      {\fontsize{8.7}{10}\selectfont\[
+        \delta_n=5\tanh(z_{1,n}),\quad
+        \eta_n=5\tanh(z_{2,n}).
+      \]}
+      {\scriptsize\begin{tightitemize}
+        \item Both holdings may be long or short, so \([0,1]\) is inappropriate.
+        \item \([-5,5]\) stabilises training; it is not an optimality theorem.
+      \end{tightitemize}}
+      \vspace{0.08cm}
+      \pill[Gold]{Two different contracts}
+      {\scriptsize
+      \begin{align*}
+        \text{target: }&K=0.9,\ T=0.5,\\
+        \text{hedge: }&K_h=1,\ T_h=1.
+      \end{align*}
+      Near ATM and longer dated: variance-sensitive and alive throughout.}
     \end{column}
   \end{columns}
-  \vspace{0.2cm}
-  \claimbox{The proxy is not merely imprecise in level; its path dynamics are inconsistent with the simulated Heston market.}
-  \sourcefoot{Submitted report, Table A.9 and Sec.\ 4.1.4. Bars reproduce reported values; zero is the risk-neutral \(r=0\) diagnostic reference.}
-  \note{Avoid the stronger phrase ``formal arbitrage proof.'' Handover: ``The diagnostic is empirical; Glasson will show the exact missing drift terms and the model-consistent correction.''}
+  \risknote{Full-information simulation: true \(v_n\) enters the state; instantaneous variance is latent in real markets.}
+  \sourcefoot{Submitted report, Sec.\ 4.1.4 and Algorithm A.6.10.}
+  \note{Distinguish holdings from trade increments and explain why the two contracts differ.}
+\end{frame}
+
+\speakerlabel{Siphelele}{1:15}
+\begin{frame}{Frozen-volatility repricing is inconsistent}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.57\textwidth}
+      \begin{beamercolorbox}[rounded=true,sep=0.22cm]{block body}
+        \[
+          C_t^h\approx
+          C_{\bs}\!\left(S_t,K_h,T_h-t,\sqrt{v_t}\right)
+        \]
+      \end{beamercolorbox}
+      \vspace{0.16cm}
+      \begin{tikzpicture}[
+        box/.style={rounded corners=3pt,draw=DeepNavy!18,fill=Mist,
+          minimum height=0.72cm,text width=2.0cm,align=center,font=\scriptsize},
+        arr/.style={-{Latex[length=2mm]},color=Teal,line width=0.8pt},node distance=0.25cm]
+        \node[box] (now) {at \(t_n\): insert\\\(\sigma=\sqrt{v_{t_n}}\)};
+        \node[box,right=of now] (freeze) {price as if \(\sigma\)\\stays fixed to \(T_h\)};
+        \node[box,right=of freeze] (next) {at \(t_{n+1}\): repeat\\with new variance};
+        \draw[arr] (now)--(freeze);\draw[arr] (freeze)--(next);
+      \end{tikzpicture}
+      \vspace{0.16cm}
+      \claimbox{Recomputing the level at every date does not make the path satisfy the Heston pricing equation.}
+    \end{column}
+    \begin{column}{0.39\textwidth}
+      \pill{Why it seemed reasonable}
+      {\small\begin{tightitemize}
+        \item cheap to evaluate;
+        \item responsive to current variance;
+        \item creates a variance-sensitive second instrument.
+      \end{tightitemize}}
+      \vspace{0.14cm}
+      \pill[Coral]{Process mismatch}
+      {\small\begin{tightitemize}
+        \item stock and variance follow Heston;
+        \item the proxy uses frozen-volatility Black--Scholes valuation;
+        \item final COS results use a different traded-option process.
+      \end{tightitemize}}
+    \end{column}
+  \end{columns}
+  \sourcefoot{Submitted report, Sec.\ 4.1.4 (pp.\ 24--25) and Algorithm A.6.5.}
+  \note{The preliminary proxy RMSE 0.008198 is motivation only and is not comparable with the final COS experiment.}
+\end{frame}
+
+\speakerlabel{Siphelele}{1:25}
+\begin{frame}{A martingale diagnostic exposes the inconsistency}
+  \centering
+  {\scriptsize\textbf{Estimated mean total liquid-option movement over the target hedge horizon \([0,T]\)}}
+  \vspace{-0.10cm}
+  {\fontsize{9.2}{10.4}\selectfont\[
+    \widehat m=\frac1M\sum_{i=1}^{M}\left(C_T^{h,(i)}-C_0^h\right),
+    \qquad T=0.5<T_h=1.
+  \]}
+  \vspace{-0.14cm}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.58\textwidth}
+      \begin{tikzpicture}[x=1cm,y=1cm]
+        \draw[-{Latex[length=2mm]},Slate] (1.2,0)--(6.15,0);
+        \draw[dashed,Slate] (5.82,-0.12)--(5.82,1.72);
+        \node[below,font=\scriptsize,color=Slate] at (5.82,-0.05) {zero};
+        \node[right,font=\small] at (0,1.25) {BS proxy};
+        \node[right,font=\small] at (0,0.42) {Heston COS};
+        \draw[line width=10pt,color=Coral!70] (1.35,1.25)--(5.82,1.25);
+        \draw[line width=10pt,color=Teal!75] (5.76,0.42)--(5.82,0.42);
+        \node[anchor=west,font=\small\bfseries,color=Coral] at (1.35,1.52) {\(-0.009482\)};
+        \node[anchor=east,font=\small\bfseries,color=Teal] at (5.72,0.69) {\(-0.000118\)};
+        \node[anchor=west,font=\scriptsize,color=Slate] at (1.35,1.00) {SE \(0.000459\)};
+        \node[anchor=east,font=\scriptsize,color=Slate] at (5.72,0.17) {SE \(0.000479\)};
+      \end{tikzpicture}
+    \end{column}
+    \begin{column}{0.38\textwidth}
+      {\fontsize{8.8}{10.3}\selectfont\begin{tightitemize}
+        \item At \(r=0\), a consistently risk-neutral-priced traded option has approximately zero mean movement---not a flat path.
+        \item The proxy estimate is about 20 standard errors from zero.
+        \item The COS estimate is statistically negligible, within ordinary simulation and discretisation error.
+      \end{tightitemize}}
+    \end{column}
+  \end{columns}
+  \vspace{-0.02cm}
+  \claimbox{The proxy is not just imprecise in level: its path dynamics are inconsistent with the simulated Heston market.}
+  \sourcefoot{Submitted report, Table A.9 and Sec.\ 4.1.4. Diagnostic evidence, not a standalone arbitrage proof.}
+  \note{Handover: Glasson will identify the omitted Heston drift terms and show how the final COS implementation addresses them.}
 \end{frame}

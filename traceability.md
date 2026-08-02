@@ -47,31 +47,35 @@ All report page numbers below are the printed report page numbers where availabl
 | 10 | Analytic premium per path | Sec. 4.1.3; Table A.2 | Algorithm A.6.3 | Verified — report | Pricing separated from hedging. |
 | 11 | Heston SDEs | Sec. 2.1.2, Eqns. (2.4)–(2.5); Sec. 4.1.4 | Algorithm A.3.3 | Verified — report | Notation uses \(v_t\) as in main Heston experiment. |
 | 11 | Two Brownian sources imply stock-only incompleteness | Sec. 2.1.2; Sec. 4.1.4 | N/A | Verified — report | Diagram is conceptual. |
-| 11 | \(\rho=-0.70,\xi=0.60\), Feller values | Sec. 4.1.4, p. 24 | Heston configuration absent | Report-supported; archive unresolved | Arithmetic reproduced from report. |
-| 12 | Two-instrument gain equation | Sec. 4.1.4, p. 24 | Algorithm A.6.10 | Verified — report code | Exact stock and option gain structure. |
-| 12 | Six-feature state | Sec. 4.1.4, p. 26 | Algorithm A.6.10 | Verified — report code | Reproduced in report notation. |
-| 12 | \(\delta=5\tanh z_1,\eta=5\tanh z_2\) | Sec. 4.1.4, p. 26 | Algorithm A.6.10 | Verified — report code | Signed bounded actions. |
-| 12 | Target and hedge-option contracts | Sec. 4.1.4, p. 24 | Heston configuration absent | Verified — report | \(K=0.9,T=0.5,K_h=1,T_h=1\). |
-| 13 | Frozen-volatility BS proxy equation | Sec. 4.1.4, p. 25 | Algorithm A.6.5 | Verified — report | Proxy stage clearly separated. |
-| 13 | Preliminary proxy NN RMSE `0.008198` | Sec. 4.1.4, p. 25 | Exact run archive absent | Report-supported; archive unresolved | Kept secondary, per specification risk treatment. |
-| 14 | Proxy movement `-0.009482`, SE `0.000459` | Table A.9; Sec. 4.1.4 | Drift CSV absent | Report-supported; archive unresolved | Bar length reproduces exact table value. |
-| 14 | COS movement `-0.000118`, SE `0.000479` | Table A.9; Sec. 4.1.4 | Drift CSV absent | Report-supported; archive unresolved | Same-path diagnostic. |
-| 14 | \(r=0\) martingale interpretation | Sec. 4.1.4; Algorithm A.6.8 | N/A | Verified — report | Framed as diagnostic, not formal arbitrage claim. |
-| 15 | Frozen-proxy drift residual equation | Sec. 4.1.4, p. 25; Appendix A.6.3 | N/A | Verified — report | Exact three terms. |
-| 15 | Interpretation of residual terms | Sec. 4.1.4; Appendix A.6.3 | N/A | Verified — report | Wording follows report. |
-| 15 | Negative sign qualification | Sec. 4.1.4 | Drift CSV absent | Verified — report | Sign attributed to submitted parameters and realised state distribution, not \(\xi,\rho\) alone. |
-| 16 | COS uses Heston characteristic function and repeated path repricing | Sec. 4.1.4; Algorithm A.6.6 | COS notebook absent | Verified — report | Native pipeline diagram is conceptual. |
-| 16 | 256 terms and interval \([-7,7]\) | Appendix A.6.2 | COS config absent | Report-supported; archive unresolved | Accuracy/runtime setting. |
-| 16 | Max COS–Carr–Madan discrepancy `5.1×10^-8` | Sec. 4.1.4; Appendix A.6.2 | Validation CSV absent | Report-supported; archive unresolved | Traded validation grid only. |
-| 16 | Delta error `9.8×10^-5`; variance error `4.7×10^-4` | Sec. 4.1.4, p. 26 | Greek validation CSV absent | Report-supported; archive unresolved | Report gives approximate values. |
-| 17 | Representative Heston strategy values | Tables 4.5–4.6 | Heston CSV absent | Report-supported; archive unresolved | Representative and multi-seed evidence separated. |
-| 17 | Strongest heuristic is BS-proxy Greeks on COS path | Table 4.6; Sec. 4.1.4 | Heston CSV absent | Verified — report | Described as heuristic, not optimum. |
-| 17 | Seed rows 111/222/333 | Table A.11 | Multi-seed CSV absent | Report-supported; archive unresolved | Exact RMSE and improvement values. |
-| 17 | Mean RMSE improvement `22.7%`; CVaR95 `27.1%` | Sec. 4.1.4; Table A.11 | Multi-seed CSV absent | Report-supported; archive unresolved | All three pairwise comparisons favour NN. |
-| 17 | Fair-premium centering caveat | Sec. 4.1.4, p. 26; Table A.2 | Heston evaluation code absent | Verified — report | Same test paths used for centering and risk metrics. |
-| 18 | Three calibrated conclusions | Sec. 5, pp. 31–32 | N/A | Verified — report | Faithful condensation of conclusion. |
-| 18 | Learned option position broadly follows variance-hedge direction and softens at high variance | Figure 4.3; Sec. 4.1.4 | Figure/data absent | Verified — report | No empirical curve redrawn. |
-| 18 | Limitations: three seeds, centering, heuristic comparator, frictionless Heston, information set | Sec. 4.1.4; Sec. 5 | N/A | Verified — report | Main limitations shown visibly. |
+| 11 | \(\rho=-0.70\) | Sec. 4.1.4, p. 24 | Heston configuration absent | Report-supported; archive unresolved | Exact submitted correlation retained. |
+| 11 | Orthogonal-shock decomposition \(dW^v=\rho dW^S+\sqrt{1-\rho^2}dW^\perp\) | Sec. 2.1.2 correlation specification | Algorithm A.3.3 correlated-normal construction | Verified — report code | Makes the residual variance shock explicit; no \(W^v\to\) stock arrow. |
+| 12 | Correlated Gaussian construction | Sec. 4.1.4; Appendix A.3 | Listing C.4; Algorithm A.3.3 | Verified — report code | Independent normals are combined using submitted \(\rho\). |
+| 12 | Log-Euler stock and full-truncation variance updates | Sec. 4.1.4; Appendix A.3 | Listing C.4 | Verified — report code | No exact simulation or antithetic claim. |
+| 12 | Independent splits and complete-path sample | Appendix A.1; Algorithm A.6.10 | Report training protocol | Verified — report | Each path generates one terminal hedge error. |
+| 13 | Two-instrument gain equation | Sec. 4.1.4, p. 24 | Algorithm A.6.10 | Verified — report code | \(\delta_n,\eta_n\) are total holdings. |
+| 13 | Six-feature state | Sec. 4.1.4, p. 26 | Algorithm A.6.10 | Verified — report code | Reproduced in report notation and grouped by role. |
+| 13 | \(\delta=5\tanh z_1,\eta=5\tanh z_2\) and \(\max|\eta^{NN}|\approx1.33\) | Sec. 4.1.4; Table A.12 | Algorithm A.6.10 | Verified — report code | Signed bounded actions; bound is a numerical control. |
+| 13 | Target and hedge-option contracts | Sec. 4.1.4, p. 24 | Heston configuration absent | Verified — report | \(K=0.9,T=0.5,K_h=1,T_h=1\). |
+| 14 | Frozen-volatility BS proxy equation | Sec. 4.1.4, p. 25 | Algorithm A.6.5 | Verified — report | Proxy stage clearly separated. |
+| 14 | Preliminary proxy NN RMSE `0.008198` | Sec. 4.1.4, p. 25 | Exact run archive absent | Report-supported; archive unresolved | Notes only; explicitly non-comparable motivation. |
+| 15 | Proxy movement `-0.009482`, SE `0.000459` | Table A.9; Sec. 4.1.4 | Drift CSV absent | Report-supported; archive unresolved | Bar length reproduces exact table value. |
+| 15 | COS movement `-0.000118`, SE `0.000479` | Table A.9; Sec. 4.1.4 | Drift CSV absent | Report-supported; archive unresolved | Same-path diagnostic. |
+| 15 | Sample-mean statistic and \(r=0\) martingale interpretation | Sec. 4.1.4; Algorithm A.6.8 | N/A | Verified — report | Diagnostic, not formal arbitrage proof; COS residual not called exactly zero. |
+| 16 | Frozen-proxy drift residual equation | Sec. 4.1.4, p. 25; Appendix A.6.3 | N/A | Verified — report | Exact three terms. |
+| 16 | Interpretation of residual terms | Sec. 4.1.4; Appendix A.6.3 | N/A | Verified — report | Wording follows report. |
+| 16 | Negative sign qualification | Sec. 4.1.4 | Drift CSV absent | Verified — report | Sign attributed to submitted parameters and realised state distribution, not \(\xi,\rho\) alone. |
+| 17 | COS uses Heston characteristic function and repeated path repricing | Sec. 4.1.4; Algorithm A.6.6 | COS notebook absent | Verified — report | Native pipeline diagram is conceptual. |
+| 17 | 256 terms and interval \([-7,7]\) | Appendix A.6.2 | COS config absent | Report-supported; archive unresolved | Accuracy/runtime setting. |
+| 17 | Max COS–Carr–Madan discrepancy `5.1×10^-8` | Sec. 4.1.4; Appendix A.6.2 | Validation CSV absent | Report-supported; archive unresolved | Traded validation grid only. |
+| 17 | Delta error `9.8×10^-5`; variance error `4.7×10^-4` | Sec. 4.1.4, p. 26 | Greek validation CSV absent | Report-supported; archive unresolved | Report gives approximate values. |
+| 18 | Representative Heston strategy values | Tables 4.5–4.6 | Heston CSV absent | Report-supported; archive unresolved | Representative and multi-seed evidence separated. |
+| 18 | Strongest heuristic is BS-proxy Greeks on COS path | Table 4.6; Sec. 4.1.4 | Heston CSV absent | Verified — report | Described as heuristic, not optimum. |
+| 18 | Seed rows 111/222/333 | Table A.11 | Multi-seed CSV absent | Report-supported; archive unresolved | Exact RMSE and improvement values. |
+| 18 | Mean RMSE improvement `22.7%`; CVaR95 `27.1%` | Sec. 4.1.4; Table A.11 | Multi-seed CSV absent | Report-supported; archive unresolved | All three pairwise comparisons favour NN. |
+| 18 | Fair-premium centering caveat | Sec. 4.1.4, p. 26; Table A.2 | Heston evaluation code absent | Verified — report | Same test paths used for centering and risk metrics. |
+| 19 | Three calibrated conclusions | Sec. 5, pp. 31–32 | N/A | Verified — report | Faithful condensation of conclusion. |
+| 19 | Learned option position broadly follows variance-hedge direction and softens at high variance | Figure 4.3; Sec. 4.1.4 | Figure/data absent | Verified — report | No empirical curve redrawn. |
+| 19 | Limitations: three seeds, centering, heuristic comparator, frictionless Heston, information set | Sec. 4.1.4; Sec. 5 | N/A | Verified — report | Main limitations shown visibly. |
 
 ## Backup code provenance
 

@@ -1,13 +1,13 @@
 # Speaker notes
 
-Planned main-deck speech: **27:20**, leaving approximately **2:40** inside the 30-minute limit.
+Planned main-deck speech: **27:10**, leaving approximately **2:50** inside the 30-minute limit.
 
 | Speaker | Slides | Planned time |
 |---|---:|---:|
 | Kaiden Wessels | 1–5 | 6:50 |
 | Micaela Marais | 6–10 | 6:50 |
-| Siphelele Nkosi | 11–14 | 6:40 |
-| Glasson Osborne | 15–18 | 6:40 including handover |
+| Siphelele Nkosi | 11–15 | 6:30 |
+| Glasson Osborne | 16–19 | 6:40 including handover |
 
 The notes below are prompts, not a script. Numerical values should be spoken only where listed.
 
@@ -193,77 +193,65 @@ The notes below are prompts, not a script. Numerical values should be spoken onl
 
 ## Slide 11 — Heston introduces a second source of risk
 
-- **Speaker / time:** Siphelele — 1:40
-- **Central claim:** Stochastic variance adds a correlated diffusion source that stock and cash alone cannot span.
-- **Opening:** “Heston changes both the state process and the market-completeness argument.”
-- **Speaking points:**
-  - Define \(v,\kappa,\theta,\xi,\rho\).
-  - Explain two Brownian shocks and one risky asset.
-  - Add a liquid option with nonzero variance sensitivity.
-  - Note the submitted parameters satisfy Feller.
-- **Exact values:** \(v_0=\theta=0.16\), \(\kappa=2\), \(\xi=0.60\), \(\rho=-0.70\); \(2\kappa\theta=0.64\), \(\xi^2=0.36\).
-- **Do not overclaim:** Discrete trading and numerical approximation still leave error after adding the option.
-- **Transition:** “The learned policy must now choose two signed positions.”
+- **Speaker / time:** Siphelele — 1:25
+- **Central claim:** Stochastic variance adds an orthogonal diffusion component that stock and cash alone cannot span.
+- **Spoken notes:** “Black–Scholes gave us one stock-driven source of uncertainty. Under Heston, variance becomes stochastic as well, which changes both the hedgeable risks and the information available to the strategy. The first equation drives the stock with instantaneous volatility \(\sqrt{v_t}\); the second makes the instantaneous variance \(v_t\) mean-revert while receiving its own shock. Those shocks are correlated, but they are not identical. Writing the variance shock as a correlated stock component plus \(\sqrt{1-\rho^2}\,dW^\perp\) shows that an orthogonal variance shock remains because \(|\rho|<1\). Stock gives us only one traded diffusion exposure, so stock and cash cannot span that second component. A liquid option with non-zero variance sensitivity adds a second locally independent exposure. In the ideal continuous-time frictionless model this can locally span both shocks; it is not a claim of global completion under our discrete trading grid.”
+- **Optional if short on time:** Omit the sentence defining mean reversion and say only that \(v_t\) is instantaneous variance.
+- **Transition:** “We now simulate both risks together to create the market paths used for training.”
 - **Likely question:** Why does an option complete the market?
 - **Answer outline:** Locally, stock and an option with nonzero variance sensitivity can span the two diffusion shocks in the ideal continuous-time frictionless model.
 - **Report source:** Secs. 2.1.2 and 4.1.4.
 - **Code/result source:** Heston parameters in report; notebook absent.
 
-## Slide 12 — The hedge now chooses two traded positions
+## Slide 12 — How Heston training paths are generated
 
-- **Speaker / time:** Siphelele — 1:45
-- **Central claim:** A six-feature causal state drives two bounded signed positions whose stock and option gains enter one terminal-MSE objective.
-- **Opening:** “The objective is unchanged in spirit, but both the state and action space expand.”
-- **Speaking points:**
-  - Define \(\delta\), \(\eta\) and the two gain sums.
-  - Explain each state feature.
-  - Target option \(K=0.9,T=0.5\); hedge option \(K_h=1,T_h=1\).
-  - Explain tanh bounds and Heston path scheme.
-- **Exact values:** Output bound \(\pm5\); six inputs; two outputs; \(N=125\).
-- **Do not overclaim:** Bounds are numerical controls, not proof of optimal economic constraints.
-- **Transition:** “The first liquid-option price was fast and plausible, but not model-consistent.”
+- **Speaker / time:** Siphelele — 0:55
+- **Central claim:** One observation for the loss is an independently simulated complete Heston trajectory.
+- **Spoken notes:** “These are simulated risk-neutral paths, not historical data. At each step we draw an independent stock shock and orthogonal shock, then combine them to produce the correlated variance shock. Stock is updated with log-Euler, which preserves a positive stock level. Variance uses full-truncation Euler: the non-negative part enters the drift and square root, and the stored next value is clamped, so a negative Euler proposal does not propagate. We then reprice the liquid option at every hedge date, form the six-feature state, choose both holdings and accumulate gains. One training sample is this entire trajectory and produces one terminal hedge error. Training, validation and test sets use independently simulated paths.”
+- **Optional if short on time:** Omit the tensor dimensions; they are shown in backup.
+- **Transition:** “At each date along that path, the network chooses two total holdings.”
+- **Likely question:** Does the Feller condition make truncation unnecessary?
+- **Answer outline:** No. Feller concerns the continuous-time process; a finite Euler step can still propose a negative variance.
+- **Report source:** Listing C.4; Algorithms A.3.3, A.6.8 and A.6.10.
+- **Code/result source:** Report code excerpt; executable notebook absent.
+
+## Slide 13 — The hedge chooses two traded positions
+
+- **Speaker / time:** Siphelele — 1:30
+- **Central claim:** Six causal features drive two bounded signed total holdings whose gains enter the terminal-MSE objective.
+- **Spoken notes:** “The objective is unchanged in spirit, but both the information set and action space expand. The network sees two target features: log-moneyness and remaining target time. It sees variance scaled by its long-run level. It also sees the hedge option’s log-moneyness, remaining maturity and its contemporaneous price divided by stock. These ratios normalise scale, and the option quote contains current variance information. The two outputs are delta units of stock and eta units of the liquid option held over the next interval. They are total holdings, not trades; trade increments would be differences from the previous holdings and matter once transaction costs are introduced. Both positions may be positive or negative, so a Black–Scholes call-delta sigmoid is unsuitable. Scaled tanh allows signed positions and bounds them at five for numerical stability; that bound is not an optimality theorem, and the observed neural option holding stayed near 1.33 in absolute value. This headline experiment is full-information simulation because true simulated variance enters the state; instantaneous variance would be latent in real markets. Finally, the target liability has \(K=0.9,T=0.5\), while the hedge option is initially near the money at \(K_h=1\) and remains alive to \(T_h=1\). Trading the target itself would largely trivialise the task.”
+- **Optional if short on time:** Omit the sentence on the observed maximum option holding.
+- **Transition:** “The first way we generated that option quote was fast and causal, but dynamically inconsistent.”
 - **Likely question:** Does the option quote leak future information?
 - **Answer outline:** No; \(C^h_{t_n}\) is contemporaneous. It does contain current variance information, which is why the robustness check is described as observable-market-information, not stock-return-only.
 - **Report source:** Sec. 4.1.4; Algorithms A.3.3, A.6.10.
 - **Code/result source:** Report Listing C.4 and Algorithm A.6.10; executable notebook absent.
 
-## Slide 13 — The frozen-volatility proxy changed the market
+## Slide 14 — Frozen-volatility repricing is inconsistent
 
-- **Speaker / time:** Siphelele — 1:45
+- **Speaker / time:** Siphelele — 1:15
 - **Central claim:** Plugging \(\sqrt v_t\) into Black–Scholes creates a cheap variance-sensitive price, but one governed by the wrong dynamic pricing equation.
-- **Opening:** “The proxy was a reasonable engineering first step and an inconsistent traded process.”
-- **Speaking points:**
-  - Explain the plug-in construction.
-  - Say why it seemed useful.
-  - Mention preliminary performance only as motivation.
-  - Separate Heston state simulation from BS pricing dynamics.
-- **Exact values:** Preliminary proxy-priced stock-plus-option NN RMSE `0.008198`.
-- **Do not overclaim:** The separate run archive is absent; value is report-supported. Do not compare it directly with final COS results.
+- **Spoken notes:** “The first liquid-option proxy was a reasonable engineering step. At date \(t_n\), we insert the current Heston volatility \(\sqrt{v_{t_n}}\) into Black–Scholes and value the option as though that volatility remains constant until its maturity. At the next date we repeat the calculation using the newly simulated variance. This is causal, cheap and responsive to current variance, so it appeared to provide a useful second instrument. But the stock and variance still follow Heston while each valuation solves a frozen-volatility Black–Scholes equation. Recomputing the level every date does not make the resulting sequence satisfy the Heston pricing equation. The preliminary neural RMSE of 0.008198 was motivation only; it is not directly comparable with the final COS experiment because the traded-option process changes.”
+- **Optional if short on time:** Omit the preliminary RMSE sentence.
 - **Transition:** “A risk-neutral martingale diagnostic makes the mismatch visible.”
 - **Likely question:** Is any approximation invalid as a hedge price?
 - **Answer outline:** Approximation error in price level can be tolerable, but a traded path should be dynamically consistent with the simulated risk-neutral market; this proxy has a systematic drift artifact.
 - **Report source:** Sec. 4.1.4, pp. 24–25; Algorithm A.6.5.
 - **Code/result source:** Preliminary archive absent.
 
-## Slide 14 — A martingale diagnostic exposes inconsistency
+## Slide 15 — A martingale diagnostic exposes the inconsistency
 
-- **Speaker / time:** Siphelele — 1:30
+- **Speaker / time:** Siphelele — 1:25
 - **Central claim:** The proxy’s mean total movement is materially negative, while the COS-priced option is statistically consistent with zero under \(r=0\).
-- **Opening:** “If this is a traded risk-neutral price at zero rates, average movement should be approximately zero.”
-- **Speaking points:**
-  - Read the proxy mean and standard error.
-  - Read the COS mean and standard error.
-  - Explain why the comparison is made on the same Heston paths.
-  - Attribute small COS residual to discretisation.
-- **Exact values:** Proxy `-0.009482`, SE `0.000459`; COS `-0.000118`, SE `0.000479`.
-- **Do not overclaim:** Call it a diagnostic, not a formal standalone arbitrage proof.
-- **Transition / handover:** “The diagnostic is empirical. Glasson will show the exact missing drift terms and the model-consistent correction.”
+- **Spoken notes:** “The diagnostic measures the sample mean of the liquid option’s total movement from time zero to the target hedge horizon \(T=0.5\). The liquid option itself remains alive until \(T_h=1\). Under zero rates, a consistently risk-neutral-priced traded option should have approximately zero mean movement. This does not mean every path is flat; it means there is no predictable mean drift across paths. For the Black–Scholes proxy, the estimate is minus 0.009482 with standard error 0.000459—about twenty standard errors from zero. For the COS-priced option, it is minus 0.000118 with standard error 0.000479, statistically negligible and within ordinary simulation and discretisation error. We therefore say COS is consistent with the martingale diagnostic, not exactly drift-free. The test diagnoses dynamic inconsistency in the proxy path; it is not by itself a complete proof of executable real-market arbitrage.”
+- **Optional if short on time:** Read only the proxy estimate and say that the COS estimate is well within one standard error.
+- **Transition / handover:** “The diagnostic shows that the proxy path is dynamically inconsistent with the simulated Heston market. Glasson will now show which Heston terms produce this drift and how the final COS implementation addresses it.”
 - **Likely question:** Could sampling noise explain the proxy drift?
 - **Answer outline:** The magnitude is roughly 20 standard errors from zero; COS on the same setup is well within one.
 - **Report source:** Table A.9; Sec. 4.1.4.
 - **Code/result source:** Drift CSV absent.
 
-## Slide 15 — Why the frozen-volatility proxy drifts
+## Slide 16 — Why the frozen-volatility proxy drifts
 
 - **Speaker / time:** Glasson — 1:40
 - **Central claim:** The frozen-variance Black–Scholes PDE cancels the stock-price terms, but three variance-related Heston drift terms remain.
@@ -274,7 +262,7 @@ The notes below are prompts, not a script. Numerical values should be spoken onl
 - **Answer:** Recomputing levels does not make the process satisfy the Heston PDE; variance drift, variance curvature and spot–variance cross-variation still enter its dynamics.
 - **Report source:** Sec. 4.1.4; Appendix A.6.3.
 
-## Slide 16 — COS evaluates a Heston-consistent option price
+## Slide 17 — COS evaluates a Heston-consistent option price
 
 - **Speaker / time:** Glasson — 1:30
 - **Central claim:** COS is the numerical Heston pricer; the analytic benchmark is a separate local sensitivity-matching rule.
@@ -285,7 +273,7 @@ The notes below are prompts, not a script. Numerical values should be spoken onl
 - **Answer:** COS is efficient for repeated state pricing; Carr–Madan was retained as an independent offline validation method.
 - **Report source:** Sec. 4.1.4; Appendices A.6.1–A.6.2.
 
-## Slide 17 — The NN lowers error in all three submitted seeds
+## Slide 18 — The NN lowers error in all three submitted seeds
 
 - **Speaker / time:** Glasson — 2:00
 - **Central claim:** On the centred submitted test protocol, the stock-and-option neural policy beat the strongest tested local heuristic in every seed.
@@ -296,7 +284,7 @@ The notes below are prompts, not a script. Numerical values should be spoken onl
 - **Answer:** It is a local instantaneous exposure match, not the finite-grid multi-instrument minimum-MSE solution; between-date nonlinearities and approximation-error cancellation can change terminal performance.
 - **Report source:** Tables 4.5–4.6 and A.11; Sec. 4.1.4.
 
-## Slide 18 — Three conclusions survive the diagnostics
+## Slide 19 — Three conclusions survive the diagnostics
 
 - **Speaker / time:** Glasson — 1:25
 - **Central claim:** The submitted experiments support three useful conclusions, each within explicit empirical and protocol limits.
