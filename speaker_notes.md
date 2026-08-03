@@ -1,15 +1,17 @@
 # Speaker notes
 
-Planned main-deck speech: **27:15**, leaving approximately **2:45** inside the 30-minute limit.
+Planned main-deck speech: **26:15**, leaving approximately **3:45** inside the 30-minute limit.
 
 | Speaker | Slides | Planned time |
 |---|---:|---:|
 | Kaiden Wessels | 1–5 | 6:50 |
 | Micaela Marais | 6–10 | 6:50 |
 | Siphelele Nkosi | 11–15 | 6:30 |
-| Glasson Osborne | 16–19 | 6:45 including handover |
+| Glasson Osborne | four titled slides | 6:05 including handover |
 
-The notes below are prompts, not a script. Numerical values should be spoken only where listed.
+Glasson timing check: **6:05** for the 1,016-word final speech using the 190-wpm rehearsal setting, within the requested 5:50–6:10 range.
+
+Except for Glasson's supplied final script on slides 16--19, the notes below are prompts rather than a verbatim script. Numerical values should be spoken only where listed.
 
 ## Slide 1 — Deep Hedging under Black–Scholes and Heston Dynamics
 
@@ -251,46 +253,130 @@ The notes below are prompts, not a script. Numerical values should be spoken onl
 - **Report source:** Table A.9; Sec. 4.1.4.
 - **Code/result source:** Drift CSV absent.
 
-## Slide 16 — Why the frozen-volatility proxy drifts
+## Glasson — Why the frozen-volatility proxy drifts
 
-- **Speaker / time:** Glasson — 1:35
-- **Central claim:** The frozen-variance Black–Scholes PDE cancels the stock-price terms, but three variance-related Heston drift terms remain.
-- **Spoken notes:** “Siphelele’s martingale diagnostic showed significant drift in the proxy path. Here, \(g(t,S,v)\) is specifically the frozen-volatility price of the liquid hedging option, not the target liability. We apply Itô’s lemma to this Black–Scholes pricing function under the actual Heston stock and variance dynamics. If variance were frozen, the Black–Scholes PDE would cancel the time derivative, stock drift, stock curvature and discounting terms in the left box. Under Heston, three discounted-drift terms remain: variance mean reversion multiplied by \(g_v\), volatility of volatility multiplied by the variance curvature \(g_{vv}\), and the spot–variance cross term \(g_{Sv}\). Repricing the Black–Scholes level at each date does not remove those terms or make the process satisfy the Heston pricing equation. Their combined sign is state-dependent. Under our submitted parameters and simulated states, the average residual was negative, consistent with the diagnostic. Because the submitted rate is zero, discounted and undiscounted residuals coincide.”
-- **Optional cut if behind:** Omit the sentence listing the four cancelled Black–Scholes terms; point to the left box instead.
-- **Transition:** “The repair is to price the liquid option under the same Heston model that generates the states.”
-- **Likely question:** Why does freezing \(v\) fail if the BS formula is recomputed every date?
-- **Answer:** Recomputing levels does not make the process satisfy the Heston PDE; variance drift, variance curvature and spot–variance cross-variation still enter its dynamics.
-- **Report source:** Sec. 4.1.4; Appendix A.6.3.
+### Handover
 
-## Slide 17 — COS evaluates a Heston-consistent option price
+Thanks, Siphelele.
 
-- **Speaker / time:** Glasson — 1:45
-- **Central claim:** COS is the numerical Heston pricer; the analytic benchmark is a separate local sensitivity-matching rule.
-- **Spoken notes:** “We now define the liquid hedging option as its Heston risk-neutral conditional expectation. Heston gives us a closed-form characteristic function for the future log price, but not a convenient transition density. COS samples that characteristic function on a deterministic frequency grid, converts the values into cosine density coefficients, and combines them with payoff coefficients. This is a finite deterministic sum at each state—there is no nested simulation of future paths. COS supplies the option prices and sensitivities used in the experiment. Carr–Madan is an independent price check, with maximum discrepancy \(5.1\times10^{-8}\) over the submitted traded range. Finite differences separately validate the sensitivities; those errors are in backup. The local Heston COS delta–variance benchmark uses \(V=\partial C/\partial v\). The option holding \(\eta=V^T/V^h\) matches the target’s instantaneous variance exposure, and \(\delta=\Delta^T-\eta\Delta^h\) removes the remaining stock exposure. Superscript \(T\) means target and \(h\) means liquid hedge option. The report table calls this delta–vega, although the implemented derivative is with respect to variance. The BS-proxy Greek heuristic instead uses frozen-variance Black–Scholes sensitivities. Both rules trade the same COS-priced option path; only the position rule differs.”
-- **Optional cut if behind:** Omit the explanation of the report’s “delta–vega” label; retain the definition \(V=\partial C/\partial v\).
-- **Transition:** “That same-path design lets us compare position rules without changing the traded asset.”
-- **Likely question:** Why use COS rather than Carr–Madan at every path state?
-- **Answer:** COS is efficient for repeated state pricing; Carr–Madan was retained as an independent offline validation method.
-- **Report source:** Sec. 4.1.4; Appendices A.6.1–A.6.2.
+The martingale diagnostic shows that the frozen-volatility proxy is not dynamically consistent with the simulated Heston market. Over the hedge horizon, its price process has a statistically significant negative average movement.
 
-## Slide 18 — The stock-plus-option NN beats the strongest tested analytic heuristic in all three seeds
+I’ll now explain where that movement comes from, how we replaced the proxy with Heston-consistent pricing, and how the final hedging strategies performed.
 
-- **Speaker / time:** Glasson — 2:05
-- **Central claim:** Under the fair-centred submitted protocol, the stock-plus-option neural hedge beat the strongest tested analytic Greek heuristic in every submitted seed.
-- **Spoken notes:** “The left table is one representative full-information run. It includes the broader strategy set: no hedge, stock-only methods, the model-consistent local Heston COS delta–vega benchmark, the BS-proxy Greek heuristic on the COS option path, and the stock-plus-option network. In that run, the network’s RMSE is \(0.007426\), compared with \(0.009874\) for the strongest tested analytic heuristic and \(0.014782\) for the local COS Greek benchmark. The right table is a separate three-seed cell. It retrained the stock-only tanh and stock-plus-option networks and reevaluated the COS delta–variance and BS-proxy Greek analytic rules on each fresh test set. No hedge, BS-proxy stock delta and other representative-only rows were not all rerun in that four-strategy cell. The pairwise neural-versus-heuristic RMSE improvements are 20.6, 21.8 and 25.5 per cent, averaging 22.7 per cent. Mean Loss CVaR95 improves by 27.1 per cent; this is mean seller loss in the worst five per cent of outcomes. Every headline strategy is fair-centred separately on the test paths. For a fixed strategy, centring selects the constant premium that minimises test MSE and removes its test-sample mean error. This is applied only for final evaluation; during training the neural network learns a raw premium jointly with its hedge weights. Because the fair premium and risk metrics use the same test paths, the comparison is not fully out-of-sample joint pricing and hedging. Finally, COS establishes model-consistent pricing and local sensitivities, not the finite-grid minimum-MSE hedge. Between dates, nonlinear exposures and changing Greeks remain, and model misspecification may accidentally offset some finite-grid effects. That does not make Black–Scholes a better Heston pricer.”
-- **Optional cut if behind:** State only the three pairwise improvements and the mean, then refer to backup for the four-strategy rerun scope and fair-centering formula.
-- **Transition:** “The last slide states the strongest conclusion these experiments support—and where it stops.”
-- **Likely question:** Why can the model-consistent COS Greek rule have higher terminal RMSE?
-- **Answer:** It is a local instantaneous exposure match, not the finite-grid multi-instrument minimum-MSE solution; between-date nonlinearities and accidental compensation from model misspecification can change terminal performance.
-- **Report source:** Tables 4.5–4.6 and A.11; Sec. 4.1.4.
+### Why the frozen-volatility proxy drifts
 
-## Slide 19 — Three conclusions survive the diagnostics
+**Delivery cue — not spoken:** Point to the left box when saying what Black–Scholes cancels. Point to the right box when naming the three Heston effects. Do not read either equation aloud.
 
-- **Speaker / time:** Glasson — 1:20
-- **Central claim:** The submitted experiments support three useful conclusions, each within explicit empirical and protocol limits.
-- **Spoken notes:** “Three conclusions survive the diagnostics. First, in Black–Scholes the neural strategy recovered the known finite-grid hedge. Second, adding the missing contract information repaired the identified generalisation failure. Third, in Heston, after pricing the liquid option consistently, the stock-plus-option network achieved lower terminal error than the strongest tested analytic Greek heuristic in every submitted seed. This is consistent evidence across three runs, not high-powered statistical evidence. It is also not superiority to a derived finite-grid multi-instrument optimum, and it remains a frictionless simulated Heston experiment under the submitted information assumptions. The ordering survived the causal EWMA variance-proxy check, but the contemporaneous option quote remained observable and variance-informative, so that was not a stock-return-only filter. A constrained neural policy can recover a known finite-grid solution and then improve terminal hedging performance when stochastic volatility adds a second risk factor and a second traded instrument.”
-- **Optional cut if behind:** Omit the EWMA sentence and deliver the final displayed conclusion.
-- **Delivery:** Stop after the final displayed sentence. Do not reread the caveats.
-- **Likely question:** What is the most important next analytic benchmark?
-- **Answer:** A finite-grid Heston minimum-variance hedge for the joint stock-and-option gain process, accounting explicitly for spot–variance correlation.
-- **Report source:** Secs. 4.1.4 and 5; stated limitations and observable-information diagnostic.
+The function at the top of the slide is the price assigned to our liquid hedging option using the frozen-volatility Black–Scholes proxy.
+
+At each hedge date, we take the current Heston variance, convert it into volatility, and insert it into the Black–Scholes formula.
+
+The problem is that each Black–Scholes valuation treats that volatility as though it will remain constant until the hedge option expires, even though variance continues to evolve according to Heston.
+
+To understand the effect of this mismatch, we apply Itô’s lemma to the Black–Scholes pricing function under the actual Heston stock and variance dynamics.
+
+The equation on the left shows the terms cancelled by the frozen-volatility Black–Scholes equation: the time term, the stock-drift term and the stock-gamma term.
+
+However, the three terms on the right remain.
+
+The first comes from variance mean reversion interacting with the option’s sensitivity to variance.
+
+The second comes from volatility of volatility interacting with curvature in the option value with respect to variance.
+
+The third comes from the interaction between the stock and variance shocks.
+
+Together, these terms create a residual drift under Heston.
+
+Repricing the option at every date does not remove this residual. We are repeatedly evaluating a Black–Scholes function, but that function still does not satisfy the full Heston pricing equation.
+
+The residual can be positive or negative depending on the current state. Under our submitted parameters and simulated states, however, its average contribution was negative, which is consistent with the martingale diagnostic on the previous slide.
+
+## Glasson — COS evaluates a Heston-consistent option price
+
+**Delivery cue — not spoken:** Point to the process strip when distinguishing Monte Carlo from COS. Point to the two hedge equations while explaining their economic purpose. Pause after: “The traded price process is therefore the same.”
+
+We therefore replaced the proxy with a liquid-option price generated by the same Heston model used for the stock and variance states.
+
+The expression at the top represents the risk-neutral value of the hedge option, conditional on the current stock price and variance.
+
+To evaluate this efficiently, we use the COS method.
+
+Heston gives us a characteristic function for the future log stock price. COS uses that characteristic function to construct a finite cosine expansion of the option value.
+
+The important distinction is that COS is not used to generate the stock and variance paths.
+
+Monte Carlo generates the Heston paths. COS then takes each simulated stock-and-variance state and returns the corresponding liquid-option price and sensitivities.
+
+We independently validated the pricing and sensitivity implementation, with the details available in backup.
+
+Once we have those sensitivities, we can construct an analytic stock-and-option hedge.
+
+We choose the hedge-option position to match the target option’s variance exposure. We then choose the stock position to remove the remaining stock exposure.
+
+This gives us two different analytic strategies.
+
+The Heston COS benchmark calculates its hedge positions using Heston-consistent sensitivities.
+
+The Black–Scholes proxy heuristic calculates its positions using frozen-volatility Black–Scholes sensitivities.
+
+Crucially, both strategies are evaluated using the same COS-priced liquid-option path.
+
+The traded price process is therefore the same. Only the rule used to choose the stock and option positions is different.
+
+## Glasson — The stock-plus-option NN beats the strongest tested analytic heuristic in all three seeds
+
+**Delivery cue — not spoken:** Highlight only the COS benchmark, strongest heuristic, and stock-plus-option NN in the representative table. Pause briefly before the three-seed headline. Do not read every row.
+
+The table on the left shows the representative full-information run.
+
+The model-consistent Heston COS benchmark achieved an RMSE of approximately zero point zero one four eight.
+
+The strongest analytic strategy in our experiments was the Black–Scholes proxy Greek heuristic evaluated on the COS option path. Its RMSE was approximately zero point zero zero nine eight seven.
+
+The stock-plus-option neural network achieved the lowest representative RMSE, approximately zero point zero zero seven four three.
+
+It also achieved the lowest Loss CVaR ninety-five, which measures the average seller loss in the worst five per cent of test outcomes.
+
+For the headline comparison, we fair-centre every strategy separately. In practical terms, this removes each strategy’s average test error.
+
+RMSE therefore compares the remaining dispersion of the hedge errors, rather than differences in their average level. The same treatment is applied to both the neural and analytic strategies.
+
+The table on the right gives our more conservative headline result.
+
+Across all three submitted reruns, the stock-plus-option neural network outperformed the strongest tested analytic heuristic.
+
+The RMSE improvements were twenty point six per cent, twenty-one point eight per cent and twenty-five point five per cent.
+
+This gives a mean RMSE improvement of twenty-two point seven per cent.
+
+The mean improvement in Loss CVaR ninety-five was twenty-seven point one per cent.
+
+One result worth clarifying is that the Black–Scholes proxy heuristic performed better than the Heston COS Greek benchmark.
+
+This does not mean that Black–Scholes is a better Heston pricing model.
+
+The COS strategy uses more model-consistent prices and instantaneous sensitivities. However, matching local sensitivities is not the same as directly minimising terminal hedging error over a discrete trading grid.
+
+The neural strategy is trained on the terminal-error objective itself, which allows it to adapt its positions to the specific objective and hedge frequency used in the experiment.
+
+## Glasson — Three conclusions survive the diagnostics
+
+**Delivery cue — not spoken:** Do not add qualifications beyond the three shown. Finish after the final conclusion sentence.
+
+Our experiments support three main conclusions.
+
+First, under Black–Scholes, the neural strategy recovered the known finite-grid hedge. This gave us a controlled setting in which we could validate the learning framework.
+
+Second, the original network failed to generalise because important contract information was missing from its inputs and training distribution. Once we added strike and volatility conditioning, the identified generalisation failure was repaired over the tested range.
+
+Third, under Heston, once the liquid hedging option was priced consistently with the simulated model, the stock-plus-option neural strategy achieved lower terminal error than the strongest tested analytic Greek heuristic in every submitted seed.
+
+These conclusions remain bounded.
+
+They are based on three submitted seeds, a frictionless simulated market, and the information assumptions used in our experiments. We also do not claim to have derived the finite-grid optimal stock-and-option hedge.
+
+Our conclusion is therefore not that neural networks replace correct analytic hedging theory.
+
+It is that a constrained and carefully validated neural policy can first recover a known solution, and then adapt when the state dynamics, information set and traded instruments become more complex.
+
+Thank you.
