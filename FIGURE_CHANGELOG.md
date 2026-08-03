@@ -2,6 +2,68 @@
 
 Updated: 3 August 2026.
 
+## Black--Scholes opening refinement
+
+### Main slides modified
+
+- Reframed the terminal-error slide around Black--Scholes as the validation
+  gate, added the baseline parameter strip and retained the terminal-MSE
+  objective and no-delta-label statement.
+- Simplified the end-to-end workflow, added the 100k / 30k / 100k
+  train-validation-test split, identified one sample as one complete trajectory
+  and stated that Black--Scholes uses the exact lognormal grid transition.
+- Made validation-based architecture selection prominent: 12 candidates across
+  three seeds, selected on mean validation loss and independently retrained for
+  the final benchmark.
+- Made the discrete-time conditional projection the central benchmark because
+  it matches both the trading grid and terminal-MSE objective.
+- Preserved every submitted headline RMSE and premium value, added the 0.4\%
+  finite-grid gap and the approximately 29-fold RMSE reduction from no hedge,
+  and replaced “validation result” with “controlled benchmark outcome.”
+
+### Main slides added
+
+- Added Siphelele's `The benchmark recovery is distributional---not only one
+  RMSE number` using submitted report Figure 3.2.
+- Added Siphelele's `Why crude Monte Carlo was sufficient at the final path
+  budget` using submitted report Figure A.1 and a direct handover to Micaela.
+- The revised block contains five Kaiden slides (6:50) and two Siphelele slides
+  (3:00), for a total of 9:50 before Micaela begins.
+
+### Assets added and verified
+
+| Source | Project-local destination | Report figure | Verification |
+|---|---|---:|---|
+| Final report PDF p. 20 (printed p. 16) | `figures/report_fig_3_2_hedge_error_distributions.pdf` | 3.2 | Both the full hedge-error distribution and seller-shortfall zoom are retained. Curve identities, legend order, axes and the wider degree-2 polynomial distribution match the report. |
+| Final report PDF p. 22 (printed p. 18) | `figures/report_fig_3_4_moneyness_bucket_errors.pdf` | 3.4 | All four strategies and five terminal-moneyness buckets are retained; box, whisker and differing-scale presentation matches the report. |
+| Final report PDF p. 22 (printed p. 18) | `figures/report_fig_3_5_representative_paths.pdf` | 3.5 | OTM, ATM and ITM representative paths, strategy identities, axes and near-overlapping hedge ratios match the report. |
+| Final report PDF p. 48 (printed p. 44) | `figures/report_fig_A_1_sampling_path_count.pdf` | A.1 | Overall RMSE, Loss CVaR95 and OTM RMSE panels are all retained. Crude MC, LHS and Sobol+BB series, path budgets, axes and convergence at 50k--100k match the report. |
+
+All four files are tight vector crops. Surrounding report prose and captions
+were removed; no data-bearing element was redrawn, recoloured or regenerated.
+No matching original export exists on `main` or either inspected Overleaf
+archive branch.
+
+### Backups added
+
+- Added Figure 3.4 and Figure 3.5 backup frames.
+- Added the exact Black--Scholes transition, tensor shapes and shared-gradient
+  accumulation in one implementation-detail backup.
+- Added the complete 12-candidate architecture table. Existing backups continue
+  to provide Figures 3.3 and 3.6 and the full discrete-time derivation; the main
+  Figure A.1 crop retains all three submitted panels.
+
+### Protected sections and unresolved issues
+
+Micaela’s existing main slides were not modified.
+
+The leading Kaiden benchmark frame was moved out of `sections/02_micaela.tex`
+into `sections/01b_black_scholes_results.tex`; Micaela's protected section now
+begins directly with `The learned hedge has the right financial shape`. The
+protected frame source and order are unchanged. The Heston section was not
+modified. Original standalone exports for Figures 3.2, 3.4, 3.5 and A.1 remain
+unavailable, so the README-approved final-report vector crops were used.
+
 ## Source audit
 
 The final submitted report, `MFE_Research_Project_1__Section_B_.pdf`, is the

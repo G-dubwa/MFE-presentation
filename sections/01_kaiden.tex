@@ -1,12 +1,14 @@
-% Slides 2--5: Kaiden Wessels, 6:20 plus title = 6:50.
+% Five-slide Black--Scholes validation block: Kaiden Wessels, 6:50.
 
-\speakerlabel{Kaiden}{1:30}
-\begin{frame}{The hedge is learned through terminal portfolio error}
+\speakerlabel{Kaiden}{1:10}
+\begin{frame}{Black--Scholes is the validation gate}
+  \academicbox[\textwidth]{\centering
+    {\color{DeepNavy}\small\bfseries Black--Scholes is the controlled validation gate: the correct finite-grid benchmark is known.}}
+  \vspace{0.12cm}
   \begin{columns}[T,onlytextwidth]
     \begin{column}{0.58\textwidth}
-      \vspace{0.15cm}
-      \begin{beamercolorbox}[rounded=true,sep=0.25cm]{block body}
-        {\fontsize{9}{11}\selectfont
+      \begin{beamercolorbox}[rounded=true,sep=0.20cm]{block body}
+        {\fontsize{8.8}{10.5}\selectfont
         \[
           \begin{aligned}
           \he
@@ -14,87 +16,90 @@
           \pi+
           \underbrace{\sum_{n=0}^{N-1}\delta_n
           \bigl(S_{t_{n+1}}-S_{t_n}\bigr)}_{\text{self-financing gains}}
-          -(S_T-K)^+,\\[-0.05cm]
-          &\hspace{1.2cm}\min_{\pi,\theta}\; \mathbb{E}[\he^2].
+          -(S_T-K)^+,\\[-0.04cm]
+          &\hspace{1.15cm}\min_{\pi,\theta}\;\mathbb{E}[\he^2].
           \end{aligned}
         \]}
       \end{beamercolorbox}
-      \vspace{0.28cm}
+      \vspace{0.12cm}
       \claimbox{The analytic delta is never used as a training target.}
     \end{column}
     \begin{column}{0.38\textwidth}
+      {\fontsize{8.5}{10.3}\selectfont
       \begin{tightitemize}
-        \item \(N=125\) discrete hedge dates in the baseline.
-        \item \(\delta_n=f_\theta(x_n)\) is adapted to information at \(t_n\).
-        \item Negative \(\he\) is a seller shortfall; reported seller loss is \(L=-\he\).
-        \item With \(r=0\), the submitted experiments use undiscounted gains.
-      \end{tightitemize}
-      \vspace{0.15cm}
-      \begin{tikzpicture}[x=0.75cm,y=0.6cm]
-        \draw[-{Latex[length=2mm]},line width=0.8pt,color=Slate] (0,0)--(5.2,0);
-        \foreach \x/\lab in {0/0,1/1,2/2,3/\cdots,4/N-1,5/N}{
-          \draw[Teal,line width=0.9pt] (\x,-0.12)--(\x,0.12);
-          \node[below,font=\scriptsize,color=Slate] at (\x,-0.13) {\(\lab\)};
-        }
-        \node[above,font=\scriptsize\bfseries,color=DeepNavy] at (2.5,0.22) {rebalance using current state};
-      \end{tikzpicture}
+        \item \(\delta_n=f_\theta(x_n)\) is adapted to information at hedge date \(t_n\).
+        \item Negative \(\he\) is a seller shortfall; seller loss is \(L=-\he\).
+        \item With \(r=0\), gains are undiscounted in the submitted experiment.
+      \end{tightitemize}}
     \end{column}
   \end{columns}
+  \vspace{0.12cm}
+  \begin{beamercolorbox}[rounded=true,sep=0.11cm]{block body}
+    \centering{\small
+      \(S_0=1\quad K=0.9\quad \sigma=0.4\quad T=0.5\quad r=0\quad N=125\)}
+  \end{beamercolorbox}
   \sourcefoot{Submitted report, Secs.\ 1.1, 2.2.2 and 3.1; Eqns.\ (1.1)--(1.2).}
-  \note{Define premium, position, self-financing gains and payoff. Explain that MSE matches the submitted training objective, not a claim that it is the only relevant risk measure.}
+  \note{Frame Black--Scholes as the validation gate, then define premium, position, self-financing gains and payoff. Emphasise that MSE is the submitted terminal objective and that no analytic delta labels enter training.}
 \end{frame}
 
-\speakerlabel{Kaiden}{2:00}
-\begin{frame}{The implementation is differentiable end to end}
+\speakerlabel{Kaiden}{1:25}
+\begin{frame}{Training is pathwise and differentiable end to end}
   \centering
   \begin{tikzpicture}[
-    node distance=0.16cm,
-    box/.style={rounded corners=3pt,draw=DeepNavy!18,fill=Mist,
-      minimum height=1.05cm,text width=1.82cm,align=center,
-      font=\fontsize{7.7}{8.8}\selectfont},
+    node distance=0.17cm,
+    box/.style={rounded corners=3pt,draw=DeepNavy!20,fill=Mist,
+      minimum height=0.82cm,text width=2.23cm,align=center,
+      font=\fontsize{7.6}{8.7}\selectfont\bfseries},
     arrow/.style={-{Latex[length=2mm]},line width=0.9pt,color=Teal}
   ]
-    \node[box] (par) {\textbf{Parameters}\\\(S_0,K,T\)\\\(r,\sigma,N\)};
-    \node[box,right=of par] (sim) {\textbf{Simulate}\\\texttt{simulate\_}\\\texttt{gbm\_paths}\\\((B,N{+}1)\)};
-    \node[box,right=of sim] (feat) {\textbf{Causal state}\\\(\log(S_n/K)\)\\\(\tau_n/T\), \((B,N,2)\)};
-    \node[box,right=of feat] (net) {\textbf{Shared MLP}\\\(64\times64\times64\)\\same \(\theta\) for every \(n\)};
-    \node[box,right=of net] (pos) {\textbf{Positions}\\sigmoid output\\\((B,N)\)};
-    \draw[arrow] (par)--(sim);
-    \draw[arrow] (sim)--(feat);
-    \draw[arrow] (feat)--(net);
-    \draw[arrow] (net)--(pos);
-
-    \node[box,below=0.52cm of pos] (gain) {\textbf{Gains}\\\texttt{deltas * dS}\\sum over time};
-    \node[box,left=of gain] (err) {\textbf{Pathwise error}\\\texttt{hedge\_}\\\texttt{error}\\\((B,)\)};
-    \node[box,left=of err] (mse) {\textbf{Batch MSE}\\mean of \(\he^2\)};
-    \node[box,left=of mse] (bp) {\textbf{Backpropagate}\\Adam, validation\\best epoch retained};
+    \node[box] (sim) {simulate path};
+    \node[box,right=of sim] (state) {form causal state};
+    \node[box,right=of state] (mlp) {shared MLP};
+    \node[box,right=of mlp] (pos) {positions};
+    \node[box,below=0.38cm of pos] (gain) {self-financing gains};
+    \node[box,left=of gain] (err) {terminal error};
+    \node[box,left=of err] (mse) {MSE};
+    \node[box,left=of mse] (bp) {backpropagation};
+    \draw[arrow] (sim)--(state);
+    \draw[arrow] (state)--(mlp);
+    \draw[arrow] (mlp)--(pos);
     \draw[arrow] (pos)--(gain);
     \draw[arrow] (gain)--(err);
     \draw[arrow] (err)--(mse);
     \draw[arrow] (mse)--(bp);
-    \draw[arrow] (bp.west) -- ++(-0.35,0) |- (net.south);
+    \draw[arrow] (bp.west) -- ++(-0.32,0) |- (mlp.south);
   \end{tikzpicture}
 
-  \vspace{0.25cm}
+  \vspace{0.15cm}
   \begin{columns}[T,onlytextwidth]
-    \begin{column}{0.49\textwidth}
-      \claimbox{Supervision is financial: payoff minus self-financing wealth.}
+    \begin{column}{0.48\textwidth}
+      \academicbox{\centering\small\bfseries One sample = one complete trajectory}
     \end{column}
-    \begin{column}{0.49\textwidth}
-      \risknote{Function names and path construction are verified from report Appendix C; the separate executable notebook bundle is absent from this repository.}
+    \begin{column}{0.48\textwidth}
+      \academicbox{\centering\small Black--Scholes paths use the exact lognormal grid transition.}
     \end{column}
   \end{columns}
-  \sourcefoot{Submitted report, Algorithm A.6.1 and Listings C.1--C.3. Shape contract follows the displayed array construction and shared network input.}
-  \note{Walk left to right, then around the lower loop. State that train, validation and test paths are independently generated. Do not imply that the missing notebook archive was inspected.}
+
+  \vspace{0.12cm}
+  \begin{beamercolorbox}[rounded=true,sep=0.12cm]{block body}
+    \centering{\small\bfseries
+      100,000 training paths\quad\textcolor{Teal}{|}\quad
+      30,000 validation paths\quad\textcolor{Teal}{|}\quad
+      100,000 held-out test paths}
+  \end{beamercolorbox}
+  \vspace{0.10cm}
+  \claimbox{Supervision is financial: payoff minus self-financing wealth.}
+  \sourcefoot{Submitted report, Algorithm A.6.1, Appendix A.1 and Listings C.1--C.3.}
+  \note{Walk through one complete trajectory. Validation loss selects the retained epoch; the final numbers are then computed on freshly generated held-out test paths. Mention that the exact lognormal transition removes time-discretisation error from Black--Scholes path generation.}
 \end{frame}
 
-\speakerlabel{Kaiden}{1:30}
-\begin{frame}{Call economics guide architecture selection}
+\speakerlabel{Kaiden}{1:15}
+\begin{frame}{Architecture selection is validation-based}
   \begin{columns}[T,onlytextwidth]
     \begin{column}{0.54\textwidth}
       \begin{tikzpicture}[
         layer/.style={rounded corners=3pt,draw=DeepNavy!20,fill=Mist,
-          minimum width=1.35cm,minimum height=0.9cm,align=center,font=\scriptsize},
+          minimum width=1.35cm,minimum height=0.88cm,align=center,font=\scriptsize},
         arr/.style={-{Latex[length=2mm]},color=Teal,line width=0.9pt},
         node distance=0.22cm
       ]
@@ -104,71 +109,81 @@
         \node[layer,right=of l2] (l3) {64\\tanh};
         \node[layer,right=of l3,fill=Teal!12] (o) {1\\sigmoid};
         \draw[arr] (x)--(l1);\draw[arr] (l1)--(l2);\draw[arr] (l2)--(l3);\draw[arr] (l3)--(o);
-        \node[below=0.25cm of l2,font=\scriptsize,color=Slate] {one shared map at all 125 dates};
+        \node[below=0.24cm of l2,font=\scriptsize,color=Slate] {one shared map at all 125 hedge dates};
       \end{tikzpicture}
-      \vspace{0.35cm}
+      \vspace{0.27cm}
+      {\fontsize{8.3}{9.9}\selectfont
       \begin{tightitemize}
-        \item \textbf{Log-moneyness} is scale-normalised and financially natural.
-        \item \textbf{Weight sharing} exploits Markov and time-homogeneous structure.
-        \item \textbf{Sigmoid} enforces the call-delta range \(0<\delta<1\).
+        \item \textbf{Log-moneyness} is scale-normalised; \textbf{time-to-maturity} is explicit.
+        \item \textbf{Shared weights} reflect the Markov, time-homogeneous structure.
+        \item \textbf{Sigmoid} enforces the economically justified call-delta range \(0<\delta<1\).
         \item A scalar premium is learned jointly with the hedge.
-      \end{tightitemize}
+      \end{tightitemize}}
     \end{column}
     \begin{column}{0.42\textwidth}
+      \academicbox{\centering
+        {\color{Teal}\fontsize{15}{17}\selectfont\bfseries 12 candidates \(\times\) 3 seeds\par}
+        \vspace{0.05cm}
+        {\small Selected on mean validation loss}}
+      \vspace{0.12cm}
+      \academicbox{\centering\small\bfseries Independently retrained for the final benchmark}
+      \vspace{0.12cm}
+      {\centering\scriptsize Illustrative close candidates\par}
+      \vspace{0.03cm}
       \begin{table}
         \centering
-        \scriptsize
-        \setlength{\tabcolsep}{3pt}
-        \begin{tabular}{lrr}
+        \fontsize{6.7}{7.7}\selectfont
+        \setlength{\tabcolsep}{2.4pt}
+        \begin{tabular}{lr}
           \toprule
-          Candidate & Test RMSE & Time (s)\\
+          Candidate & Mean test RMSE\\
           \midrule
-          \rowcolor{Teal!10}
-          Shared norm.\ \(64{\times}3\), tanh & \textbf{0.007891} & 103.0\\
-          Shared norm.\ \(64{\times}2\), ReLU & 0.007912 & 93.2\\
-          Time-separated \(16{\times}1\) & 0.008083 & 786.9\\
+          \rowcolor{Teal!10} Shared norm.\ \(64{\times}3\), tanh & 0.007891\\
+          Shared norm.\ \(64{\times}2\), ReLU & 0.007912\\
+          Time-separated \(16{\times}1\) & 0.008083\\
           \bottomrule
         \end{tabular}
       \end{table}
-      \vspace{0.2cm}
-      \claimbox{Selected on mean validation loss across three seeds; close alternatives remained.}
-      \vspace{0.15cm}
-      \risknote{The model was selected, not uniquely dominant: the ReLU candidate won one seed.}
+      \vspace{0.04cm}
+      {\scriptsize\color{Coral}\bfseries The selected model was not uniquely dominant.\par}
     \end{column}
   \end{columns}
   \sourcefoot{Submitted report, Secs.\ 3.1.2--3.1.3; Tables 3.1 and A.3--A.6.}
-  \note{Explain why shared weights and normalized inputs are choices, not decorations. Mention the architecture-search batch size 256 versus final retraining batch size 4096.}
+  \note{Explain the economic constraints first. Then state that all 12 candidates were compared over three independent seeds using mean validation loss, and that the selected specification was independently retrained. The table is only a visual reminder that close alternatives remained.}
 \end{frame}
 
 \speakerlabel{Kaiden}{1:20}
 \begin{frame}{The fair benchmark matches the grid and objective}
   \begin{columns}[T,onlytextwidth]
-    \begin{column}{0.62\textwidth}
+    \begin{column}{0.58\textwidth}
       \begin{tikzpicture}[
-        item/.style={rounded corners=3pt,minimum height=0.73cm,text width=6.9cm,
+        item/.style={rounded corners=3pt,minimum height=0.68cm,text width=6.35cm,
           align=left,font=\small,inner xsep=7pt},
-        node distance=0.12cm
+        node distance=0.10cm
       ]
         \node[item,fill=Coral!10,text=Ink] (u) {\textbf{No hedge}\\[-0.04cm]{\scriptsize raw option risk}};
         \node[item,fill=Gold!12,below=of u] (bs) {\textbf{Black--Scholes delta}\\[-0.04cm]{\scriptsize continuous-time rule sampled on the grid}};
-        \node[item,fill=Teal!15,below=of bs] (dt) {\textbf{Discrete-time MSE-optimal}\\[-0.04cm]{\scriptsize conditional projection on the same grid}};
-        \node[item,fill=Mist,below=of dt] (poly) {\textbf{Degree-2 polynomial}\\[-0.04cm]{\scriptsize deliberately low-capacity approximation}};
+        \node[item,fill=Teal!18,below=of bs] (dt) {\textbf{Discrete-time MSE-optimal}\\[-0.04cm]{\scriptsize conditional projection on the same grid}};
+        \node[item,fill=Mist,below=of dt] (poly) {\textbf{Degree-2 polynomial}\\[-0.04cm]{\scriptsize low-capacity approximation}};
         \node[item,fill=DeepNavy!12,below=of poly] (nn) {\textbf{Neural hedge}\\[-0.04cm]{\scriptsize terminal-MSE training without delta labels}};
-        \draw[decorate,decoration={brace,amplitude=4pt},DeepNavy]
-          ([xshift=-0.12cm]bs.north west)--([xshift=-0.12cm]nn.south west)
-          node[midway,left=0.17cm,rotate=90,font=\scriptsize\bfseries] {same held-out paths};
       \end{tikzpicture}
     \end{column}
-    \begin{column}{0.34\textwidth}
-      \[
-        \deltadt_n =
-        \frac{\operatorname{Cov}\!\left(g(S_T),\,\Delta S_n\mid S_{t_n}\right)}
-        {\operatorname{Var}\!\left(\Delta S_n\mid S_{t_n}\right)}
-      \]
-      \vspace{0.1cm}
-      \claimbox{The comparison asks whether the network recovers the finite-grid solution---not whether it beats correct Black--Scholes theory.}
+    \begin{column}{0.38\textwidth}
+      \academicbox{\centering
+        {\small\bfseries Discrete-time conditional projection\par}
+        \vspace{0.05cm}
+        {\fontsize{7.5}{8.7}\selectfont\(
+          \displaystyle\deltadt_n=
+          \frac{\operatorname{Cov}\!\left(g(S_T),\Delta S_n\mid S_{t_n}\right)}
+          {\operatorname{Var}\!\left(\Delta S_n\mid S_{t_n}\right)}
+        \)}}
+      \vspace{0.12cm}
+      \academicbox{\centering
+        {\color{Teal}\small\bfseries Matches both the trading grid and the terminal-MSE objective}}
     \end{column}
   \end{columns}
+  \vspace{0.16cm}
+  \claimbox{The comparison asks whether the network recovers the finite-grid solution---not whether it beats correct Black--Scholes theory.}
   \sourcefoot{Submitted report, Sec.\ 3.1.1 and Appendix A.4; Schweizer (1995, 2001).}
-  \note{Make the benchmark hierarchy explicit. The covariance ratio is valid here under the submitted r=0 martingale setting. Handover: ``With the fair benchmark established, Micaela will show whether the network recovered it.''}
+  \note{Make the discrete-time conditional projection visually and conceptually central. Black--Scholes delta is a continuous-time rule sampled on the grid; the discrete-time hedge matches both the submitted grid and terminal-MSE objective. The next slide gives the held-out result.}
 \end{frame}

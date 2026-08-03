@@ -13,6 +13,32 @@
   \sourcefoot{Submitted report, Figure 3.3 and Sec.\ 3.1.4. Vector crop from the final report.}
 \end{frame}
 
+\begin{frame}[t]{\texorpdfstring{\resizebox{0.96\textwidth}{!}{Backup: hedge error by terminal-moneyness bucket}}{Backup: hedge error by terminal-moneyness bucket}}
+  \centering
+  \includegraphics[width=0.98\textwidth,height=5.20cm,keepaspectratio]
+    {figures/report_fig_3_4_moneyness_bucket_errors.pdf}
+
+  \vspace{0.04cm}
+  \academicbox[0.92\textwidth]{\centering\small
+    The neural hedge remains centred near zero with dispersion close to the two
+    analytic benchmarks across all five terminal-moneyness buckets.}
+  \vspace{-0.04cm}
+  \sourcefoot{Submitted report, Figure 3.4 and Sec.\ 3.1.4. Tight vector crop from final report PDF p.\ 22 (printed p.\ 18).}
+\end{frame}
+
+\begin{frame}[t]{\texorpdfstring{\resizebox{0.96\textwidth}{!}{Backup: analytic and neural hedges agree along representative paths}}{Backup: analytic and neural hedges agree along representative paths}}
+  \centering
+  \includegraphics[width=0.98\textwidth,height=5.15cm,keepaspectratio]
+    {figures/report_fig_3_5_representative_paths.pdf}
+
+  \vspace{0.04cm}
+  \academicbox[0.92\textwidth]{\centering\small
+    Black--Scholes, discrete-time MSE-optimal and neural positions are nearly
+    indistinguishable along representative OTM, ATM and ITM test paths.}
+  \vspace{-0.04cm}
+  \sourcefoot{Submitted report, Figure 3.5 and Sec.\ 3.1.4. Tight vector crop from final report PDF p.\ 22 (printed p.\ 18).}
+\end{frame}
+
 \begin{frame}[t]{\texorpdfstring{\resizebox{0.96\textwidth}{!}{Backup: training and validation losses converge without visible instability}}{Backup: training and validation losses converge without visible instability}}
   \centering
   \includegraphics[width=0.98\textwidth,height=5.25cm,keepaspectratio]
@@ -24,6 +50,75 @@
     the best validation loss occurs at the submitted epoch cap of 250.}
   \vspace{-0.04cm}
   \sourcefoot{Submitted report, Figure 3.6 and Sec.\ 3.1.4. Optimisation and validation evidence, not proof of external generalisation.}
+\end{frame}
+
+\begin{frame}[t]{\texorpdfstring{\resizebox{0.95\textwidth}{!}{Backup: exact paths, tensor shapes and shared gradients}}{Backup: exact paths, tensor shapes and shared gradients}}
+  \pill{Exact Black--Scholes grid transition}
+  \vspace{0.05cm}
+  \academicbox{\centering\small
+    \(\displaystyle
+      S_{t_{n+1}}=S_{t_n}\exp\!\left[
+      \left(r-\frac12\sigma^2\right)\Delta t
+      +\sigma\sqrt{\Delta t}\,Z_{n+1}\right],
+      \qquad Z_{n+1}\sim\mathcal N(0,1).
+    \)}
+  \vspace{0.14cm}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.39\textwidth}
+      \pill[Gold]{Tensor shapes}
+      \vspace{0.07cm}
+      {\small
+      \begin{tabular}{ll}
+        Paths & \((B,N{+}1)\)\\
+        Causal states & \((B,N,2)\)\\
+        Positions & \((B,N)\)\\
+        Terminal errors & \((B,)\)\\
+      \end{tabular}}
+    \end{column}
+    \begin{column}{0.57\textwidth}
+      \pill[Teal]{Shared-gradient accumulation}
+      \vspace{0.07cm}
+      \academicbox{\centering\fontsize{7.3}{8.5}\selectfont
+        \(\displaystyle
+        \nabla_\theta\widehat{\mathcal L}
+        =\frac{2}{B}\sum_{b=1}^{B}\he^{(b)}
+          \sum_{n=0}^{N-1}\Delta S_n^{(b)}
+          \nabla_\theta f_\theta\!\left(x_n^{(b)}\right).
+        \)}
+      \vspace{0.06cm}
+      {\scriptsize One shared parameter vector receives gradient contributions from every path and every hedge date.\par}
+    \end{column}
+  \end{columns}
+  \sourcefoot{Submitted report, Algorithms A.3.1 and A.6.1; Listings C.1--C.3.}
+\end{frame}
+
+\begin{frame}[t]{Backup: full architecture candidate table}
+  \centering
+  \fontsize{6.7}{7.7}\selectfont
+  \setlength{\tabcolsep}{3.2pt}
+  \begin{tabular}{lrrrr}
+    \toprule
+    Architecture & Mean val. loss & Mean test RMSE & Mean premium & Time (s)\\
+    \midrule
+    Shared norm.\ \(16{\times}1\), tanh & \(1.148\times10^{-4}\) & 0.010767 & 0.164127 & 75.4\\
+    Shared norm.\ \(16{\times}2\), tanh & \(6.545\times10^{-5}\) & 0.008186 & 0.164167 & 77.1\\
+    Shared norm.\ \(32{\times}2\), tanh & \(6.421\times10^{-5}\) & 0.008114 & 0.164118 & 82.1\\
+    Shared norm.\ \(32{\times}3\), tanh & \(6.105\times10^{-5}\) & 0.007911 & 0.164135 & 89.5\\
+    Shared norm.\ \(64{\times}2\), tanh & \(6.299\times10^{-5}\) & 0.008032 & 0.164128 & 92.0\\
+    \rowcolor{Teal!12}Shared norm.\ \(64{\times}3\), tanh & \(6.079\times10^{-5}\) & 0.007891 & 0.164164 & 103.0\\
+    Shared norm.\ \(64{\times}2\), ReLU & \(6.113\times10^{-5}\) & 0.007912 & 0.164142 & 93.2\\
+    Shared norm.\ \(64{\times}2\), softplus & \(1.948\times10^{-4}\) & 0.013954 & 0.164141 & 94.4\\
+    Shared raw \(32{\times}2\), tanh & \(6.688\times10^{-5}\) & 0.008271 & 0.164097 & 80.5\\
+    Shared raw \(64{\times}2\), tanh & \(6.547\times10^{-5}\) & 0.008187 & 0.164058 & 92.5\\
+    Time-sep. norm.\ \(8{\times}1\), tanh & \(6.545\times10^{-5}\) & 0.008170 & 0.164122 & 720.9\\
+    Time-sep. norm.\ \(16{\times}1\), tanh & \(6.405\times10^{-5}\) & 0.008083 & 0.164090 & 786.9\\
+    \bottomrule
+  \end{tabular}
+  \vspace{0.14cm}
+  \academicbox[0.92\textwidth]{\centering\small
+    The selected \(64{\times}3\) tanh model has the lowest mean validation loss,
+    but the \(64{\times}2\) ReLU alternative is close.}
+  \sourcefoot{Submitted report, Table 3.1; averages across three independent seeds.}
 \end{frame}
 
 \input{sections/05_heston_backups}

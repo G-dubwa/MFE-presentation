@@ -1,47 +1,4 @@
-% Slides 6--10: Micaela Marais, 6:50.
-\begin{frame}{The neural hedge recovers the finite-grid benchmark}
-  \begin{columns}[T,onlytextwidth]
-    \begin{column}{0.62\textwidth}
-      \begin{table}
-        \centering
-        \small
-        \begin{tabular}{lS[table-format=1.6]}
-          \toprule
-          Strategy & {RMSE}\\
-          \midrule
-          No hedge & 0.227257\\
-          Black--Scholes delta & 0.007810\\
-          Discrete-time MSE-optimal & 0.007810\\
-          Degree-2 polynomial & 0.022183\\
-          \rowcolor{Teal!13}
-          \textbf{Neural hedge} & \bfseries 0.007841\\
-          \bottomrule
-        \end{tabular}
-      \end{table}
-      \vspace{0.16cm}
-      \risknote{These are final-benchmark values from an independent retraining, not architecture-search rows.}
-    \end{column}
-    \begin{column}{0.34\textwidth}
-      \begin{beamercolorbox}[rounded=true,sep=0.23cm]{block body}
-        \centering
-        {\color{Teal}\fontsize{21}{23}\selectfont\bfseries 0.4\%\par}
-        {\scriptsize neural RMSE above the discrete-time benchmark}
-      \end{beamercolorbox}
-      \vspace{0.2cm}
-      \begin{beamercolorbox}[rounded=true,sep=0.23cm]{block body}
-        \centering
-        {\color{DeepNavy}\fontsize{16}{18}\selectfont\bfseries 0.163972\par}
-        {\scriptsize learned premium}\\[0.08cm]
-        {\color{Slate}\scriptsize vs.\ analytic \(0.164111\)}
-      \end{beamercolorbox}
-      \vspace{0.2cm}
-      \claimbox{Near equality is the validation result we wanted.}
-    \end{column}
-  \end{columns}
-  \sourcefoot{Submitted report, Table 3.2 and Sec.\ 3.1.4.}
-  \note{State RMSE values for the three key strategies. Do not say the network outperformed Black--Scholes. Explain the learned-premium gap as finite-sample/optimisation error.}
-\end{frame}
-
+% Micaela Marais's protected main-slide section begins here.
 \speakerlabel{Micaela}{1:10}
 \begin{frame}{The learned hedge has the right financial shape}
   \begin{columns}[T,onlytextwidth]
@@ -2560,4 +2517,3 @@ pricing performance from hedging performance.
 }
 
 \end{frame}
-
