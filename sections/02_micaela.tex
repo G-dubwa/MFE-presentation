@@ -246,7 +246,8 @@ $K$ & $\sigma$ & $T$ & $N$ & {DT-opt RMSE} & {Retrained NN} & {Param-cond NN} & 
 
 \end{frame}
 
-\end{comment}
+
+
 
 
 \begin{frame}[t]{Parameter Robustness under Retraining}
@@ -315,7 +316,7 @@ $K$ & $\sigma$ & $T$ & $N$ & {DT-opt RMSE} & {Retrained NN} & {Param-cond NN} & 
   \sourcefoot{Submitted report, Sec.\ 4.1.1, Table 4.1 and Figure 4.1.}
 \end{frame}
 
-
+\end{comment}
 
 \begin{comment}
     
@@ -371,6 +372,9 @@ $K$ & $\sigma$ & $T$ & $N$ & {DT-opt RMSE} & {Retrained NN} & {Param-cond NN} & 
 % ---------------------------------------------------------------------
 % SLIDE 7 : Generalization Failure  (unchanged from v1 -- included for completeness)
 % ---------------------------------------------------------------------
+
+\begin{comment}
+    
 \speakerlabel{Micaela}{1:30}
 \begin{frame}{\fontsize{15}{17}\selectfont Generalization Failure of the Single-Scenario Hedger}
   \vspace{-0.08cm}
@@ -427,7 +431,9 @@ $K$ & $\sigma$ & $T$ & $N$ & {DT-opt RMSE} & {Retrained NN} & {Param-cond NN} & 
 \end{frame}
 
 
+\end{comment}
 
+\begin{comment}
 \speakerlabel{Micaela}{1:30}
 \begin{frame}{Parameter-Conditioned Hedger}
   \begin{columns}[T,onlytextwidth]
@@ -487,6 +493,7 @@ $K$ & $\sigma$ & $T$ & $N$ & {DT-opt RMSE} & {Retrained NN} & {Param-cond NN} & 
   \sourcefoot{Submitted report, Sec.\ 4.1.3, Table 4.3.}
 \end{frame}
 
+\end{comment}
 
 \begin{comment}
 \begin{frame}[t]{Conditioning fixes the Generalisation Failure}
@@ -2170,174 +2177,21 @@ models for every individual setting.
 \end{frame}
 \end{comment}
 
-
-\speakerlabel{Micaela}{1:30}
-
 \begin{frame}[t]{Parameter Robustness under Retraining}
-
-\vspace{-0.18cm}
-
-%=========================================================
-% SETUP
-%=========================================================
-{\small
-\begin{itemize}
-    \setlength{\itemsep}{0.10cm}
-    \setlength{\topsep}{0pt}
-
-    \item The same architecture is retrained from scratch at each setting.
-
-    \item Parameters are varied one at a time around the baseline
-    \(
-      (K,\sigma,T,N)=(0.9,\,0.4,\,0.5,\,125).
-    \)
-\end{itemize}
-}
-
-\vspace{0.08cm}
-
-%=========================================================
-% PARAMETER RANGES — ONE LINE
-%=========================================================
-{\footnotesize
-\[
-\makebox[0.97\textwidth][s]{%
-  \(K\in\{0.8,0.9,1.0,1.1,1.2\}\)
-  \hfill
-  \(\sigma\in\{0.2,0.4,0.6\}\)
-  \hfill
-  \(T\in\{0.25,0.5,1.0\}\)
-  \hfill
-  \(N\in\{30,60,125,250\}\)
-}
-\]
-}
-
 \vspace{-0.20cm}
-
-%=========================================================
-% GRAPH AND RESULTS
-%=========================================================
-\begin{columns}[T,onlytextwidth]
-
-%---------------------------------------------------------
-% GRAPH
-%---------------------------------------------------------
-\begin{column}{0.62\textwidth}
-
-    \centering
-
-    \includegraphics[
-        width=\linewidth,
-        height=4.65cm,
-        keepaspectratio
-    ]{sections/robustness_rmse_vs_N.png}
-
-\end{column}
-
-\hfill
-
-%---------------------------------------------------------
-% RESULTS
-%---------------------------------------------------------
-\begin{column}{0.335\textwidth}
-
-    \raggedright
-    \footnotesize
-
-    % Result 1
-    \noindent
-    {\color{Teal}\(\blacktriangleright\)}
-    \hspace{0.08cm}
-    \begin{minipage}[t]{0.88\linewidth}
-        Mean neural-to-optimal RMSE ratio
-    \end{minipage}
-
-    \vspace{0.12cm}
-
-    \begin{center}
-        \fbox{\fontsize{17}{19}\selectfont \(1.049\)}
-    \end{center}
-
-    \vspace{-0.06cm}
-
-    \begin{center}
-        {\scriptsize Range: \(1.009\)--\(1.099\)}
-    \end{center}
-
-    \vspace{0.25cm}
-
-    % Result 2
-    \noindent
-    {\color{Teal}\(\blacktriangleright\)}
-    \hspace{0.08cm}
-    \begin{minipage}[t]{0.88\linewidth}
-        Neural hedge remains at most
-    \end{minipage}
-
-    \vspace{0.12cm}
-
-    \begin{center}
-        \fbox{\fontsize{17}{19}\selectfont \(10\%\)}
-    \end{center}
-
-    \vspace{-0.06cm}
-
-    \begin{center}
-        {\scriptsize above the discrete-time optimum}
-    \end{center}
-
-    \vspace{0.25cm}
-
-    % Result 3
-    \noindent
-    {\color{Teal}\(\blacktriangleright\)}
-    \hspace{0.08cm}
-    \begin{minipage}[t]{0.88\linewidth}
-        Largest relative gap occurs at
-    \end{minipage}
-
-    \vspace{0.08cm}
-
-    \[
-        N=250.
-    \]
-
-\end{column}
-
-\end{columns}
-
-\end{frame}
-
-\speakerlabel{Micaela}{1:30}
-
-\begin{frame}[t]{Parameter Robustness under Retraining}
-
-\vspace{-0.20cm}
-
-%=========================================================
-% SETUP
-%=========================================================
 {\small
 \begin{itemize}
     \setlength{\itemsep}{0.08cm}
     \setlength{\topsep}{0pt}
     \setlength{\partopsep}{0pt}
-
     \item The same architecture is retrained from scratch at each setting.
-
     \item Parameters are varied one at a time around the baseline
     \(
       (K,\sigma,T,N)=(0.9,\,0.4,\,0.5,\,125).
     \)
 \end{itemize}
 }
-
 \vspace{0.06cm}
-
-%=========================================================
-% PARAMETER RANGES: SINGLE LINE
-%=========================================================
 \begin{center}
 \resizebox{0.94\textwidth}{!}{%
     \(
@@ -2351,107 +2205,53 @@ models for every individual setting.
     \)
 }
 \end{center}
-
 \vspace{-0.10cm}
 
-%=========================================================
-% GRAPH AND RESULTS
-%=========================================================
-\begin{columns}[T,onlytextwidth]
-
+\begin{columns}[c,onlytextwidth]
 %---------------------------------------------------------
 % GRAPH
 %---------------------------------------------------------
-\begin{column}{0.65\textwidth}
-
+\begin{column}{0.63\textwidth}
     \centering
-
     \includegraphics[
         width=\linewidth,
-        height=4.25cm,
+        height=4.6cm,
         keepaspectratio
     ]{sections/robustness_rmse_vs_N.png}
-
 \end{column}
-
 %---------------------------------------------------------
 % RESULTS
 %---------------------------------------------------------
-\begin{column}{0.31\textwidth}
+\begin{column}{0.34\textwidth}
+    \centering
+    % ---- headline stat box ----
+    \begin{tcolorbox}[
+        colback=Teal!8,
+        colframe=Teal,
+        boxrule=0.4pt,
+        arc=1.5pt,
+        left=4pt,right=4pt,top=3pt,bottom=3pt,
+        width=0.98\linewidth
+    ]
+    \centering
+    {\footnotesize Mean neural-to-optimal RMSE ratio}\\[2pt]
+    {\Large\bfseries\color{Teal} 1.049}\\[1pt]
+    {\scriptsize (Range 1.009--1.099)}
+    \end{tcolorbox}
 
-    % Move content closer to the graph and slightly lower
-    \hspace*{-0.28cm}
-    \begin{minipage}[t]{1.02\linewidth}
+    \vspace{0.22cm}
 
-    \vspace{0.18cm}
-
-    %---------------- Result 1 ----------------
-    \noindent
-    {\color{Teal}\scriptsize\(\blacktriangleright\)}
-    \hspace{0.04cm}
-    {\footnotesize Mean neural-to-optimal RMSE ratio}
-
-    \vspace{0.08cm}
-
-    \begin{center}
-        \fbox{
-            \fontsize{14}{16}\selectfont
-            \(1.049\)
-        }
-    \end{center}
-
-    \vspace{-0.10cm}
-
-    \begin{center}
-        {\scriptsize Range: \(1.009\)--\(1.099\)}
-    \end{center}
+    \raggedright
+    {\color{Teal}\scriptsize\(\blacktriangleright\)}\hspace{0.04cm}
+    {\footnotesize Neural hedge remains at most \(10\%\) above the discrete-time optimum}
 
     \vspace{0.18cm}
 
-    %---------------- Result 2 ----------------
-    \noindent
-    {\color{Teal}\scriptsize\(\blacktriangleright\)}
-    \hspace{0.04cm}
-    {\footnotesize Neural hedge remains at most}
-
-    \vspace{0.08cm}
-
-    \begin{center}
-        \fbox{
-            \fontsize{14}{16}\selectfont
-            \(10\%\)
-        }
-    \end{center}
-
-    \vspace{-0.10cm}
-
-    \begin{center}
-        {\scriptsize above the discrete-time optimum}
-    \end{center}
-
-    \vspace{0.18cm}
-
-    %---------------- Result 3 ----------------
-    \noindent
-    {\color{Teal}\scriptsize\(\blacktriangleright\)}
-    \hspace{0.04cm}
-    {\footnotesize Largest relative gap occurs at}
-
-    \vspace{0.06cm}
-
-    \begin{center}
-        {\small \(N=250\).}
-    \end{center}
-
-    \end{minipage}
-
+    {\color{Teal}\scriptsize\(\blacktriangleright\)}\hspace{0.04cm}
+    {\footnotesize Largest relative gap occurs at \(N=250\)}
 \end{column}
-
 \end{columns}
-
 \end{frame}
-
-
 
 \begin{frame}[t]{Generalisation Failure of the Single-Scenario Hedger}
 \vspace{-0.18cm}
@@ -2470,10 +2270,11 @@ models for every individual setting.
 %=================================================
 \begin{column}{0.60\textwidth} % widened slightly to make plot bigger
 \centering
+\vspace{0.35cm} % nudges the graph further down
 \begin{tikzpicture}
 \begin{axis}[
     width=\linewidth,
-    height=4.75cm, % increased from 4.25cm
+    height=5.4cm, % increased from 4.75cm
     ybar,
     bar width=7pt,
     ymin=0,
@@ -2530,7 +2331,7 @@ models for every individual setting.
 ]
 \addplot[
     ybar,
-    fill=blue!35,
+    fill=Teal!35,
     draw=none
 ] coordinates {
     (K0.9s0.6,4.8)
@@ -2544,7 +2345,7 @@ models for every individual setting.
 };
 \addplot[
     ybar,
-    fill=blue!70,
+    fill=Teal,
     draw=none
 ] coordinates {
     (K0.9s0.4,1.0)
@@ -2565,12 +2366,11 @@ models for every individual setting.
 \begin{enumerate}
     \setlength{\itemsep}{0.16cm}
     \setlength{\topsep}{0pt}
-    \item \textbf{Single training scenario}
+    \item \textbf{Single training scenario:}
     No variation from which to learn dependence on \(K\) or \(\sigma\).
-    \item \textbf{Strike is hardcoded}
-    \(K^\ast\) is built into log-moneyness, so a new strike gives the
-    network the wrong input.
-    \item \textbf{Volatility is missing}
+    \item \textbf{Strike is hardcoded:}
+    \(K^\ast\) is built into log-moneyness.
+    \item \textbf{Volatility is missing:}
     The network has no input through which it can respond to a change
     in \(\sigma\).
 \end{enumerate}
@@ -2579,9 +2379,6 @@ models for every individual setting.
 \end{columns}
 \vspace{0.08cm}
 \vspace{0.02cm}
-{\tiny\color{Slate}
-Submitted report, Sec.\ 4.1.2 and Table 4.2.
-}
 \note{
 Contrast this result with retraining.
 When retrained at each setting, the architecture remains close to optimal.
