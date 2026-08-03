@@ -23,7 +23,7 @@
 \setbeamercolor{framesubtitle}{fg=Slate}
 \setbeamercolor{alerted text}{fg=Coral}
 \setbeamercolor{block title}{fg=white,bg=DeepNavy}
-\setbeamercolor{block body}{fg=Ink,bg=Mist}
+\setbeamercolor{block body}{fg=Ink,bg=white}
 \setbeamercolor{itemize item}{fg=Teal}
 \setbeamercolor{itemize subitem}{fg=Teal}
 \setbeamercolor{enumerate item}{fg=Teal}
@@ -39,7 +39,7 @@
 \setbeamertemplate{navigation symbols}{}
 \setbeamertemplate{itemize item}{\raise0.2ex\hbox{\color{Teal}\scriptsize$\blacktriangleright$}}
 \setbeamertemplate{itemize subitem}{\raise0.15ex\hbox{\color{Teal}\tiny$\bullet$}}
-\setbeamertemplate{blocks}[rounded][shadow=false]
+\setbeamertemplate{blocks}[default]
 \setbeamersize{text margin left=0.65cm,text margin right=0.65cm}
 
 \newcommand{\deckspeaker}{}
@@ -76,28 +76,33 @@
   \par\vspace{0.12cm}{\fontsize{6.4}{7.5}\selectfont\color{Slate}Source: #1\par}
 }
 
+\newcommand{\academicbox}[2][\linewidth]{%
+  \begingroup
+  \setlength{\fboxsep}{0.12cm}%
+  \setlength{\fboxrule}{0.35pt}%
+  \noindent\fcolorbox{black!55}{white}{%
+    \parbox{\dimexpr#1-2\fboxsep-2\fboxrule\relax}{\raggedright #2\par}}%
+  \endgroup
+}
+
 \newcommand{\claimbox}[1]{%
-  \begin{beamercolorbox}[rounded=true,sep=0.2cm]{block body}
-    \color{DeepNavy}\bfseries #1
-  \end{beamercolorbox}
+  \par\smallskip
+  \academicbox{\color{DeepNavy}\bfseries #1}%
 }
 
 \newcommand{\metricbox}[3][Teal]{%
-  \begin{beamercolorbox}[rounded=true,sep=0.18cm,wd=#3]{block body}
-    \centering
-    {\color{#1}\fontsize{17}{19}\selectfont\bfseries #2\par}
-  \end{beamercolorbox}
+  \academicbox[#3]{\centering
+    {\color{#1}\fontsize{17}{19}\selectfont\bfseries #2\par}}%
 }
 
 \newcommand{\pill}[2][Teal]{%
-  \tikz[baseline=(p.base)]\node[rounded corners=2pt,fill=#1!12,text=#1,
-  inner xsep=4pt,inner ysep=2pt,font=\scriptsize\bfseries] (p) {#2};%
+  {\color{#1}\scriptsize\(\blacktriangleright\)}\hspace{0.06cm}%
+  {\color{Ink}\scriptsize\bfseries #2}%
 }
 
 \newcommand{\risknote}[1]{%
-  \begin{beamercolorbox}[rounded=true,sep=0.15cm]{block body}
-    {\scriptsize\color{Coral}\textbf{Boundary:} \color{Ink}#1}
-  \end{beamercolorbox}
+  \par\smallskip
+  \academicbox{{\scriptsize\color{Coral}\textbf{Boundary:} \color{Ink}#1}}%
 }
 
 \newenvironment{tightitemize}{%
