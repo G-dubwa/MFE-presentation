@@ -34,8 +34,30 @@ data-bearing element was redrawn, recoloured or removed.
   instability` using submitted report Figure 3.6.
 - Added a defensive Figure 4.3 backup with the exact representative-run setting
   and a fuller interpretation than the main results slide.
-- Tightened Heston timing labels to a total of 9:40; the Figure 4.3 main slide is
-  allocated 0:35.
+- Tightened Heston timing labels to a total of 8:45: Siphelele 3:00 and Glasson
+  5:45; the Figure 4.3 main slide is allocated 0:40.
+
+## Heston main-slide simplification
+
+- Reduced Siphelele's five main slides to the visual argument: the unspanned
+  variance risk, the role of the liquid option, the trajectory-level training
+  protocol, the frozen-volatility shortcut and its martingale diagnostic.
+- Moved the holdings, gain-process, scaled-activation and detailed simulation
+  mathematics out of the main narrative; the existing technical backups retain
+  those derivations and definitions.
+- Reframed the COS slide to separate Heston-consistent option marking from
+  position selection. The analytic benchmark uses local COS Greeks, whereas the
+  neural positions are learned from terminal hedging error; COS Greeks are not
+  training labels.
+- Preserved the representative-run results and all displayed values, while
+  replacing the seed-by-seed main-slide table with the submitted three-seed
+  summary. The complete seed table remains in backup.
+- Reworded the conclusion to distinguish recovery of a known finite-grid
+  solution from direct training against the finite-grid terminal objective in
+  the more complex Heston experiment.
+- Speaker-note blocks and speech documents were not modified.
+
+Micaela's main slides were not modified.
 
 ## Micaela slide lock
 

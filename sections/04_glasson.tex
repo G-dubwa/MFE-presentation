@@ -1,6 +1,6 @@
-% Glasson Osborne's final four-slide section, approximately 6:05 including handover.
+% Glasson Osborne's final five-slide section, 5:45 including handover.
 
-\speakerlabel{Glasson}{1:00}
+\speakerlabel{Glasson}{1:10}
 \begin{frame}[t]{Why the frozen-volatility proxy drifts}
   \begin{beamercolorbox}[rounded=true,sep=0.11cm]{block body}
     \centering
@@ -51,67 +51,57 @@
   \note{Point to the left box for the Black--Scholes cancellation and the right box for the three Heston effects. Do not read either equation aloud.}
 \end{frame}
 
-\speakerlabel{Glasson}{1:00}
+\speakerlabel{Glasson}{1:10}
 \begin{frame}[t]{COS evaluates a Heston-consistent option price}
-  \begin{beamercolorbox}[rounded=true,sep=0.10cm]{block body}
-    \centering
-    {\fontsize{8.8}{10.2}\selectfont\(\displaystyle
-      C^H(t,S,v)=\mathbb E^{\mathbb Q}\!\left[
-        e^{-r(T_h-t)}(S_{T_h}-K_h)^+
-        \mid S_t=S,\ v_t=v
-      \right]\)}
-  \end{beamercolorbox}
   \vspace{0.08cm}
-  {\fontsize{7.5}{8.8}\selectfont
-    \textbf{Heston supplies the characteristic function; COS maps each simulated Heston state to a liquid-option price and the sensitivities needed for hedging.}\par}
-  \vspace{0.11cm}
   \begin{columns}[T,onlytextwidth]
     \begin{column}{0.47\textwidth}
       \pill{Pricing and marking}
-      \vspace{0.06cm}
-      \centering{\fontsize{8.4}{9.7}\selectfont\bfseries
-        \(\text{Heston characteristic function}
-        \longrightarrow \text{COS price and sensitivities}\)\par}
-      \vspace{0.13cm}
-      \begin{beamercolorbox}[rounded=true,sep=0.10cm]{block body}
-        \centering{\fontsize{7.4}{8.6}\selectfont
-          \(\text{Monte Carlo Heston states}
-          \longrightarrow \text{COS option marks}
-          \longrightarrow \text{hedge positions}\)}
-      \end{beamercolorbox}
+      \vspace{0.20cm}
+      \begin{tikzpicture}[
+        box/.style={rounded corners=3pt,draw=DeepNavy!22,fill=white,
+          minimum height=1.05cm,text width=2.55cm,align=center,font=\small\bfseries},
+        arr/.style={-{Latex[length=2.4mm]},color=Teal,line width=1pt},
+        node distance=0.36cm
+      ]
+        \node[box] (states) {Monte Carlo\\Heston states};
+        \node[box,right=of states,fill=Teal!10] (prices) {COS option\\prices};
+        \draw[arr] (states)--(prices);
+      \end{tikzpicture}
+
+      \vspace{0.25cm}
+      \academicbox{\centering\small
+        COS uses the Heston characteristic function to mark the liquid option
+        consistently with each simulated state.}
     \end{column}
     \begin{column}{0.49\textwidth}
-      \pill[Gold]{Exposure-matching positions}
-      \vspace{0.06cm}
-      \begin{beamercolorbox}[rounded=true,sep=0.11cm]{block body}
-        \centering
+      \pill[Gold]{Position selection}
+      \vspace{0.12cm}
+      \academicbox{\centering
+        {\small\bfseries Analytic local COS benchmark\par}
+        \vspace{0.05cm}
+        {\footnotesize Option matches variance exposure; stock removes the remaining delta exposure.\par}
+        \vspace{0.07cm}
         {\small\(\displaystyle
-          \boxed{\eta_n=\frac{V_n^T}{V_n^h},\qquad
-          \delta_n=\Delta_n^T-\eta_n\Delta_n^h}\)}
-      \end{beamercolorbox}
-      \vspace{0.05cm}
-      {\fontsize{7.2}{8.4}\selectfont
-        \(V=\partial C/\partial v\). The option holding matches variance exposure; the stock holding removes the remaining stock exposure.\par}
+          \eta_n=\frac{V_n^T}{V_n^h},\qquad
+          \delta_n=\Delta_n^T-\eta_n\Delta_n^h\)}}
+
+      \vspace{0.12cm}
+      \academicbox{\centering
+        {\small\bfseries Neural policy\par}
+        \vspace{0.05cm}
+        {\footnotesize Stock and option positions are learned directly from terminal hedging error; \textbf{COS Greeks are not training labels}.}}
     \end{column}
   \end{columns}
-  \vspace{0.13cm}
-  \begin{columns}[T,onlytextwidth]
-    \begin{column}{0.47\textwidth}
-      \pill{Heston COS benchmark}\quad
-      {\fontsize{7.1}{8.3}\selectfont positions from Heston-consistent sensitivities.}
-    \end{column}
-    \begin{column}{0.49\textwidth}
-      \pill[Gold]{BS-proxy Greek heuristic}\quad
-      {\fontsize{7.1}{8.3}\selectfont positions from frozen-volatility Black--Scholes sensitivities.}
-    \end{column}
-  \end{columns}
-  \vspace{0.13cm}
-  \centering{\small\color{Teal}\bfseries Same traded COS option path; different position rule.\par}
+
+  \vspace{0.24cm}
+  \academicbox[0.92\textwidth]{\centering
+    {\color{Teal}\large\bfseries Same traded COS option path; different position rule.}}
   \sourcefoot{Submitted report, Sec.\ 4.1.4 and Apps.\ A.6.1--A.6.2; Heston (1993); Fang \& Oosterlee (2008).}
   \note{Point to the process strip when distinguishing Monte Carlo from COS and to the two hedge equations for their economic purpose. Pause after stating that the traded price process is the same.}
 \end{frame}
 
-\speakerlabel{Glasson}{0:35}
+\speakerlabel{Glasson}{0:40}
 \begin{frame}[t]{\texorpdfstring{\resizebox{0.92\textwidth}{!}{The learned option position adapts to the variance state}}{The learned option position adapts to the variance state}}
   \centering
   \includegraphics[width=0.92\textwidth,height=5.15cm,keepaspectratio]
@@ -127,21 +117,21 @@
   \note{Use this as a results slide, not a derivation. Point out the broad agreement first, then the softer neural position at high variance. This supports an economically meaningful volatility-sensitive policy without claiming that the neural hedge must reproduce the local Greek rule.}
 \end{frame}
 
-\speakerlabel{Glasson}{1:30}
-\begin{frame}[t]{\texorpdfstring{\resizebox{0.97\textwidth}{!}{The stock-plus-option NN beats the strongest tested analytic heuristic in all three seeds}}{The stock-plus-option NN beats the strongest tested analytic heuristic in all three seeds}}
+\speakerlabel{Glasson}{1:45}
+\begin{frame}[t]{\texorpdfstring{\resizebox{0.96\textwidth}{!}{The stock-plus-option NN lowers hedge error in every submitted seed}}{The stock-plus-option NN lowers hedge error in every submitted seed}}
   \begin{columns}[T,onlytextwidth]
-    \begin{column}{0.56\textwidth}
-      \centering{\fontsize{7.2}{8.2}\selectfont\bfseries Representative full-information run\par}
-      \vspace{0.03cm}
+    \begin{column}{0.58\textwidth}
+      \centering{\small\bfseries Representative full-information run\par}
+      \vspace{0.06cm}
       \begin{table}
         \centering
-        \fontsize{6.9}{7.9}\selectfont
+        \fontsize{7.3}{8.4}\selectfont
         \begin{tabular}{lS[table-format=1.6]S[table-format=1.6]}
           \toprule
           Strategy & {RMSE} & {Loss CVaR95}\\
           \midrule
           No hedge & 0.190061 & 0.492959\\
-          BS-proxy stock delta & 0.019997 & 0.046360\\
+          {\color{Slate}BS-proxy stock delta} & 0.019997 & 0.046360\\
           \rowcolor{Teal!8}
           Heston COS delta--vega & 0.014782 & 0.033251\\
           Stock-only NN & 0.018166 & 0.041379\\
@@ -152,44 +142,32 @@
           \bottomrule
         \end{tabular}
       \end{table}
-      \vspace{0.03cm}
-      {\fontsize{6.8}{7.8}\selectfont Heston COS delta--vega is the model-consistent local Greek benchmark; the BS-proxy rule is the strongest tested analytic heuristic.\par}
+      \vspace{0.05cm}
+      {\scriptsize Heston COS delta--vega is the model-consistent local benchmark; the BS-proxy Greek rule on the COS path is the strongest tested analytic heuristic.\par}
     \end{column}
-    \begin{column}{0.40\textwidth}
+    \begin{column}{0.38\textwidth}
       \centering
-      {\fontsize{6.8}{7.8}\selectfont\bfseries Three independent reruns:\\NN versus strongest analytic heuristic\par}
-      \vspace{0.04cm}
-      {\fontsize{6.9}{7.9}\selectfont
-      \begin{tabular}{cS[table-format=1.6]S[table-format=1.6]S[table-format=2.1]}
-        \toprule
-        Seed & {NN} & {Heuristic} & {Imp. \%}\\
-        \midrule
-        111 & 0.007806 & 0.009838 & 20.6\\
-        222 & 0.007715 & 0.009871 & 21.8\\
-        333 & 0.007346 & 0.009864 & 25.5\\
-        \bottomrule
-      \end{tabular}}
-      \vspace{0.04cm}
-      \begin{beamercolorbox}[rounded=true,sep=0.05cm]{block body}
-        \centering
-        {\color{Teal}\fontsize{15}{17}\selectfont\bfseries 22.7\%\par}
-        {\fontsize{6.8}{7.6}\selectfont mean RMSE improvement}\\[0.03cm]
-        {\color{DeepNavy}\fontsize{12}{14}\selectfont\bfseries 27.1\%\par}
-        {\fontsize{6.8}{7.6}\selectfont mean Loss CVaR95 improvement}
-      \end{beamercolorbox}
+      \academicbox{\centering
+        {\color{DeepNavy}\fontsize{14}{16}\selectfont\bfseries Lower RMSE in all 3 submitted seeds\par}}
+
+      \vspace{0.12cm}
+      \metricbox{22.7\%}{\linewidth}
+      {\scriptsize\centering mean RMSE improvement\par}
+
+      \vspace{0.12cm}
+      \metricbox[DeepNavy]{27.1\%}{\linewidth}
+      {\scriptsize\centering mean Loss CVaR95 improvement\par}
     \end{column}
   \end{columns}
-  \vspace{0.03cm}
-  \begin{beamercolorbox}[rounded=true,sep=0.08cm]{block body}
-    {\fontsize{7.0}{8.1}\selectfont\textbf{Fair centring:} Each strategy is fair-centred separately, so RMSE compares the remaining dispersion of hedge errors rather than differences in average error. See backup.}
-  \end{beamercolorbox}
-  \vspace{0.04cm}
-  {\scriptsize\textbf{Interpretation:} Model-consistent local Greek matching is not the same objective as finite-grid terminal-error minimisation.\par}
+  \vspace{0.08cm}
+  {\scriptsize\textbf{Fair-centred separately:} compares residual hedge dispersion and tail risk.\par}
+  \vspace{0.05cm}
+  {\scriptsize\textbf{Different objectives:} local Greek matching versus finite-grid terminal-error training.\par}
   \sourcefoot{Submitted report, Tables 4.5--4.6 and A.11. Loss CVaR95 is mean seller loss in the worst 5\% of test outcomes.}
   \note{Highlight only the COS benchmark, strongest heuristic and stock-plus-option NN. Pause before the three-seed headline. Do not read every row.}
 \end{frame}
 
-\speakerlabel{Glasson}{0:55}
+\speakerlabel{Glasson}{1:00}
 \begin{frame}[t]{Three conclusions survive the diagnostics}
   \begin{columns}[T,onlytextwidth]
     \begin{column}{0.55\textwidth}
@@ -217,7 +195,7 @@
   \vspace{0.18cm}
   \begin{beamercolorbox}[rounded=true,sep=0.14cm]{block body}
     \centering\color{DeepNavy}\bfseries
-    A constrained neural policy can recover a known finite-grid solution and then improve terminal hedging performance when stochastic volatility adds a second risk factor and a second traded instrument.
+    A constrained neural policy can recover a known finite-grid solution and then be trained directly against the finite-grid terminal objective as the dynamics and traded instrument set become more complex.
   \end{beamercolorbox}
   \sourcefoot{Submitted report, Secs.\ 4.1.4 and 5; stated limitations.}
   \note{Do not add qualifications beyond the three shown. Finish after the final conclusion sentence.}
