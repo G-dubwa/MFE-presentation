@@ -429,7 +429,7 @@ $K$ & $\sigma$ & $T$ & $N$ & {DT-opt RMSE} & {Retrained NN} & {Param-cond NN} & 
 
 
 \speakerlabel{Micaela}{1:30}
-\begin{frame}{Conditioning fixes the Generalisation Failure}
+\begin{frame}{Parameter-Conditioned Hedger}
   \begin{columns}[T,onlytextwidth]
     \begin{column}{0.48\textwidth}
       \begin{beamercolorbox}[rounded=true,sep=0.24cm]{block body}
@@ -2169,3 +2169,648 @@ models for every individual setting.
   \note{Explain the changed premium treatment. Do not imply the conditioned model learns prices. Handover: ``Black--Scholes has one diffusion risk; Siphelele now moves to Heston, where variance adds a second.''}
 \end{frame}
 \end{comment}
+
+
+\speakerlabel{Micaela}{1:30}
+
+\begin{frame}[t]{Parameter Robustness under Retraining}
+
+\vspace{-0.18cm}
+
+%=========================================================
+% SETUP
+%=========================================================
+{\small
+\begin{itemize}
+    \setlength{\itemsep}{0.10cm}
+    \setlength{\topsep}{0pt}
+
+    \item The same architecture is retrained from scratch at each setting.
+
+    \item Parameters are varied one at a time around the baseline
+    \(
+      (K,\sigma,T,N)=(0.9,\,0.4,\,0.5,\,125).
+    \)
+\end{itemize}
+}
+
+\vspace{0.08cm}
+
+%=========================================================
+% PARAMETER RANGES — ONE LINE
+%=========================================================
+{\footnotesize
+\[
+\makebox[0.97\textwidth][s]{%
+  \(K\in\{0.8,0.9,1.0,1.1,1.2\}\)
+  \hfill
+  \(\sigma\in\{0.2,0.4,0.6\}\)
+  \hfill
+  \(T\in\{0.25,0.5,1.0\}\)
+  \hfill
+  \(N\in\{30,60,125,250\}\)
+}
+\]
+}
+
+\vspace{-0.20cm}
+
+%=========================================================
+% GRAPH AND RESULTS
+%=========================================================
+\begin{columns}[T,onlytextwidth]
+
+%---------------------------------------------------------
+% GRAPH
+%---------------------------------------------------------
+\begin{column}{0.62\textwidth}
+
+    \centering
+
+    \includegraphics[
+        width=\linewidth,
+        height=4.65cm,
+        keepaspectratio
+    ]{sections/robustness_rmse_vs_N.png}
+
+\end{column}
+
+\hfill
+
+%---------------------------------------------------------
+% RESULTS
+%---------------------------------------------------------
+\begin{column}{0.335\textwidth}
+
+    \raggedright
+    \footnotesize
+
+    % Result 1
+    \noindent
+    {\color{Teal}\(\blacktriangleright\)}
+    \hspace{0.08cm}
+    \begin{minipage}[t]{0.88\linewidth}
+        Mean neural-to-optimal RMSE ratio
+    \end{minipage}
+
+    \vspace{0.12cm}
+
+    \begin{center}
+        \fbox{\fontsize{17}{19}\selectfont \(1.049\)}
+    \end{center}
+
+    \vspace{-0.06cm}
+
+    \begin{center}
+        {\scriptsize Range: \(1.009\)--\(1.099\)}
+    \end{center}
+
+    \vspace{0.25cm}
+
+    % Result 2
+    \noindent
+    {\color{Teal}\(\blacktriangleright\)}
+    \hspace{0.08cm}
+    \begin{minipage}[t]{0.88\linewidth}
+        Neural hedge remains at most
+    \end{minipage}
+
+    \vspace{0.12cm}
+
+    \begin{center}
+        \fbox{\fontsize{17}{19}\selectfont \(10\%\)}
+    \end{center}
+
+    \vspace{-0.06cm}
+
+    \begin{center}
+        {\scriptsize above the discrete-time optimum}
+    \end{center}
+
+    \vspace{0.25cm}
+
+    % Result 3
+    \noindent
+    {\color{Teal}\(\blacktriangleright\)}
+    \hspace{0.08cm}
+    \begin{minipage}[t]{0.88\linewidth}
+        Largest relative gap occurs at
+    \end{minipage}
+
+    \vspace{0.08cm}
+
+    \[
+        N=250.
+    \]
+
+\end{column}
+
+\end{columns}
+
+\end{frame}
+
+\speakerlabel{Micaela}{1:30}
+
+\begin{frame}[t]{Parameter Robustness under Retraining}
+
+\vspace{-0.20cm}
+
+%=========================================================
+% SETUP
+%=========================================================
+{\small
+\begin{itemize}
+    \setlength{\itemsep}{0.08cm}
+    \setlength{\topsep}{0pt}
+    \setlength{\partopsep}{0pt}
+
+    \item The same architecture is retrained from scratch at each setting.
+
+    \item Parameters are varied one at a time around the baseline
+    \(
+      (K,\sigma,T,N)=(0.9,\,0.4,\,0.5,\,125).
+    \)
+\end{itemize}
+}
+
+\vspace{0.06cm}
+
+%=========================================================
+% PARAMETER RANGES: SINGLE LINE
+%=========================================================
+\begin{center}
+\resizebox{0.94\textwidth}{!}{%
+    \(
+    K\in\{0.8,0.9,1.0,1.1,1.2\}
+    \qquad\qquad
+    \sigma\in\{0.2,0.4,0.6\}
+    \qquad\qquad
+    T\in\{0.25,0.5,1.0\}
+    \qquad\qquad
+    N\in\{30,60,125,250\}
+    \)
+}
+\end{center}
+
+\vspace{-0.10cm}
+
+%=========================================================
+% GRAPH AND RESULTS
+%=========================================================
+\begin{columns}[T,onlytextwidth]
+
+%---------------------------------------------------------
+% GRAPH
+%---------------------------------------------------------
+\begin{column}{0.65\textwidth}
+
+    \centering
+
+    \includegraphics[
+        width=\linewidth,
+        height=4.25cm,
+        keepaspectratio
+    ]{sections/robustness_rmse_vs_N.png}
+
+\end{column}
+
+%---------------------------------------------------------
+% RESULTS
+%---------------------------------------------------------
+\begin{column}{0.31\textwidth}
+
+    % Move content closer to the graph and slightly lower
+    \hspace*{-0.28cm}
+    \begin{minipage}[t]{1.02\linewidth}
+
+    \vspace{0.18cm}
+
+    %---------------- Result 1 ----------------
+    \noindent
+    {\color{Teal}\scriptsize\(\blacktriangleright\)}
+    \hspace{0.04cm}
+    {\footnotesize Mean neural-to-optimal RMSE ratio}
+
+    \vspace{0.08cm}
+
+    \begin{center}
+        \fbox{
+            \fontsize{14}{16}\selectfont
+            \(1.049\)
+        }
+    \end{center}
+
+    \vspace{-0.10cm}
+
+    \begin{center}
+        {\scriptsize Range: \(1.009\)--\(1.099\)}
+    \end{center}
+
+    \vspace{0.18cm}
+
+    %---------------- Result 2 ----------------
+    \noindent
+    {\color{Teal}\scriptsize\(\blacktriangleright\)}
+    \hspace{0.04cm}
+    {\footnotesize Neural hedge remains at most}
+
+    \vspace{0.08cm}
+
+    \begin{center}
+        \fbox{
+            \fontsize{14}{16}\selectfont
+            \(10\%\)
+        }
+    \end{center}
+
+    \vspace{-0.10cm}
+
+    \begin{center}
+        {\scriptsize above the discrete-time optimum}
+    \end{center}
+
+    \vspace{0.18cm}
+
+    %---------------- Result 3 ----------------
+    \noindent
+    {\color{Teal}\scriptsize\(\blacktriangleright\)}
+    \hspace{0.04cm}
+    {\footnotesize Largest relative gap occurs at}
+
+    \vspace{0.06cm}
+
+    \begin{center}
+        {\small \(N=250\).}
+    \end{center}
+
+    \end{minipage}
+
+\end{column}
+
+\end{columns}
+
+\end{frame}
+
+\speakerlabel{Micaela}{1:30}
+
+\begin{frame}[t]{Generalisation Failure of the Single-Scenario Hedger}
+
+\vspace{-0.18cm}
+
+{\small
+\begin{itemize}
+    \setlength{\itemsep}{0pt}
+    \item One model is trained at
+    \((K^\ast,\sigma^\ast)=(0.9,0.4)\)
+    and evaluated elsewhere \textbf{without retraining}.
+\end{itemize}
+}
+
+\vspace{-0.14cm}
+
+\begin{columns}[c,onlytextwidth]
+
+%=================================================
+% Graph
+%=================================================
+\begin{column}{0.57\textwidth}
+
+\centering
+
+\begin{tikzpicture}
+\begin{axis}[
+    width=\linewidth,
+    height=4.25cm,
+    ybar,
+    bar width=7pt,
+    ymin=0,
+    ymax=320,
+    ylabel={NN/DT RMSE ratio},
+    ylabel style={font=\tiny},
+    ytick={0,50,100,150,200,250,300},
+    yticklabel style={font=\tiny},
+    axis lines*=left,
+    axis line style={color=black!65},
+    ymajorgrids,
+    grid style={color=black!15,line width=0.3pt},
+    symbolic x coords={
+        K0.9s0.4,
+        K0.9s0.6,
+        K1.1s0.6,
+        K1.1s0.4,
+        K0.9s0.2,
+        K0.7s0.6,
+        K1.1s0.2,
+        K0.7s0.4,
+        K0.7s0.2
+    },
+    xtick=data,
+    xticklabels={
+        {$0.9,0.4^\ast$},
+        {$0.9,0.6$},
+        {$1.1,0.6$},
+        {$1.1,0.4$},
+        {$0.9,0.2$},
+        {$0.7,0.6$},
+        {$1.1,0.2$},
+        {$0.7,0.4$},
+        {$0.7,0.2$}
+    },
+    xticklabel style={
+        rotate=90,
+        anchor=east,
+        font=\tiny,
+        inner sep=1pt
+    },
+    enlarge x limits=0.07,
+    nodes near coords={
+        \pgfmathprintnumber[
+            precision=1,
+            fixed
+        ]{\pgfplotspointmeta}$\times$
+    },
+    every node near coord/.append style={
+        font=\tiny,
+        anchor=south
+    },
+    tick style={draw=none}
+]
+
+\addplot[
+    ybar,
+    fill=blue!35,
+    draw=none
+] coordinates {
+    (K0.9s0.6,4.8)
+    (K1.1s0.6,7.8)
+    (K1.1s0.4,14.1)
+    (K0.9s0.2,14.3)
+    (K0.7s0.6,24.7)
+    (K1.1s0.2,39.3)
+    (K0.7s0.4,40.6)
+    (K0.7s0.2,291.3)
+};
+
+\addplot[
+    ybar,
+    fill=blue!70,
+    draw=none
+] coordinates {
+    (K0.9s0.4,1.0)
+};
+
+\end{axis}
+\end{tikzpicture}
+
+\vspace{-0.06cm}
+
+{\tiny Horizontal axis: \((K,\sigma)\) combinations.}
+
+\end{column}
+
+%=================================================
+% Reasons
+%=================================================
+\begin{column}{0.40\textwidth}
+
+{\small\bfseries Why does it fail?}
+
+\vspace{0.12cm}
+
+{\footnotesize
+\begin{enumerate}
+    \setlength{\itemsep}{0.16cm}
+    \setlength{\topsep}{0pt}
+
+    \item \textbf{Single training scenario}
+
+    No variation from which to learn dependence on \(K\) or \(\sigma\).
+
+    \item \textbf{Strike is hardcoded}
+
+    \(K^\ast\) is built into log-moneyness, so a new strike gives the
+    network the wrong input.
+
+    \item \textbf{Volatility is missing}
+
+    The network has no input through which it can respond to a change
+    in \(\sigma\).
+
+\end{enumerate}
+}
+
+\end{column}
+
+\end{columns}
+
+\vspace{0.08cm}
+
+
+
+\vspace{0.02cm}
+
+{\tiny\color{Slate}
+Submitted report, Sec.\ 4.1.2 and Table 4.2.
+}
+
+\note{
+Contrast this result with retraining.
+When retrained at each setting, the architecture remains close to optimal.
+When the same frozen network is moved to new settings, the error can rise
+by roughly two orders of magnitude.
+}
+
+\end{frame}
+
+
+\speakerlabel{Micaela}{1:30}
+
+\begin{frame}[t]{The Parameter-Conditioned Hedger}
+
+\vspace{-0.18cm}
+
+%=================================================
+% MODEL COMPARISON
+%=================================================
+
+\begin{center}
+
+\renewcommand{\arraystretch}{1.28}
+\setlength{\tabcolsep}{8pt}
+
+{\small
+\begin{tabular}{
+    p{0.18\textwidth}
+    p{0.35\textwidth}
+    p{0.38\textwidth}
+}
+\toprule
+&
+\textbf{Original network}
+&
+\textbf{Conditioned network}
+\\
+\midrule
+
+\textbf{Inputs}
+&
+\(\displaystyle
+\left(
+\log\frac{S}{K},
+\frac{\tau}{T}
+\right)\)
+&
+\(\displaystyle
+\left(
+\log\frac{S}{K},
+\frac{\tau}{T},
+K,\sigma
+\right)\)
+\\
+
+\textbf{Training}
+&
+Fixed \(K=0.9,\ \sigma=0.4\)
+&
+\(K\sim U(0.7,1.1)\),\quad
+\(\sigma\sim U(0.2,0.6)\)
+\\
+
+\textbf{Paths}
+&
+\(100\,000\)
+&
+\(200\,000\)
+\\
+
+\textbf{Premium}
+&
+Learned jointly
+&
+Analytic Black--Scholes premium
+\\
+
+\bottomrule
+\end{tabular}
+}
+
+\end{center}
+
+\vspace{0.20cm}
+
+%=================================================
+% RESULTS
+%=================================================
+
+\begin{columns}[T,onlytextwidth]
+
+%-------------------------------------------------
+% Interpolation
+%-------------------------------------------------
+\begin{column}{0.48\textwidth}
+
+\centering
+{\small\bfseries Interpolation}
+
+\vspace{0.07cm}
+
+{\footnotesize
+Inside the training range
+\[
+K\in[0.7,1.1],
+\qquad
+\sigma\in[0.2,0.6].
+\]
+}
+
+\vspace{-0.12cm}
+
+{\footnotesize
+\begin{itemize}
+    \setlength{\itemsep}{0.11cm}
+
+    \item Tested across nine parameter combinations.
+
+    \item Maximum RMSE gap:
+    \[
+        \boxed{\leq 0.00018}.
+    \]
+
+    \item Performance remains close to the discrete-time optimum
+    throughout the trained region.
+
+\end{itemize}
+}
+
+\end{column}
+
+%-------------------------------------------------
+% Extrapolation
+%-------------------------------------------------
+\begin{column}{0.48\textwidth}
+
+\centering
+{\small\bfseries Extrapolation}
+
+\vspace{0.07cm}
+
+{\footnotesize
+Outside the training range
+\[
+K\in\{0.6,1.3\},
+\qquad
+\sigma\in\{0.1,0.8\}.
+\]
+}
+
+\vspace{-0.12cm}
+
+{\footnotesize
+\begin{itemize}
+    \setlength{\itemsep}{0.11cm}
+
+    \item Strike extrapolation remains within \(0.00004\) of the
+    optimum.
+
+    \item Volatility extrapolation is harder.
+
+    \item At \(\sigma=0.1\), the worst RMSE is approximately
+    \[
+        \boxed{3\times}
+    \]
+    the optimum.
+
+\end{itemize}
+}
+
+\end{column}
+
+\end{columns}
+
+\vspace{0.04cm}
+
+\begin{center}
+\fbox{
+\begin{minipage}{0.91\textwidth}
+\centering
+\footnotesize
+Supplying the analytic Black--Scholes premium isolates hedging error:
+any remaining error is attributable to the hedge rather than pricing.
+\end{minipage}}
+\end{center}
+
+\vspace{0.01cm}
+
+{\tiny\color{Slate}
+Submitted report, Sec.\ 4.1.3 and Table 4.3.
+}
+
+\note{
+Explain that the model is no longer tied to one contract.
+Strike and volatility are now explicit inputs, and training covers a
+continuous parameter range. The analytic premium is supplied to separate
+pricing performance from hedging performance.
+}
+
+\end{frame}
+
