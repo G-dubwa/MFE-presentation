@@ -1,6 +1,6 @@
 % Glasson Osborne's final four-slide section, approximately 6:05 including handover.
 
-\speakerlabel{Glasson}{1:25}
+\speakerlabel{Glasson}{1:00}
 \begin{frame}[t]{Why the frozen-volatility proxy drifts}
   \begin{beamercolorbox}[rounded=true,sep=0.11cm]{block body}
     \centering
@@ -51,7 +51,7 @@
   \note{Point to the left box for the Black--Scholes cancellation and the right box for the three Heston effects. Do not read either equation aloud.}
 \end{frame}
 
-\speakerlabel{Glasson}{1:25}
+\speakerlabel{Glasson}{1:00}
 \begin{frame}[t]{COS evaluates a Heston-consistent option price}
   \begin{beamercolorbox}[rounded=true,sep=0.10cm]{block body}
     \centering
@@ -111,7 +111,23 @@
   \note{Point to the process strip when distinguishing Monte Carlo from COS and to the two hedge equations for their economic purpose. Pause after stating that the traded price process is the same.}
 \end{frame}
 
-\speakerlabel{Glasson}{1:55}
+\speakerlabel{Glasson}{0:35}
+\begin{frame}[t]{\texorpdfstring{\resizebox{0.92\textwidth}{!}{The learned option position adapts to the variance state}}{The learned option position adapts to the variance state}}
+  \centering
+  \includegraphics[width=0.92\textwidth,height=5.15cm,keepaspectratio]
+    {figures/report_fig_4_3_option_position_by_variance.pdf}
+
+  \vspace{0.02cm}
+  \academicbox[0.92\textwidth]{\centering\small
+    The stock-plus-option network broadly follows the local Heston COS delta--vega
+    option position, while using less aggressive positions at higher variance.}
+
+  \vspace{-0.06cm}
+  \sourcefoot{Submitted report, Figure 4.3 and Sec.\ 4.1.4. Vector crop from the final report; original export was not present in the submitted presentation repository.}
+  \note{Use this as a results slide, not a derivation. Point out the broad agreement first, then the softer neural position at high variance. This supports an economically meaningful volatility-sensitive policy without claiming that the neural hedge must reproduce the local Greek rule.}
+\end{frame}
+
+\speakerlabel{Glasson}{1:30}
 \begin{frame}[t]{\texorpdfstring{\resizebox{0.97\textwidth}{!}{The stock-plus-option NN beats the strongest tested analytic heuristic in all three seeds}}{The stock-plus-option NN beats the strongest tested analytic heuristic in all three seeds}}
   \begin{columns}[T,onlytextwidth]
     \begin{column}{0.56\textwidth}
@@ -173,7 +189,7 @@
   \note{Highlight only the COS benchmark, strongest heuristic and stock-plus-option NN. Pause before the three-seed headline. Do not read every row.}
 \end{frame}
 
-\speakerlabel{Glasson}{1:10}
+\speakerlabel{Glasson}{0:55}
 \begin{frame}[t]{Three conclusions survive the diagnostics}
   \begin{columns}[T,onlytextwidth]
     \begin{column}{0.55\textwidth}

@@ -33,8 +33,9 @@ All report page numbers below are the printed report page numbers where availabl
 | 6 | Final benchmark RMSE table | Table 3.2, p. 16 | Final benchmark CSV absent | Report-supported; archive unresolved | Exact five RMSE values transcribed. |
 | 6 | Neural gap ≈0.4% above DT | Table 3.2 | Calculated from report values | Verified — report | \((0.007841/0.007810-1)\times100\approx0.397\%\). |
 | 6 | Learned premium `0.163972`; analytic `0.164111` | Table 3.2; Sec. 3.1.4 | Final benchmark CSV absent | Report-supported; archive unresolved | Difference `0.000139` stated in report. |
-| 7 | Monotone hedge from near zero OTM to near one ITM | Figure 3.3; Sec. 3.1.4 | Figure/data absent | Faithful schematic | Slide explicitly says it is not a data redraw. |
+| 7 | Monotone hedge from near zero OTM to near one ITM | Figure 3.3; Sec. 3.1.4 | Original export/data absent; verified report crop in backup | Verified — report figure | Micaela's main schematic remains unchanged; the exact submitted plot is available only in backup. |
 | 7 | Pathwise tracking on OTM/ATM/ITM examples | Figure 3.5; p. 18 | Figure/data absent | Verified — report | No numerical path values reproduced. |
+| Backup | Training and validation convergence, including the epoch-250 best-validation marker | Figure 3.6; Sec. 3.1.4 | Original export/data absent; verified report crop used | Verified — report figure | Used only as an optimisation/validation diagnostic; no external-generalisation claim. |
 | 8 | Retrained robustness values | Table 4.1, p. 20 | Robustness CSV absent | Report-supported; archive unresolved | Selected rows copied exactly. |
 | 8 | Mean NN/DT ratio `1.049`; range `1.009–1.099` | Sec. 4.1.1, p. 21 | Robustness CSV absent | Report-supported; archive unresolved | Wording distinguishes relative and absolute error. |
 | 8 | \(N=30\) NN `0.015595`; \(N=250\) NN `0.006047` | Table 4.1 | Robustness CSV absent | Report-supported; archive unresolved | Demonstrates falling absolute error. |
@@ -78,7 +79,7 @@ All report page numbers below are the printed report page numbers where availabl
 | 18 | Representative table versus four-strategy three-seed cell | Tables 4.5--4.6 and A.11 | Multi-seed CSV absent | Verified — report | Three-seed cell retrained two NNs and reevaluated two analytic rules; not every representative row was rerun. |
 | 18 | Fair centring is final test evaluation, not the raw premium used in training | Sec. 4.1.4; Algorithm A.6.10 | Training/evaluation code submitted separately | Verified — report code | NN learns a raw premium jointly with weights during training. |
 | 19 | Three calibrated conclusions | Sec. 5, pp. 31–32 | N/A | Verified — report | Faithful condensation of conclusion. |
-| 19 | Learned option position broadly follows variance-hedge direction and softens at high variance | Figure 4.3; Sec. 4.1.4 | Figure/data absent | Verified — report | No empirical curve redrawn. |
+| 19 | Learned option position broadly follows variance-hedge direction and softens at high variance | Figure 4.3; Sec. 4.1.4 | Original export/data absent; verified report crop used | Verified — report figure | Main slide and fuller backup use the same unaltered vector crop; no empirical curve was redrawn. |
 | 19 | Limitations: three seeds, centering, heuristic comparator, frictionless Heston, information set | Sec. 4.1.4; Sec. 5 | N/A | Verified — report | Main limitations shown visibly. |
 
 ## Backup code provenance

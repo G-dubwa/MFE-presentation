@@ -231,7 +231,7 @@
 % Slides 11--16: Siphelele Nkosi, 6:30.
 % Revised narrative: incompleteness -> second instrument -> simulation -> proxy -> diagnostic -> handover.
 
-\speakerlabel{Siphelele}{1:05}
+\speakerlabel{Siphelele}{0:55}
 \begin{frame}{Heston adds a risk the stock cannot span}
   \begin{columns}[T,onlytextwidth]
     \begin{column}{0.58\textwidth}
@@ -290,7 +290,6 @@
   \sourcefoot{Submitted report, Secs.\ 2.1.2 and 4.1.4; Heston (1993). Feller calculation in backup.}
   \note{Open by saying that Heston changes the problem from one Brownian shock to two. Emphasise that the stock spans the stock shock, but not the orthogonal variance shock. Conclude that a second variance-sensitive traded instrument is needed.}
 \end{frame}
-
 
 % \speakerlabel{Siphelele}{1:20}
 % \begin{frame}{A liquid option supplies the missing variance exposure}
@@ -352,7 +351,7 @@
 %   \note{State the two crucial clarifications clearly: first, delta and eta are holdings, not trades; second, the hedge option is deliberately different from the target because it is variance-sensitive and remains alive throughout the hedge horizon.}
 % \end{frame}
 
-\speakerlabel{Siphelele}{1:15}
+\speakerlabel{Siphelele}{1:00}
 \begin{frame}{{\fontsize{15}{18}\selectfont A liquid option supplies the missing variance exposure}}
  \vspace{0.08cm}
   \footnotesize
@@ -403,7 +402,7 @@
   \note{Distinguish holdings from trade increments and explain why the two contracts differ.}
 \end{frame}
 
-\speakerlabel{Siphelele}{1:10}
+\speakerlabel{Siphelele}{1:00}
 \begin{frame}{Each training sample is a full Heston trajectory}
   \centering
   \begin{tikzpicture}[
@@ -480,7 +479,7 @@
 \end{frame}
 
 
-\speakerlabel{Siphelele}{0:55}
+\speakerlabel{Siphelele}{0:45}
 \begin{frame}{A tempting shortcut: freeze the current volatility}
   \begin{columns}[T,onlytextwidth]
     \begin{column}{0.57\textwidth}
@@ -529,7 +528,7 @@
 \end{frame}
 
 
-\speakerlabel{Siphelele}{1:20}
+\speakerlabel{Siphelele}{1:00}
 \begin{frame}{The martingale test catches the inconsistency}
   \centering
   {\scriptsize\textbf{Estimated mean total liquid-option movement over the target hedge horizon \([0,T]\)}}
@@ -588,46 +587,4 @@
 
   \sourcefoot{Submitted report, Table A.9 and Sec.\ 4.1.4. Diagnostic evidence, not a standalone arbitrage proof.}
   \note{Emphasise the 20.6 standard errors. Then contrast with the COS estimate, which is small relative to its standard error. Deliver the final sentence slowly because it is the main finding of your section.}
-\end{frame}
-
-
-\speakerlabel{Siphelele}{0:40}
-\begin{frame}{Handover: from the symptom to the exact drift}
-  \begin{columns}[T,onlytextwidth]
-    \begin{column}{0.53\textwidth}
-      \pill{Finding 1: market structure}
-      {\small
-      Heston has two diffusion shocks. With only the stock, the orthogonal variance component is unspanned. A variance-sensitive liquid option supplies the second exposure.}
-
-      \vspace{0.16cm}
-      \pill[Coral]{Finding 2: process consistency}
-      {\small
-      The frozen-volatility Black--Scholes proxy fails the martingale diagnostic, so it is not a Heston-consistent traded-option path.}
-    \end{column}
-
-    \begin{column}{0.43\textwidth}
-      \centering
-      \begin{tikzpicture}[
-        box/.style={rounded corners=3pt,draw=DeepNavy!18,fill=Mist,
-          minimum height=0.58cm,text width=2.5cm,align=center,font=\scriptsize},
-        smallbox/.style={rounded corners=3pt,draw=DeepNavy!18,fill=Gold!16,
-          minimum height=0.48cm,text width=2.35cm,align=center,font=\scriptsize},
-        arr/.style={-{Latex[length=2mm]},color=Teal,line width=0.8pt}
-      ]
-        \node[box] (symptom) at (0,1.55) {observed symptom:\\proxy drift};
-        \node[smallbox] (mr) at (0,0.78) {mean reversion};
-        \node[smallbox] (vv) at (0,0.12) {vol-of-vol convexity};
-        \node[smallbox] (sv) at (0,-0.54) {spot--variance interaction};
-        \node[box,fill=Teal!12] (cos) at (0,-1.42) {COS correction};
-
-        \draw[arr] (symptom)--(mr);
-        \draw[arr] (mr)--(vv);
-        \draw[arr] (vv)--(sv);
-        \draw[arr] (sv)--(cos);
-      \end{tikzpicture}
-    \end{column}
-  \end{columns}
-
-  \sourcefoot{Submitted report, Sec.\ 4.1.4 and App.\ A.6.3.}
-  \note{Say: Glasson will now use Itô's Lemma to identify the exact Heston drift terms---mean reversion, vol-of-vol convexity and spot-variance interaction---that cause this, and how the final COS implementation corrects it.}
 \end{frame}

@@ -400,6 +400,28 @@
   \sourcefoot{Submitted report, Table A.11.}
 \end{frame}
 
+\begin{frame}[t]{\texorpdfstring{\resizebox{0.96\textwidth}{!}{Backup: learned option position in the representative Heston run}}{Backup: learned option position in the representative Heston run}}
+  \centering
+  \includegraphics[width=0.88\textwidth,height=4.62cm,keepaspectratio]
+    {figures/report_fig_4_3_option_position_by_variance.pdf}
+
+  \vspace{0.02cm}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.48\textwidth}
+      \pill{Exact setting}
+      {\scriptsize Representative full-information COS run; horizontal axis is the
+      Heston variance state (v), and the vertical axis is average liquid-option position.}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \pill[Gold]{Defensive interpretation}
+      {\scriptsize The NN broadly follows the local Greek hedge but softens at high variance,
+      consistent with optimising terminal MSE rather than copying the analytic rule.}
+    \end{column}
+  \end{columns}
+  \vspace{-0.02cm}
+  \sourcefoot{Submitted report, Figure 4.3 and Sec.\ 4.1.4. In this run, \(\max|\eta^{\mathrm{NN}}|\approx1.33\), inside the imposed \([-5,5]\) range.}
+\end{frame}
+
 \begin{frame}[t]{Observable-information robustness}
   \begin{columns}[T,onlytextwidth]
     \begin{column}{0.47\textwidth}

@@ -1,5 +1,31 @@
 \speakerlabel{Backup}{}
 
+\begin{frame}[t]{\texorpdfstring{\resizebox{0.96\textwidth}{!}{Backup: the learned Black--Scholes hedge matches the analytic curves}}{Backup: the learned Black--Scholes hedge matches the analytic curves}}
+  \centering
+  \includegraphics[width=0.94\textwidth,height=5.35cm,keepaspectratio]
+    {figures/report_fig_3_3_delta_by_moneyness.pdf}
+
+  \vspace{0.04cm}
+  \academicbox[0.92\textwidth]{\centering\small
+    The learned hedge ratio closely follows the Black--Scholes delta and
+    discrete-time MSE-optimal curves across moneyness.}
+  \vspace{-0.04cm}
+  \sourcefoot{Submitted report, Figure 3.3 and Sec.\ 3.1.4. Vector crop from the final report.}
+\end{frame}
+
+\begin{frame}[t]{\texorpdfstring{\resizebox{0.96\textwidth}{!}{Backup: training and validation losses converge without visible instability}}{Backup: training and validation losses converge without visible instability}}
+  \centering
+  \includegraphics[width=0.98\textwidth,height=5.25cm,keepaspectratio]
+    {figures/report_fig_3_6_training_validation_loss.pdf}
+
+  \vspace{0.04cm}
+  \academicbox[0.92\textwidth]{\centering\small
+    Training and validation losses track closely and flatten late in training;
+    the best validation loss occurs at the submitted epoch cap of 250.}
+  \vspace{-0.04cm}
+  \sourcefoot{Submitted report, Figure 3.6 and Sec.\ 3.1.4. Optimisation and validation evidence, not proof of external generalisation.}
+\end{frame}
+
 \input{sections/05_heston_backups}
 
 \begin{frame}{Backup: method-to-code map}

@@ -59,7 +59,11 @@
 
 \input{sections/00_title}
 \input{sections/01_kaiden}
+\begingroup
+\let\micaelaMathLeq\leq
+\renewcommand{\leq}{\ensuremath{\micaelaMathLeq}}
 \input{sections/02_micaela}
+\endgroup
 \input{sections/03_siphelele}
 \input{sections/04_glasson}
 

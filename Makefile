@@ -5,7 +5,7 @@ OUTPUT := build/Group5_Deep_Hedging_Presentation.pdf
 
 all: $(OUTPUT)
 
-$(OUTPUT): $(MAIN).tex presentation_theme.sty references.bib $(wildcard sections/*.tex)
+$(OUTPUT): $(MAIN).tex presentation_theme.sty references.bib $(wildcard sections/*.tex) $(wildcard figures/*)
 	mkdir -p build
 	latexmk -pdf -interaction=nonstopmode -halt-on-error $(MAIN).tex
 	cp $(MAIN).pdf $(OUTPUT)
